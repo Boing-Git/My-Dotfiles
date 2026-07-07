@@ -1,0 +1,14 @@
+{
+  "workspace": {
+    "library": [
+      "$XDG_CONFIG_HOME/hypr/stubs",
+      "${3rd}/luv/library"
+    ],
+    "checkThirdParty": false
+  },
+  "diagnostics": {
+    "globals": [
+      "hl"
+    ]
+  }
+}

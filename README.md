@@ -1,0 +1,78 @@
+<div align="center">
+
+# ☄️ Boing's Arch Linux Dotfiles
+
+A deeply modular, dynamic, and hardware-accelerated desktop environment built on **Arch Linux**, **Hyprland**, and **Quickshell**.
+
+![Arch Linux](https://img.shields.io/badge/OS-Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)
+![Hyprland](https://img.shields.io/badge/WM-Hyprland-00A489?style=for-the-badge&logo=hyprland&logoColor=white)
+![Quickshell](https://img.shields.io/badge/UI-Quickshell-8B5CF6?style=for-the-badge&logo=qt&logoColor=white)
+
+</div>
+
+---
+
+## ✨ Overview
+
+Welcome to my personal dotfiles! After migrating from NixOS, this repository represents my fully customized, aesthetic, and automated **Arch Linux** setup. 
+
+The entire system is glued together by a unified theming engine based on **Material 3 Expressive**, leveraging Pywal/Matugen methodologies to dynamically theme the OS based on the current wallpaper and color scheme.
+
+## 🚀 Key Technologies & Stack
+
+- **Window Manager**: [Hyprland](https://hyprland.org/) (configured entirely in **Lua** for maximum programmability and modularity)
+- **Desktop Shell**: [Quickshell](https://outfoxxed.me/quickshell/) (QtQuick/QML-based, replacing traditional Waybar/Eww setups with fluid animations)
+- **Terminal Emulator**: [WezTerm](https://wezfurlong.org/wezterm/) / [Foot](https://codeberg.org/dnkl/foot)
+- **Shell & Prompt**: [Fish](https://fishshell.com/) with [Starship](https://starship.rs/)
+- **Editor**: [Neovim](https://neovim.io/) & [Zed](https://zed.dev/)
+- **Launcher**: [Fuzzel](https://codeberg.org/dnkl/fuzzel)
+- **Audio Visualizer**: [Cava](https://github.com/karlstav/cava)
+- **System Monitoring**: Btop, Htop, Nvtop
+- **Theming & Color**: [Matugen](https://github.com/InioX/matugen) + Custom Python/Bash Scripts (`color-schemes/set-theme.sh`)
+
+## 🎨 Architecture & Modules
+
+This repository avoids monolithic configuration files. Every component is meticulously split into clean, logical modules:
+
+### [Hyprland (Lua Config)](hypr/)
+Instead of a static `hyprland.conf`, the WM is configured via `hyprland.lua`. 
+- **Modular Layouts**: Dwindle, Master, Scrolling.
+- **Dynamic Manager**: A `manager.py` tool lets you swap themes, change animations (15+ profiles like *Springy*, *Jelly*, *Cinematic*), and layouts on the fly.
+- **Native Keybinds**: Deeply programmable workspace loops and window manipulation using Lua scripting.
+- *[Read more in the Hyprland README](hypr/README.md)*
+
+### [Quickshell UI](quickshell/)
+A custom-built, hardware-accelerated QML shell.
+- **Full Shell Experience**: Includes top panels, volume OSDs, notification daemons, a control center, and Hyprland workspace trackers.
+- **Material You Theming**: Colors are extracted directly from the system scheme via Python scripts and injected as QML Singletons for real-time UI updates.
+- *[Read more in the Quickshell README](quickshell/README.md)*
+
+### 🌈 Dynamic Color Engine
+The `color-schemes/` directory acts as the brain for system-wide color coordination. Using `set-theme.sh` and python utilities, changing a scheme instantly updates:
+- Quickshell UI
+- Hyprland Borders & Animations
+- GTK & Qt applications (via `qt5ct`, `qt6ct`, `nwg-look`)
+- Terminal Emulators
+- Fuzzel Launcher
+
+## 📁 Repository Structure
+
+```text
+~/dotfiles/
+├── btop/ & htop/ & nvtop/ # System monitors
+├── cava/                  # Audio visualizer
+├── color-schemes/         # Core theming engine & scripts
+├── fish/                  # Fish shell aliases, functions, and config
+├── foot/ & wezterm/       # Terminal configs
+├── fuzzel/                # App launcher styling
+├── hypr/                  # Lua-based Hyprland config
+├── matugen/               # Material color generation
+├── neovim/ & nvim/ & zed/ # Code editors
+├── nwg-look/              # GTK settings
+├── qt5ct/ & qt6ct/        # Qt theme settings
+├── quickshell/            # QML-based desktop shell
+└── starship.toml          # Shell prompt configuration
+```
+
+## 📜 License
+Distributed under the MIT License (see individual sub-directories for specific licensing details where applicable).

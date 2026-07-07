@@ -75,4 +75,4 @@ The `color-schemes/` directory acts as the brain for system-wide color coordinat
 ```
 
 ## 📜 License
-Distributed under the MIT License (see individual sub-directories for specific licensing details where applicable).
+Distributed under the GNU General Public License v3.0 (GPLv3) (see individual sub-directories for specific licensing details where applicable).

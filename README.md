@@ -1,6 +1,6 @@
 <div align="center">
 
-# ☄️ Boing's Unified Dotfiles
+# OmniFormis Shell
 
 A deeply modular, dynamic, and hardware-accelerated desktop environment built for **NixOS** and **Arch Linux**, leveraging **Hyprland** and **Quickshell**.
 
@@ -15,28 +15,28 @@ A deeply modular, dynamic, and hardware-accelerated desktop environment built fo
 
 ## ✨ Overview
 
-Welcome to my personal dotfiles! This repository represents my fully customized, aesthetic, and automated setup, featuring a unified environment that seamlessly supports both **NixOS** and **Arch Linux**. 
+Welcome to OmniFormis Shell! This repository represents my fully customized, aesthetic, and automated desktop setup, featuring a unified environment that seamlessly supports both **NixOS** and **Arch Linux**. 
 
 The entire system is glued together by a unified theming engine based on **Material 3 Expressive**, leveraging Pywal/Matugen methodologies to dynamically theme the OS based on the current wallpaper and color scheme.
 
 ## 🚀 Key Technologies & Stack
 
-- **Window Manager**: [Hyprland](https://hyprland.org/) (configured entirely in **Lua** for maximum programmability and modularity)
-- **Desktop Shell**: [Quickshell](https://outfoxxed.me/quickshell/) (QtQuick/QML-based, replacing traditional Waybar/Eww setups with fluid animations)
-- **Terminal Emulator**: [WezTerm](https://wezfurlong.org/wezterm/) / [Foot](https://codeberg.org/dnkl/foot)
-- **Shell & Prompt**: [Fish](https://fishshell.com/) with [Starship](https://starship.rs/)
-- **Editor**: [Neovim](https://neovim.io/) & [Zed](https://zed.dev/)
-- **Launcher**: [Fuzzel](https://codeberg.org/dnkl/fuzzel)
-- **Audio Visualizer**: [Cava](https://github.com/karlstav/cava)
-- **System Monitoring**: Btop, Htop, Nvtop
-- **Theming & Color**: [Matugen](https://github.com/InioX/matugen) + Custom Python/Bash Scripts (`color-schemes/set-theme.sh`)
+* **Window Manager**: [Hyprland](https://hyprland.org/) (configured entirely in **Lua** for maximum programmability and modularity)
+* **Desktop Shell**: [Quickshell](https://outfoxxed.me/quickshell/) (QtQuick/QML-based, replacing traditional Waybar/Eww setups with fluid animations)
+* **Terminal Emulator**: [WezTerm](https://wezfurlong.org/wezterm/) / [Foot](https://codeberg.org/dnkl/foot)
+* **Shell & Prompt**: [Fish](https://fishshell.com/) with [Starship](https://starship.rs/)
+* **Editor**: [Neovim](https://neovim.io/) & [Zed](https://zed.dev/)
+* **Launcher**: [Fuzzel](https://codeberg.org/dnkl/fuzzel)
+* **Audio Visualizer**: [Cava](https://github.com/karlstav/cava)
+* **System Monitoring**: Btop, Htop, Nvtop
+* **Theming & Color**: [Matugen](https://github.com/InioX/matugen) + Custom Python/Bash Scripts (`color-schemes/set-theme.sh`)
 
 ## 🛠️ Installation
 
-This repository features a unified installer that automatically detects your operating system and executes the appropriate setup logic for both NixOS and Arch Linux.
+OmniFormis Shell features a unified installer that automatically detects your operating system and executes the appropriate setup logic for both NixOS and Arch Linux.
 
 ```bash
-git clone https://github.com/Boing-Git/My-Dotfiles ~/Dotfiles
+git clone [https://github.com/Boing-Git/My-Dotfiles](https://github.com/Boing-Git/My-Dotfiles) ~/Dotfiles
 cd ~/Dotfiles
 chmod +x install.sh
 ./install.sh
@@ -48,25 +48,25 @@ This repository avoids monolithic configuration files. Every component is meticu
 
 ### [Hyprland (Lua Config)](hypr/)
 Instead of a static `hyprland.conf`, the WM is configured via `hyprland.lua`. 
-- **Modular Layouts**: Dwindle, Master, Scrolling.
-- **Dynamic Manager**: A `manager.py` tool lets you swap themes, change animations (15+ profiles like *Springy*, *Jelly*, *Cinematic*), and layouts on the fly.
-- **Native Keybinds**: Deeply programmable workspace loops and window manipulation using Lua scripting.
-- *[Read more in the Hyprland README](hypr/README.md)*
+* **Modular Layouts**: Dwindle, Master, Scrolling.
+* **Dynamic Manager**: A `manager.py` tool lets you swap themes, change animations (15+ profiles like *Springy*, *Jelly*, *Cinematic*), and layouts on the fly.
+* **Native Keybinds**: Deeply programmable workspace loops and window manipulation using Lua scripting.
+* *[Read more in the Hyprland README](hypr/README.md)*
 
-### [Quickshell UI](quickshell/)
-A custom-built, hardware-accelerated QML shell.
-- **Full Shell Experience**: Includes top panels, volume OSDs, notification daemons, a control center, and Hyprland workspace trackers.
-- **Material You Theming**: Colors are extracted directly from the system scheme via Python scripts and injected as QML Singletons for real-time UI updates.
-- *[Read more in the Quickshell README](quickshell/README.md)*
+### [Quickshell UI (OmniFormis Core)](quickshell/)
+A custom-built, hardware-accelerated QML shell powering the core user interface.
+* **Full Shell Experience**: Includes top panels, volume OSDs, notification daemons, a control center, and Hyprland workspace trackers.
+* **Material You Theming**: Colors are extracted directly from the system scheme via Python scripts and injected as QML Singletons for real-time UI updates.
+* *[Read more in the Quickshell README](quickshell/README.md)*
 
 ### 🌈 Dynamic Color Engine
 The `color-schemes/` directory acts as the brain for system-wide color coordination. Using `set-theme.sh` and python utilities, changing a scheme instantly updates:
-- Quickshell UI
-- Hyprland Borders & Animations
-- GTK & Qt applications (via `qt5ct`, `qt6ct`, `nwg-look`)
-- Terminal Emulators
-- Fuzzel Launcher
-- Spotify (via imperative `spicetify` hooks)
+* OmniFormis Shell / Quickshell UI
+* Hyprland Borders & Animations
+* GTK & Qt applications (via `qt5ct`, `qt6ct`, `nwg-look`)
+* Terminal Emulators
+* Fuzzel Launcher
+* Spotify (via imperative `spicetify` hooks)
 
 ## 📁 Repository Structure
 
@@ -83,7 +83,7 @@ The `color-schemes/` directory acts as the brain for system-wide color coordinat
 ├── neovim/ & nvim/ & zed/ # Code editors
 ├── nwg-look/              # GTK settings
 ├── qt5ct/ & qt6ct/        # Qt theme settings
-├── quickshell/            # QML-based desktop shell
+├── quickshell/            # QML-based OmniFormis desktop shell
 ├── spicetify/             # Dynamic Spotify theming
 └── starship.toml          # Shell prompt configuration
 ```

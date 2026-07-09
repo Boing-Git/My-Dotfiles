@@ -6,7 +6,7 @@ import sys
 
 # Resolve VARS_FILE relative to this script's location so it works whether
 # called from ~/dotfiles or via a ~/.local/bin symlink.
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 VARS_FILE = os.path.join(SCRIPT_DIR, "modules", "variables.lua")
 
 def read_file():
@@ -39,16 +39,6 @@ def parse_variables(content):
         if stripped.startswith('--') and not stripped.startswith('---'):
             c = stripped.lstrip('-').strip()
             current_comments.append(c)
-            
-            # Simple category heuristic: if the comment is a known category name
-            cat_lower = c.lower()
-            known_categories = [
-                "general", "app launcher", "environment variables", "misc",
-                "animation style", "window rules", "decoration", "shadows",
-                "blur", "groupbar", "input", "gestures", "modifiers"
-            ]
-            if cat_lower in known_categories:
-                current_category = c
                 
         elif stripped == '' or stripped.startswith('---'):
             current_comments = []
@@ -60,6 +50,9 @@ def parse_variables(content):
                 bool_val = match.group(3)
                 num_val = match.group(4)
                 comment = match.group(5)
+                
+                if len(current_comments) > 1:
+                    current_category = current_comments[0]
                 
                 # Help text is the last comment or inline comment
                 help_text = comment.strip("- ") if comment else (current_comments[-1] if current_comments else f"Set {key}")

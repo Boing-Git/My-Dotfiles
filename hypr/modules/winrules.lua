@@ -4,7 +4,7 @@
 
 local vars = require("modules.variables")
 local windowOpacity = vars.windowOpacity or "0.9"
-local singleWindowGapsOut = vars.singleWindowGapsOut or "10"
+local singleWindowGapsOut = vars.GameMode and "0" or (vars.singleWindowGapsOut or "10")
 
 --------------------------------------------------------------------------------
 -- ## Global Window Rules

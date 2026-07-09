@@ -12,7 +12,7 @@ Rectangle {
     id: systemTrayContainer
     layer.enabled: true
     layer.effect: MultiEffect { shadowEnabled: true; shadowBlur: 1.0; shadowColor: Qt.rgba(0,0,0,0.25); shadowVerticalOffset: 4; shadowHorizontalOffset: 0 }
-    color: Theme.primary
+    color: Theme.surface_container_high
     radius: height / 2
     
     // THE FIX: Only show this pill if there is actually an app in the tray!
@@ -40,7 +40,7 @@ Rectangle {
                 radius: height / 2
 
                 Behavior on color {
-                    ColorAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
+                    ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
                 }
 
                 property var trayItem: modelData 
@@ -77,7 +77,7 @@ Rectangle {
                     
                     // Dim inactive tray icons slightly to match the aesthetic
                     opacity: itemMouseArea.containsMouse ? 1.0 : 0.7
-                    Behavior on opacity { NumberAnimation { duration: 250 } }
+                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration } }
                 }
             }
         }

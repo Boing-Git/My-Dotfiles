@@ -19,13 +19,13 @@ Item {
 
     // Animate height changes for smooth insertions/removals
     Behavior on height {
-        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.OutCubic }
     }
 
     // A state flag to indicate if we are dismissing so we can trigger animations
     property bool dismissing: false
 
-    property color textColor: isPopup ? (modelData.urgency === NotificationUrgency.Critical ? Theme.on_error : Theme.on_primary) : (modelData.urgency === NotificationUrgency.Critical ? Theme.on_error_container : Theme.on_primary_container)
+    property color textColor: isPopup ? (modelData.urgency === NotificationUrgency.Critical ? Theme.on_error : Theme.on_surface) : (modelData.urgency === NotificationUrgency.Critical ? Theme.on_error_container : Theme.on_surface)
 
     // Drag-to-dismiss properties
     property real dragThreshold: width * 0.4
@@ -42,7 +42,7 @@ Item {
         x: 0
         
         radius: Vars.radiusLarge // Material 3 expressive rounded corners for all notifications
-        color: isPopup ? (modelData.urgency === NotificationUrgency.Critical ? Theme.error : "transparent") : (modelData.urgency === NotificationUrgency.Critical ? Theme.error_container : Theme.primary_container)
+        color: isPopup ? (modelData.urgency === NotificationUrgency.Critical ? Theme.error : "transparent") : (modelData.urgency === NotificationUrgency.Critical ? Theme.error_container : Theme.surface_container_high)
         border.width: 0
         clip: true
 
@@ -58,7 +58,7 @@ Item {
         // Opacity animation for entry/exit
         opacity: dismissing ? 0.0 : 1.0
         Behavior on opacity {
-            NumberAnimation { duration: dismissing ? 200 : 300; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: dismissing ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.OutCubic }
         }
 
         // Entry animation (opacity from 0)
@@ -200,7 +200,7 @@ Item {
                     color: closeHover.pressed ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12) : (closeHover.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.08) : "transparent")
                     Layout.alignment: Qt.AlignVCenter
                     
-                    Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
                     Text {
                         anchors.centerIn: parent
@@ -294,7 +294,7 @@ Item {
                         border.width: 1
 
                         Behavior on color {
-                            ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
+                            ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
                         }
 
                         Text {
@@ -327,7 +327,7 @@ Item {
                 Layout.fillWidth: true
                 height: 3
                 radius: Math.floor(Vars.radiusSmall / 5)
-                color: Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.2)
+                color: Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.2)
                 Layout.topMargin: (Vars.spacingSmall / 2)
                 visible: rootCard.modelData.urgency !== NotificationUrgency.Critical && isPopup
 
@@ -337,13 +337,13 @@ Item {
                     width: parent.width
                     radius: Math.floor(Vars.radiusSmall / 5)
                     color: rootCard.modelData.urgency === NotificationUrgency.Critical
-                           ? Theme.error : Theme.on_primary
+                           ? Theme.error : Theme.on_surface
                     opacity: 0.8
 
                     SequentialAnimation {
                         running: rootCard.modelData.urgency !== NotificationUrgency.Critical && isPopup
                         paused: cardHover.hovered
-                        PauseAnimation { duration: 50 }
+                        PauseAnimation { duration: Vars.animationDuration }
                         NumberAnimation {
                             target: progressBar
                             property: "width"

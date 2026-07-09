@@ -1,0 +1,159 @@
+#!/usr/bin/env bash
+
+if grep -qi "nixos" /etc/os-release; then
+    echo "Detected NixOS..."
+    
+    git clone https://github.com/Boing-Git/NixOs-Dotfiles ~/Nixos
+    cd ~/Nixos
+    
+    mkdir -p ~/.config/quickshell
+    git clone https://github.com/Boing-Git/Quickshell-Dotfiles ~/.config/quickshell
+    
+    mkdir -p ~/.config/hypr
+    git clone https://github.com/Boing-Git/Hyprland-Dotfiles ~/.config/hypr
+    
+    cp /etc/nixos/hardware-configuration.nix ./
+    
+    sudo nixos-rebuild switch --flake .#nixos
+
+elif grep -qi "arch" /etc/os-release; then
+    set -e
+    
+    echo "Starting Arch Linux Dependencies & Dotfiles Installation..."
+    
+    # Ensure yay is installed
+    if ! command -v yay &> /dev/null; then
+        echo "yay is not installed. Installing yay..."
+        sudo pacman -S --needed --noconfirm git base-devel
+        git clone https://aur.archlinux.org/yay.git /tmp/yay
+        cd /tmp/yay && makepkg -si --noconfirm
+        rm -rf /tmp/yay
+    fi
+    
+    echo "Installing system packages and dependencies..."
+    yay -S --needed --noconfirm --answerclean None --answerdiff None --answeredit None \
+        git wezterm ttf-space-mono-nerd papirus-icon-theme nautilus unzip curl fontconfig \
+        file-roller jq btop eza zoxide wl-clipboard cliphist xdg-utils gtk3 \
+        desktop-file-utils cairo pango tree gobject-introspection cbonsai lua \
+        ffmpeg fuzzel loupe grim slurp playerctl satty blanket github-cli hypridle \
+        cmake ninja pkgconf qt6-base qt6-declarative ddcutil brightnessctl \
+        lm_sensors networkmanager pipewire fish bash swappy libqalculate aubio \
+        cava fftw xkeyboard-config ttf-cascadia-code-nerd \
+        tk python-gobject python-flask \
+        starship hyprland base-devel \
+        vlc python qemu-desktop libvirt swtpm dconf gamemode \
+        fastfetch pavucontrol ttf-dejavu prismlauncher hyprpicker \
+        inotify-tools ncdu gsettings-desktop-schemas neovim zed matugen-bin
+    
+    echo "Installing AUR packages..."
+    yay -S --needed --noconfirm --answerclean None --answerdiff None --answeredit None \
+        quickshell-git vscodium-bin papirus-folders spotify nitch \
+        awww-git upscayl-bin github-desktop-bin nixfmt nixd antigravity \
+        app2unit ttf-space-mono \
+        hexecute-git \
+        python-pywebview zen-browser \
+        mpvpaper googledot-cursor-theme pipes.sh spicetify-cli python-emoji
+    
+    echo "Forcing installation of fonts..."
+    yay -S --noconfirm --answerclean None --answerdiff None --answeredit None \
+        ttf-material-symbols-variable
+    
+    echo "Manually installing Rubik font (AUR package is broken)..."
+    # 1. Create a dedicated directory for Rubik in your local fonts folder
+    mkdir -p ~/.local/share/fonts/Rubik
+    
+    # 2. Download the Rubik family ZIP from Google Fonts using curl
+    # (-L ensures curl follows any redirects, -o specifies the output file)
+    curl -L "https://fonts.google.com/download?family=Rubik" -o ~/.local/share/fonts/Rubik/Rubik.zip
+    
+    # 3. Extract the downloaded ZIP file into the new directory
+    unzip -o ~/.local/share/fonts/Rubik/Rubik.zip -d ~/.local/share/fonts/Rubik/
+    
+    # 4. Remove the leftover ZIP file to keep things clean
+    rm ~/.local/share/fonts/Rubik/Rubik.zip
+    
+    # 5. Force the system to rebuild its font cache so it detects Rubik immediately
+    fc-cache -fv
+    
+    echo "Cloning and installing dotfiles..."
+    rm -rf ~/.dotfiles
+    git clone https://github.com/Boing-Git/My-Dotfiles ~/.dotfiles
+    
+    mkdir -p ~/.config
+    for item in ~/.dotfiles/* ~/.dotfiles/.* ; do
+        name=$(basename "$item")
+        # Skip parent directories, git folder, and repo specific files
+        if [[ "$name" == "." || "$name" == ".." || "$name" == ".git" || "$name" == "README.md" || "$name" == "CONTRIBUTING.md" || "$name" == "LICENSE" || "$name" == "install.sh" ]]; then
+            continue
+        fi
+        
+        if [ -d "$item" ]; then
+            mkdir -p ~/.config/"$name"
+            cp -rT "$item" ~/.config/"$name"
+        elif [ -f "$item" ]; then
+            cp "$item" ~/.config/"$name"
+        fi
+    done
+    
+    echo "Running post-installation configurations..."
+    
+    echo "Configuring Virtualization..."
+    sudo usermod -aG libvirt,kvm "$USER"
+    sudo systemctl enable libvirtd
+    
+    echo "Applying Custom Hacks and Derivations..."
+    # Antigravity Scaled Desktop File
+    mkdir -p ~/.local/share/applications
+    if [ -f /usr/share/applications/antigravity.desktop ]; then
+        cp /usr/share/applications/antigravity.desktop ~/.local/share/applications/antigravity-scaled.desktop
+        sed -i 's/^Name=Antigravity/Name=Antigravity (Scaled)/' ~/.local/share/applications/antigravity-scaled.desktop
+        sed -i 's|^Exec=antigravity|Exec=antigravity --force-device-scale-factor=2|g' ~/.local/share/applications/antigravity-scaled.desktop
+    fi
+    
+    # Btop Symlink Hack
+    mkdir -p ~/.config
+    ln -sf ~/.local/share/caelestia/btop ~/.config/btop
+    
+    # Papirus Icon Cleanup
+    sudo rm -rf /usr/share/icons/Papirus-Light
+    
+    echo "Configuring VSCodium..."
+    for ext in jnoortheen.nix-ide mvllow.rose-pine haikalllp.matugen-theme; do
+        codium --install-extension $ext || true
+    done
+    
+    # VSCodium LSP Hack
+    mkdir -p ~/.config/quickshell/Pill
+    touch ~/.config/quickshell/Pill/.qmlls.ini
+    
+    echo "Configuring Spicetify..."
+    spicetify config extensions adblockify.js beautifulLyrics.js popupLyrics.js spicyLyrics.js fullAppDisplay.js || true
+    
+    echo "Setting Environment Variables in Fish..."
+    mkdir -p ~/.config/fish
+    if ! grep -q "set -gx EDITOR codium" ~/.config/fish/config.fish 2>/dev/null; then
+        echo 'set -gx EDITOR codium' >> ~/.config/fish/config.fish
+        echo 'set -gx QML_IMPORT_PATH /usr/lib/qt6/qml' >> ~/.config/fish/config.fish
+    fi
+    
+    echo "Setting Default Cursor..."
+    mkdir -p ~/.icons/default
+    echo '[Icon Theme]' > ~/.icons/default/index.theme
+    echo 'Inherits=GoogleDot-Black' >> ~/.icons/default/index.theme
+    
+    echo "Setting up hypr-manager CLI tool..."
+    mkdir -p ~/.local/bin
+    chmod +x ~/.config/hypr/manager.py
+    ln -sf ~/.config/hypr/manager.py ~/.local/bin/hypr-manager
+    
+    echo "Setting default shell to fish..."
+    if [ "$SHELL" != "/usr/bin/fish" ]; then
+        sudo chsh -s /usr/bin/fish "$USER"
+    fi
+    
+    echo "Installation complete! Please reboot your system."
+
+else
+    echo "Unsupported OS! This script only supports NixOS and Arch Linux."
+    exit 1
+fi

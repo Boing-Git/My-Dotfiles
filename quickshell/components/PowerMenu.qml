@@ -84,64 +84,32 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
-        width: root.expanded ? 420 : 100
+        width: root.expanded ? 456 : 100
         height: root.expanded ? 84 : 40
         
-        color: Theme.primary
-        radius: root.gameMode ? 0 : (root.expanded ? 20 : height / 2)
+        color: Theme.surface_container_high
+        radius: root.gameMode ? 0 : (root.expanded ? 32 : height / 2)
         // clip removed for shadow
 
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-
-        Rectangle {
-            id: globalCursor
-            color: Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12)
-            border.color: Theme.on_primary
-            border.width: root.activeFocus ? 2 : 0
-            radius: 16
-            
-            Behavior on border.width { NumberAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-
-            property var currentItem: {
-                if (root.currentIndex === 0) return btn0;
-                if (root.currentIndex === 1) return btn1;
-                if (root.currentIndex === 2) return btn2;
-                if (root.currentIndex === 3) return btn3;
-                if (root.currentIndex === 4) return btn4;
-                return null;
-            }
-            property real _x: currentItem ? currentItem.x : 0
-            property real _y: currentItem ? currentItem.y : 0
-            property real _w: currentItem ? currentItem.width : 0
-            property real _h: currentItem ? currentItem.height : 0
-            
-            x: rowLayout.x + _x
-            y: rowLayout.y + _y
-            width: _w
-            height: _h
-            opacity: root.expanded ? 1.0 : 0.0
-
-            Behavior on x { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-            Behavior on y { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-            Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-            Behavior on height { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-            Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-        }
+        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
 
         RowLayout {
             id: rowLayout
             anchors.fill: parent
-            anchors.margins: 6
-            spacing: 8
+            anchors.leftMargin: 24
+            anchors.rightMargin: 24
+            anchors.topMargin: 6
+            anchors.bottomMargin: 6
+            spacing: 12
             
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
-            Behavior on opacity { SequentialAnimation { PauseAnimation { duration: root.expanded ? 200 : 0 } NumberAnimation { duration: root.expanded ? 200 : 100; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
+            Behavior on opacity { SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
 
             PowerMenuButton {
                 id: btn0
@@ -190,17 +158,20 @@ Item {
         property string iconText: ""
         property string labelText: ""
         property int index: 0
-        property color textColor: Theme.on_primary
+        property bool isActive: root.currentIndex === index
         signal clicked
         
         Layout.preferredWidth: 72
         Layout.preferredHeight: 72
-        radius: 16 // Reduced radius for buttons to match
+        radius: isActive ? height / 2 : 24 
         
-        color: "transparent"
+        Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+        
+        color: isActive ? Theme.primary : Theme.surface_container_highest
+        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
         
         scale: ma.pressed ? 0.92 : 1.0
-        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+        Behavior on scale { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.OutQuad } }
 
         ColumnLayout {
             anchors.centerIn: parent
@@ -210,15 +181,17 @@ Item {
                 text: btn.iconText
                 font.family: "Material Symbols Outlined"
                 font.pixelSize: 24
-                color: btn.textColor
+                color: btn.isActive ? Theme.on_primary : Theme.on_surface
+                Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
                 Layout.alignment: Qt.AlignHCenter
             }
             Text {
                 text: btn.labelText
                 font.family: Vars.fontFamily
                 font.pixelSize: 11
-                font.weight: 500
-                color: btn.textColor
+                font.weight: 600
+                color: btn.isActive ? Theme.on_primary : Theme.on_surface
+                Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
                 Layout.alignment: Qt.AlignHCenter
             }
         }

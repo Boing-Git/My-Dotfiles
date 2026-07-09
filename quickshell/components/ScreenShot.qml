@@ -63,14 +63,14 @@ PanelWindow {
         color: Theme.scrim // Unified scrim color
         opacity: 0.0
         Behavior on opacity {
-            NumberAnimation { duration: 400; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
+            NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
         }
     }
 
     Rectangle {
         id: selectionBox
         // Blanket Style: A soft, translucent fill instead of a completely empty box
-        color: Theme.primary
+        color: Theme.surface_container_high
         opacity: 0.15 // The fill is highly transparent
         
         // A softer border to match the aesthetic

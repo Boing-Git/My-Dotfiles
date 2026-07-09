@@ -5,6 +5,8 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
+import Quickshell.Networking
+import Quickshell.Bluetooth
 import "../Variables/variables.js" as Vars
 import ".."
 
@@ -21,6 +23,32 @@ Item {
     property var allVars: []
     property alias panel: panel
     property alias panelMask: panelMask
+    
+    property string currentSection: "hyprland" // "hyprland", "wifi", "bluetooth"
+    
+    // Wi-Fi
+    property var wifiDevice: Networking.devices.values.find(d => d.type === DeviceType.Wifi)
+    property var activeNet: wifiDevice ? wifiDevice.networks.values.find(n => n.connected) : null
+    property var wifiSignal: activeNet ? activeNet.signalStrength : 0
+
+    readonly property string wifiIcon: {
+        if (!Networking.wifiEnabled) return "\ue1da"; 
+        if (!activeNet) return "\uf067"; 
+        let tier = Math.min(Math.floor(wifiSignal / 25), 3);
+        let icons = ["\ue1ba", "\uebe4", "\uebd6", "\uebe1"];
+        return icons[tier];
+    }
+    
+    // Bluetooth
+    property var adapter: Bluetooth.defaultAdapter
+    property bool adapterState: adapter ? adapter.enabled : false
+    property var connectDevice: adapter ? adapter.devices.values.find(d => d.connected) : null
+
+    readonly property string bluetoothIcon: {
+        if (!adapterState) return "\ue1a9"; 
+        if (!connectDevice) return "\ue1a7"; 
+        return "\ue1a8"; 
+    }
     
     opacity: forceHidePill ? 0.0 : 1.0
     visible: opacity > 0
@@ -45,18 +73,18 @@ Item {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         
-        width: root.expanded ? 700 : 100
-        height: root.expanded ? 600 : 40
+        width: root.expanded ? 900 : 100
+        height: root.expanded ? 650 : 40
         
-        color: Theme.primary
+        color: Theme.surface_container_low
         radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
         
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
 
         Item {
             anchors.fill: parent
@@ -64,140 +92,270 @@ Item {
             
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
-            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? 200 : 0 } NumberAnimation { duration: root.expanded ? 200 : 100; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
+            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
 
-            ColumnLayout {
+            RowLayout {
                 anchors.fill: parent
-                spacing: Vars.spacingMedium
+                spacing: Vars.spacingLarge
 
-                RowLayout {
-                    Layout.fillWidth: true
+                // Sidebar
+                ColumnLayout {
+                    Layout.preferredWidth: 280
+                    Layout.maximumWidth: 280
+                    Layout.fillHeight: true
                     spacing: Vars.spacingMedium
 
-                    Rectangle {
-                        width: 40; height: 40; radius: Vars.radiusMedium
-                        color: backHover.pressed ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
-                        Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_primary; text: "\ue5cd" }
-                        MouseArea { id: backHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.expanded = false }
-                        Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                    }
-
-                    Text {
-                        text: "settings"
-                        font.family: "Material Symbols Outlined"
-                        font.pixelSize: 28
-                        color: Theme.on_primary
-                    }
-
-                    ColumnLayout {
-                        spacing: 4
-                        Text {
-                            text: "Hyprland Settings"
-                            font.family: Vars.fontFamily
-                            font.pixelSize: 22
-                            font.bold: true
-                            color: Theme.on_primary
-                        }
-                    }
-                    
-                    Item { Layout.fillWidth: true }
-                    
-                    Button {
-                        text: "Refresh"
-                        onClicked: { loadSettings(); }
-                        background: Rectangle {
-                            color: refreshBtnHover.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.1) : "transparent"
-                            radius: Vars.radiusMedium
-                        }
-                        contentItem: Text { text: "Refresh"; color: Theme.on_primary; font.family: Vars.fontFamily; font.bold: true }
-                        MouseArea { id: refreshBtnHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: loadSettings() }
-                    }
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    height: 40
-                    color: Qt.rgba(Theme.surface_variant.r, Theme.surface_variant.g, Theme.surface_variant.b, 0.5)
-                    radius: Vars.radiusMedium
-                    
+                    // Header
                     RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 8
-                        Text {
-                            text: "search"
-                            font.family: "Material Symbols Outlined"
-                            font.pixelSize: 20
-                            color: Theme.on_surface_variant
+                        Layout.fillWidth: true
+                        spacing: Vars.spacingMedium
+
+                        Rectangle {
+                            width: 48; height: 48; radius: Vars.radiusMedium
+                            color: backHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                            Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "\ue5cd" }
+                            MouseArea { id: backHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.expanded = false }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                         }
-                        TextInput {
-                            id: searchInput
-                            Layout.fillWidth: true
-                            color: Theme.on_surface
+                        
+                        Text {
+                            text: "Settings"
                             font.family: Vars.fontFamily
-                            font.pixelSize: 16
-                            verticalAlignment: TextInput.AlignVCenter
-                            clip: true
-                            onTextChanged: applyFilter()
-                            KeyNavigation.down: settingsList
-                            Keys.onDownPressed: {
-                                settingsList.forceActiveFocus();
+                            font.pixelSize: 24
+                            font.weight: 700
+                            color: Theme.on_surface
+                        }
+                    }
+
+                    Item { Layout.preferredHeight: Vars.spacingSmall }
+
+                    // Navigation Items
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 4
+
+                        Repeater {
+                            model: [
+                                { id: "hyprland", name: "Hyprland", subtitle: "Configuration, appearance", icon: "\ue8b8" }, // settings
+                                { id: "wifi", name: "Wi-Fi", subtitle: "Wi-Fi, ethernet", icon: root.wifiIcon },
+                                { id: "bluetooth", name: "Bluetooth", subtitle: "Bluetooth, pairing", icon: root.bluetoothIcon }
+                            ]
+                            delegate: Rectangle {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 72
+                                property bool isSelected: root.currentSection === modelData.id
+                                radius: isSelected ? height / 2 : 16
+                                Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                color: isSelected ? Theme.secondary_container : (navHover.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container)
+                                border.color: activeFocus ? Theme.on_surface : "transparent"
+                                border.width: activeFocus ? 2 : 0
+                                activeFocusOnTab: true
+                                Keys.onSpacePressed: root.currentSection = modelData.id
+                                Keys.onReturnPressed: root.currentSection = modelData.id
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                
+                                // Square-off top corners if not the first item
+                                Rectangle {
+                                    width: parent.radius; height: parent.radius; color: parent.color
+                                    anchors.top: parent.top; anchors.left: parent.left
+                                    opacity: (index > 0 && !parent.isSelected) ? 1.0 : 0.0
+                                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                }
+                                Rectangle {
+                                    width: parent.radius; height: parent.radius; color: parent.color
+                                    anchors.top: parent.top; anchors.right: parent.right
+                                    opacity: (index > 0 && !parent.isSelected) ? 1.0 : 0.0
+                                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                }
+                                // Square-off bottom corners if not the last item
+                                Rectangle {
+                                    width: parent.radius; height: parent.radius; color: parent.color
+                                    anchors.bottom: parent.bottom; anchors.left: parent.left
+                                    opacity: (index < 2 && !parent.isSelected) ? 1.0 : 0.0
+                                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                }
+                                Rectangle {
+                                    width: parent.radius; height: parent.radius; color: parent.color
+                                    anchors.bottom: parent.bottom; anchors.right: parent.right
+                                    opacity: (index < 2 && !parent.isSelected) ? 1.0 : 0.0
+                                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                }
+
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 20
+                                    anchors.rightMargin: 20
+                                    spacing: 16
+                                    
+                                    Text {
+                                        text: modelData.icon
+                                        font.family: "Material Symbols Outlined"
+                                        font.pixelSize: 24
+                                        color: parent.isSelected ? Theme.on_secondary_container : Theme.on_surface_variant
+                                    }
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 2
+                                        Text {
+                                            text: modelData.name
+                                            font.family: Vars.fontFamily
+                                            font.pixelSize: 16
+                                            font.weight: parent.isSelected ? 500 : 400
+                                            color: parent.isSelected ? Theme.on_secondary_container : Theme.on_surface
+                                            Layout.fillWidth: true
+                                            horizontalAlignment: Text.AlignLeft
+                                        }
+                                        Text {
+                                            text: modelData.subtitle
+                                            font.family: Vars.fontFamily
+                                            font.pixelSize: 12
+                                            color: parent.isSelected ? Theme.on_secondary_container : Theme.on_surface_variant
+                                            Layout.fillWidth: true
+                                            horizontalAlignment: Text.AlignLeft
+                                            opacity: 0.9
+                                        }
+                                    }
+                                }
+                                
+                                MouseArea {
+                                    id: navHover
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.currentSection = modelData.id
+                                }
                             }
                         }
                     }
+
+                    Item { Layout.fillHeight: true }
                 }
 
-                ListModel {
-                    id: settingsModel
-                    // Roles: key, type, help, enums, val, category
+                // Vertical Divider
+                Rectangle {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: 1
+                    color: Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.2)
                 }
-                ListView {
-                    id: settingsList
+
+                // Content Area
+                StackLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    clip: true
-                    spacing: Vars.spacingLarge
-                    model: settingsModel
-                    boundsBehavior: Flickable.StopAtBounds
-                    focus: true
-                    KeyNavigation.up: searchInput
-                    
-                    Keys.onReturnPressed: {
-                        if (currentItem) {
-                            currentItem.triggerAction();
+                    currentIndex: root.currentSection === "hyprland" ? 0 : (root.currentSection === "wifi" ? 1 : 2)
+
+                    // 0: Hyprland Settings
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: Vars.spacingMedium
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 2
+                            Text {
+                                text: "Hyprland Configuration"
+                                font.family: Vars.fontFamily
+                                font.pixelSize: 16
+                                font.weight: 500
+                                color: Theme.on_surface
+                            }
+                            Text {
+                                text: "Configuration, appearance, and window behavior"
+                                font.family: Vars.fontFamily
+                                font.pixelSize: 12
+                                color: Theme.on_surface
+                                opacity: 0.7
+                            }
                         }
-                    }
-                    Keys.onRightPressed: {
-                        if (currentItem) currentItem.triggerAction();
-                    }
-                    
-                    section.property: "category"
-                    section.criteria: ViewSection.FullString
-                    section.delegate: Rectangle {
-                        width: ListView.view.width
-                        height: 40
-                        color: "transparent"
-                        
-                        Text {
-                            anchors.left: parent.left
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 8
-                            text: section
-                            color: Theme.primary
-                            font.pixelSize: 18
-                            font.bold: true
-                            font.family: Vars.fontFamily
-                        }
-                        
+
                         Rectangle {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-                            height: 1
-                            color: Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.2)
+                            Layout.fillWidth: true
+                            height: 72
+                            color: Theme.surface_container
+                            radius: 16
+                            
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: 20
+                                anchors.rightMargin: 20
+                                spacing: 16
+                                Text {
+                                    text: "search"
+                                    font.family: "Material Symbols Outlined"
+                                    font.pixelSize: 24
+                                    color: Theme.on_surface
+                                }
+                                TextInput {
+                                    id: searchInput
+                                    Layout.fillWidth: true
+                                    color: Theme.on_surface
+                                    font.family: Vars.fontFamily
+                                    font.pixelSize: 16
+                                    verticalAlignment: TextInput.AlignVCenter
+                                    clip: true
+                                    onTextChanged: applyFilter()
+                                    KeyNavigation.down: settingsList
+                                    Keys.onDownPressed: {
+                                        settingsList.forceActiveFocus();
+                                    }
+                                }
+                                Button {
+                                    onClicked: loadSettings()
+                                    background: Rectangle {
+                                        color: refreshBtnHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.1) : "transparent"
+                                        radius: 16
+                                    }
+                                    contentItem: Text { text: "Refresh"; color: Theme.on_surface; font.family: Vars.fontFamily; font.bold: true }
+                                    MouseArea { id: refreshBtnHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: loadSettings() }
+                                }
+                            }
                         }
-                    }
-                    
-                    delegate: Rectangle {
+
+                        ListModel {
+                            id: settingsModel
+                            // Roles: key, type, help, enums, val, category
+                        }
+                        ListView {
+                            id: settingsList
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            clip: true
+                            spacing: 4
+                            model: settingsModel
+                            boundsBehavior: Flickable.StopAtBounds
+                            focus: true
+                            KeyNavigation.up: searchInput
+                            
+                            Keys.onReturnPressed: {
+                                if (currentItem) {
+                                    currentItem.triggerAction();
+                                }
+                            }
+                            Keys.onRightPressed: {
+                                if (currentItem) currentItem.triggerAction();
+                            }
+                            
+                            section.property: "category"
+                            section.criteria: ViewSection.FullString
+                            section.labelPositioning: ViewSection.InlineLabels
+                            section.delegate: Item {
+                                width: ListView.view.width
+                                height: 50
+                                z: 2
+                                
+                                Text {
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: section
+                                    color: Theme.primary
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    font.family: Vars.fontFamily
+                                }
+                            }
+                            
+                            delegate: Rectangle {
                         id: delegateRoot
                         property int delegateIndex: index
                         property string itemKey: model.key
@@ -208,10 +366,37 @@ Item {
                         
                         width: ListView.view.width
                         height: 80
-                        color: Theme.primary_container
-                        radius: Vars.radiusMedium
-                        border.color: ListView.isCurrentItem ? Theme.primary : "transparent"
-                        border.width: 1
+                        property bool isSelected: false
+                        radius: 16
+                        color: delegateMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                        
+                        // Square-off top corners if not the first in section
+                        Rectangle {
+                            width: parent.radius; height: parent.radius; color: parent.color
+                            anchors.top: parent.top; anchors.left: parent.left
+                            opacity: (index > 0 && settingsModel.get(index).category === settingsModel.get(index - 1).category) && !delegateMouse.containsMouse ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                        }
+                        Rectangle {
+                            width: parent.radius; height: parent.radius; color: parent.color
+                            anchors.top: parent.top; anchors.right: parent.right
+                            opacity: (index > 0 && settingsModel.get(index).category === settingsModel.get(index - 1).category) && !delegateMouse.containsMouse ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                        }
+                        // Square-off bottom corners if not the last in section
+                        Rectangle {
+                            width: parent.radius; height: parent.radius; color: parent.color
+                            anchors.bottom: parent.bottom; anchors.left: parent.left
+                            opacity: (index < settingsModel.count - 1 && settingsModel.get(index).category === settingsModel.get(index + 1).category) && !delegateMouse.containsMouse ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                        }
+                        Rectangle {
+                            width: parent.radius; height: parent.radius; color: parent.color
+                            anchors.bottom: parent.bottom; anchors.right: parent.right
+                            opacity: (index < settingsModel.count - 1 && settingsModel.get(index).category === settingsModel.get(index + 1).category) && !delegateMouse.containsMouse ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                        }
                         
                         function triggerAction() {
                             if (itemType === "bool") {
@@ -227,7 +412,9 @@ Item {
                         }
                         
                         MouseArea {
+                            id: delegateMouse
                             anchors.fill: parent
+                            hoverEnabled: true
                             onClicked: {
                                 settingsList.currentIndex = delegateRoot.delegateIndex;
                             }
@@ -246,14 +433,13 @@ Item {
                                     font.family: Vars.fontFamily
                                     font.pixelSize: 16
                                     font.bold: true
-                                    color: Theme.on_primary_container
+                                    color: Theme.on_surface
                                 }
                                 Text {
                                     text: delegateRoot.itemHelp
                                     font.family: Vars.fontFamily
                                     font.pixelSize: 12
-                                    color: Theme.on_primary_container
-                                    opacity: 0.8
+                                    color: Theme.on_surface_variant
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
                                 }
@@ -261,16 +447,23 @@ Item {
                             
                             Rectangle {
                                 visible: delegateRoot.itemType === "bool"
-                                width: 50; height: 28; radius: 14
-                                color: delegateRoot.itemVal === "true" ? Theme.on_primary_container : Qt.rgba(Theme.on_primary_container.r, Theme.on_primary_container.g, Theme.on_primary_container.b, 0.3)
-                                Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                width: 52; height: 32; radius: 16
+                                color: delegateRoot.itemVal === "true" ? Theme.primary : Theme.surface_variant
+                                border.color: delegateRoot.activeFocus ? Theme.on_surface : "transparent"; border.width: delegateRoot.activeFocus ? 2 : 0
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                                 
                                 Rectangle {
                                     width: 24; height: 24; radius: 12
-                                    y: 2
-                                    x: delegateRoot.itemVal === "true" ? 24 : 2
-                                    color: Theme.primary_container
-                                    Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                    color: delegateRoot.itemVal === "true" ? Theme.on_primary : Theme.on_surface_variant
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.left: parent.left; anchors.leftMargin: delegateRoot.itemVal === "true" ? 24 : 4
+                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                    
+                                    Text {
+                                        anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16
+                                        color: delegateRoot.itemVal === "true" ? Theme.primary : Theme.surface_variant
+                                        text: delegateRoot.itemVal === "true" ? "\ue5ca" : "\ue5cd"
+                                    }
                                 }
                                 
                                 MouseArea {
@@ -287,8 +480,8 @@ Item {
                             Rectangle {
                                 visible: delegateRoot.itemType === "string" || delegateRoot.itemType === "number"
                                 width: 150; height: 32; radius: Vars.radiusSmall
-                                color: Qt.rgba(Theme.on_primary_container.r, Theme.on_primary_container.g, Theme.on_primary_container.b, 0.1)
-                                border.color: tInput.activeFocus ? Theme.on_primary_container : "transparent"
+                                color: Theme.surface_container_highest
+                                border.color: tInput.activeFocus ? Theme.primary : "transparent"
                                 border.width: 1
                                 
                                 TextInput {
@@ -299,15 +492,20 @@ Item {
                                     text: delegateRoot.itemVal
                                     font.family: Vars.fontFamily
                                     font.pixelSize: 14
-                                    color: Theme.on_primary_container
+                                    color: Theme.on_surface
                                     selectByMouse: true
-                                    onEditingFinished: {
-                                        settingsModel.setProperty(delegateRoot.delegateIndex, "val", text);
-                                        updateVariable(delegateRoot.itemKey, text);
+                                    onAccepted: {
                                         tInput.focus = false;
                                         settingsList.forceActiveFocus();
                                     }
+                                    onEditingFinished: {
+                                        if (text !== delegateRoot.itemVal) {
+                                            settingsModel.setProperty(delegateRoot.delegateIndex, "val", text);
+                                            updateVariable(delegateRoot.itemKey, text);
+                                        }
+                                    }
                                     Keys.onEscapePressed: {
+                                        text = delegateRoot.itemVal; // Restore original text
                                         tInput.focus = false;
                                         settingsList.forceActiveFocus();
                                     }
@@ -332,13 +530,13 @@ Item {
                                 }
                                 
                                 background: Rectangle {
-                                    color: Qt.rgba(Theme.on_primary_container.r, Theme.on_primary_container.g, Theme.on_primary_container.b, 0.1)
+                                    color: Theme.surface_container_highest
                                     radius: Vars.radiusSmall
                                 }
                                 contentItem: Text {
                                     text: combo.displayText
                                     font.family: Vars.fontFamily
-                                    color: Theme.on_primary_container
+                                    color: Theme.on_surface
                                     font.pixelSize: 14
                                     verticalAlignment: Text.AlignVCenter
                                     leftPadding: 10
@@ -352,7 +550,7 @@ Item {
                                     text: "\ue5cf"
                                     font.family: "Material Symbols Outlined"
                                     font.pixelSize: 18
-                                    color: Theme.on_primary_container
+                                    color: Theme.on_surface
                                 }
                                 delegate: ItemDelegate {
                                     width: combo.popup.width - 16
@@ -360,7 +558,7 @@ Item {
                                     contentItem: Text {
                                         text: modelData
                                         font.family: Vars.fontFamily
-                                        color: Theme.on_primary_container
+                                        color: Theme.on_surface
                                         font.pixelSize: 14
                                         verticalAlignment: Text.AlignVCenter
                                         leftPadding: 8
@@ -368,8 +566,8 @@ Item {
                                     highlighted: combo.highlightedIndex === index
                                     background: Rectangle {
                                         radius: Vars.radiusSmall
-                                        color: parent.highlighted ? Qt.rgba(Theme.on_primary_container.r, Theme.on_primary_container.g, Theme.on_primary_container.b, 0.12) : (parent.hovered ? Qt.rgba(Theme.on_primary_container.r, Theme.on_primary_container.g, Theme.on_primary_container.b, 0.06) : "transparent")
-                                        Behavior on color { ColorAnimation { duration: 100 } }
+                                        color: parent.highlighted ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (parent.hovered ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.06) : "transparent")
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
                                     }
                                 }
                                 popup: Popup {
@@ -379,9 +577,9 @@ Item {
                                     padding: 8
 
                                     background: Rectangle {
-                                        color: Theme.primary_container
+                                        color: Theme.surface_container_high
                                         radius: Vars.radiusMedium
-                                        border.color: Qt.rgba(Theme.on_primary_container.r, Theme.on_primary_container.g, Theme.on_primary_container.b, 0.15)
+                                        border.color: Theme.outline_variant
                                         border.width: 1
                                         layer.enabled: true
                                         layer.effect: MultiEffect {
@@ -403,6 +601,760 @@ Item {
                             }
                         }
                     }
+                        }
+                    }
+
+                    // 1: Wi-Fi Settings
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: Vars.spacingMedium
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 2
+                            Text {
+                                text: "Wi-Fi Networks"
+                                font.family: Vars.fontFamily
+                                font.pixelSize: 16
+                                font.weight: 500
+                                color: Theme.on_surface
+                            }
+                            Text {
+                                text: "Network connection and internet availability"
+                                font.family: Vars.fontFamily
+                                font.pixelSize: 12
+                                color: Theme.on_surface
+                                opacity: 0.7
+                            }
+                        }
+
+                        Flickable {
+                            Layout.fillWidth: true; Layout.fillHeight: true
+                            contentHeight: wifiContent.childrenRect.height; clip: true
+
+                            ColumnLayout {
+                                id: wifiContent
+                                width: parent.width; spacing: Vars.spacingSmall
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 4
+
+                                    // Wi-Fi Header Card
+                                    Rectangle {
+                                        id: wifiHeader
+                                        Layout.fillWidth: true; Layout.preferredHeight: 72
+                                        radius: 16; color: wifiHeaderMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                        
+                                        // Square bottom corners if enabled
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left; visible: Networking.wifiEnabled; opacity: wifiHeaderMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } } }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right; visible: Networking.wifiEnabled; opacity: wifiHeaderMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } } }
+                                        
+                                        activeFocusOnTab: true
+                                        Keys.onSpacePressed: Networking.wifiEnabled = !Networking.wifiEnabled
+                                        Keys.onReturnPressed: Networking.wifiEnabled = !Networking.wifiEnabled
+                                        
+                                        RowLayout {
+                                            anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20
+                                            Text { text: "Wi-Fi"; font.family: Vars.fontFamily; font.pixelSize: 16; font.weight: 500; color: Theme.on_surface; Layout.fillWidth: true }
+                                            
+                                            // Master Toggle
+                                            Rectangle {
+                                                width: 52; height: 32; radius: 16
+                                                color: Networking.wifiEnabled ? Theme.primary : Theme.surface_variant
+                                                border.color: wifiHeader.activeFocus ? Theme.on_surface : "transparent"
+                                                border.width: wifiHeader.activeFocus ? 2 : 0
+                                                Rectangle {
+                                                    width: 24; height: 24; radius: 12
+                                                    color: Networking.wifiEnabled ? Theme.on_primary : Theme.on_surface_variant
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    anchors.left: parent.left; anchors.leftMargin: Networking.wifiEnabled ? 24 : 4
+                                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                                    Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16; color: Networking.wifiEnabled ? Theme.primary : Theme.surface_variant; text: Networking.wifiEnabled ? "\ue5ca" : "\ue5cd" }
+                                                }
+                                            }
+                                        }
+                                        MouseArea { id: wifiHeaderMouse; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; onClicked: { wifiHeader.forceActiveFocus(); Networking.wifiEnabled = !Networking.wifiEnabled; } }
+                                    }
+
+                                    // Empty state (only if enabled and no networks)
+                                    Rectangle {
+                                        Layout.fillWidth: true; Layout.preferredHeight: 120
+                                        visible: Networking.wifiEnabled && (!wifiDevice || wifiDevice.networks.values.length === 0)
+                                        radius: 16; color: Theme.surface_container
+                                        
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.left: parent.left }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.right: parent.right }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right }
+                                        
+                                        ColumnLayout {
+                                            anchors.centerIn: parent; spacing: 8
+                                            Text { text: "\ue63e"; font.family: "Material Symbols Outlined"; font.pixelSize: 32; color: Theme.on_surface_variant; Layout.alignment: Qt.AlignHCenter } // Wifi off icon
+                                            Text { text: "No networks found"; font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface_variant; Layout.alignment: Qt.AlignHCenter }
+                                        }
+                                    }
+
+                                    // Wi-Fi List
+                                    Repeater {
+                                        model: wifiDevice && Networking.wifiEnabled ? wifiDevice.networks.values : []
+                                        delegate: Rectangle {
+                                            id: wifiDelegate
+                                            Layout.fillWidth: true; Layout.preferredHeight: 72
+                                            property bool isSelected: modelData.connected
+                                            property bool showForget: false
+                                            radius: isSelected ? height / 2 : 16
+                                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            color: isSelected ? Theme.secondary_container : (wifiMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container)
+                                            Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                            
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.top: parent.top; anchors.left: parent.left
+                                                opacity: parent.isSelected || wifiMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.top: parent.top; anchors.right: parent.right
+                                                opacity: parent.isSelected || wifiMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.bottom: parent.bottom; anchors.left: parent.left
+                                                opacity: parent.isSelected || wifiMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.bottom: parent.bottom; anchors.right: parent.right
+                                                opacity: parent.isSelected || wifiMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            
+                                            RowLayout {
+                                                anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20; spacing: 16
+                                                
+                                                Text {
+                                                    font.family: "Material Symbols Outlined"; font.pixelSize: 24
+                                                    color: modelData.connected ? Theme.primary : Theme.on_surface_variant
+                                                    text: {
+                                                        if (modelData.signalStrength === undefined) return "\ue63e";
+                                                        let tier = Math.min(Math.floor(modelData.signalStrength / 25), 3);
+                                                        return ["\ue1ba", "\uebe4", "\uebd6", "\uebe1"][tier] || "\ue63e";
+                                                    }
+                                                }
+                                                
+                                                ColumnLayout {
+                                                    Layout.alignment: Qt.AlignVCenter; spacing: 0; Layout.fillWidth: true
+                                                    Text { 
+                                                        text: modelData.name; font.family: Vars.fontFamily; font.pixelSize: 16
+                                                        color: Theme.on_surface
+                                                        Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft
+                                                    }
+                                                    Text { 
+                                                        text: modelData.connected ? "Connected" : "Available"
+                                                        font.family: Vars.fontFamily; font.pixelSize: 11; font.weight: 500
+                                                        color: Theme.on_surface_variant
+                                                        Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft
+                                                    }
+                                                }
+                                            }
+                                            MouseArea {
+                                                id: wifiMouse
+                                                anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true
+                                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                                onClicked: (mouse) => {
+                                                    wifiDelegate.forceActiveFocus();
+                                                    if (mouse.button === Qt.RightButton) {
+                                                        wifiDelegate.showForget = true;
+                                                    } else {
+                                                        if (modelData.connected) modelData.disconnect(); else modelData.connect();
+                                                    }
+                                                }
+                                            }
+                                            
+                                            // Forget Overlay
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                color: Theme.surface_container_highest
+                                                visible: wifiDelegate.showForget
+                                                opacity: wifiDelegate.showForget ? 1.0 : 0.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                                
+                                                RowLayout {
+                                                    anchors.fill: parent; anchors.margins: 16; spacing: 16
+                                                    Text {
+                                                        text: "Forget " + (modelData.name || "Network") + "?"
+                                                        font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface; Layout.fillWidth: true; elide: Text.ElideRight
+                                                    }
+                                                    Rectangle {
+                                                        width: 80; height: 32; radius: 16; color: "transparent"
+                                                        border.color: Theme.outline; border.width: 1
+                                                        Text { anchors.centerIn: parent; text: "Cancel"; color: Theme.on_surface; font.family: Vars.fontFamily; font.pixelSize: 14 }
+                                                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: wifiDelegate.showForget = false }
+                                                    }
+                                                    Rectangle {
+                                                        width: 80; height: 32; radius: 16; color: Theme.error ? Theme.error : "#ffb4ab"
+                                                        Text { anchors.centerIn: parent; text: "Forget"; color: Theme.on_error ? Theme.on_error : "#690005"; font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: 500 }
+                                                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { if (modelData.forget) modelData.forget(); wifiDelegate.showForget = false; } }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Scan for Networks Card
+                                    Rectangle {
+                                        id: scanCard
+                                        Layout.fillWidth: true; Layout.preferredHeight: 72
+                                        visible: Networking.wifiEnabled
+                                        radius: 16; color: scanMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                        
+                                        Rectangle { 
+                                            width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.left: parent.left 
+                                            opacity: scanMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                        }
+                                        Rectangle { 
+                                            width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.right: parent.right 
+                                            opacity: scanMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                        }
+                                        
+                                        activeFocusOnTab: true
+                                        Keys.onSpacePressed: if(wifiDevice && typeof wifiDevice.scan === 'function') wifiDevice.scan()
+                                        Keys.onReturnPressed: if(wifiDevice && typeof wifiDevice.scan === 'function') wifiDevice.scan()
+                                        
+                                        RowLayout {
+                                            anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20; spacing: 16
+                                            Text { text: "\ue863"; font.family: "Material Symbols Outlined"; font.pixelSize: 24; color: Theme.on_surface }
+                                            Text { text: "Scan for Networks"; font.family: Vars.fontFamily; font.pixelSize: 16; font.weight: 500; color: Theme.on_surface; Layout.fillWidth: true }
+                                        }
+                                        MouseArea { id: scanMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { scanCard.forceActiveFocus(); if(wifiDevice && typeof wifiDevice.scan === 'function') wifiDevice.scan() } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 2: Bluetooth Settings
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: Vars.spacingMedium
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 2
+                            Text {
+                                text: "Bluetooth"
+                                font.family: Vars.fontFamily
+                                font.pixelSize: 16
+                                font.weight: 500
+                                color: Theme.on_surface
+                            }
+                            Text {
+                                text: "Manage devices and discoverability"
+                                font.family: Vars.fontFamily
+                                font.pixelSize: 12
+                                color: Theme.on_surface
+                                opacity: 0.7
+                            }
+                        }
+
+                        Flickable {
+                            Layout.fillWidth: true; Layout.fillHeight: true
+                            contentHeight: btContent.childrenRect.height; clip: true
+
+                            ColumnLayout {
+                                id: btContent
+                                width: parent.width; spacing: Vars.spacingSmall
+                                property bool isPairingMode: false
+
+                                // --- MAIN BLUETOOTH VIEW ---
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: Vars.spacingSmall
+                                    visible: !btContent.isPairingMode
+
+                                    // Main Bluetooth Group
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 4
+
+                                    // Bluetooth Header Card
+                                    Rectangle {
+                                        id: btHeader
+                                        Layout.fillWidth: true; Layout.preferredHeight: 72
+                                        radius: 16; 
+                                        color: btHeaderMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                        
+                                        property bool hasDeviceBelow: {
+                                            if (!adapter || !adapter.devices.values) return false;
+                                            for (let i = 0; i < adapter.devices.values.length; ++i) {
+                                                let d = adapter.devices.values[i];
+                                                if (d && (d.paired || d.connected)) return true;
+                                            }
+                                            return false;
+                                        }
+                                        
+                                        // Square bottom corners if there are paired devices below
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left; visible: adapterState && parent.hasDeviceBelow; opacity: btHeaderMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } } }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right; visible: adapterState && parent.hasDeviceBelow; opacity: btHeaderMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } } }
+                                        
+                                        activeFocusOnTab: true
+                                        Keys.onSpacePressed: if(adapter) adapter.enabled = !adapter.enabled
+                                        Keys.onReturnPressed: if(adapter) adapter.enabled = !adapter.enabled
+                                        
+                                        RowLayout {
+                                            anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20
+                                            Text { text: "Bluetooth"; font.family: Vars.fontFamily; font.pixelSize: 16; font.weight: 500; color: Theme.on_surface; Layout.fillWidth: true }
+                                            
+                                            // Master Toggle
+                                            Rectangle {
+                                                width: 52; height: 32; radius: 16
+                                                color: adapterState ? Theme.primary : Theme.surface_variant
+                                                border.color: btHeader.activeFocus ? Theme.on_surface : "transparent"
+                                                border.width: btHeader.activeFocus ? 2 : 0
+                                                Rectangle {
+                                                    width: 24; height: 24; radius: 12
+                                                    color: adapterState ? Theme.on_primary : Theme.on_surface_variant
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    anchors.left: parent.left; anchors.leftMargin: adapterState ? 24 : 4
+                                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                                    Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16; color: adapterState ? Theme.primary : Theme.surface_variant; text: adapterState ? "\ue5ca" : "\ue5cd" }
+                                                }
+                                            }
+                                        }
+                                        MouseArea { id: btHeaderMouse; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; onClicked: { btHeader.forceActiveFocus(); if(adapter) adapter.enabled = !adapter.enabled; } }
+                                    }
+
+                                    // Empty state (only if enabled and no devices)
+                                    Rectangle {
+                                        Layout.fillWidth: true; Layout.preferredHeight: 120
+                                        visible: adapterState && (!adapter || adapter.devices.values.length === 0)
+                                        radius: 16; color: Theme.surface_container
+                                        
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.left: parent.left }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.right: parent.right }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right }
+                                        
+                                        ColumnLayout {
+                                            anchors.centerIn: parent; spacing: 8
+                                            Text { text: "\ue322"; font.family: "Material Symbols Outlined"; font.pixelSize: 32; color: Theme.on_surface_variant; Layout.alignment: Qt.AlignHCenter } // Devices icon
+                                            Text { text: "No saved devices"; font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface_variant; Layout.alignment: Qt.AlignHCenter }
+                                        }
+                                    }
+
+                                    // Device List
+                                    Repeater {
+                                        model: adapter && adapterState ? adapter.devices.values : []
+                                        delegate: Rectangle {
+                                            id: btDelegate
+                                            Layout.fillWidth: true; Layout.preferredHeight: visible ? 72 : 0
+                                            visible: modelData.paired || modelData.connected
+                                            property bool isSelected: modelData.connected
+                                            property bool showForget: false
+                                            radius: isSelected ? height / 2 : 16
+                                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            color: isSelected ? Theme.secondary_container : (btMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container)
+                                            Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                            
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.top: parent.top; anchors.left: parent.left
+                                                opacity: parent.isSelected || btMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            property bool hasDeviceBelow: {
+                                                if (!adapter || !adapter.devices.values) return false;
+                                                for (let i = index + 1; i < adapter.devices.values.length; ++i) {
+                                                    let d = adapter.devices.values[i];
+                                                    if (d && (d.paired || d.connected)) return true;
+                                                }
+                                                return false;
+                                            }
+                                            
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.bottom: parent.bottom; anchors.left: parent.left
+                                                visible: parent.hasDeviceBelow
+                                                opacity: parent.isSelected || btMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.bottom: parent.bottom; anchors.right: parent.right
+                                                visible: parent.hasDeviceBelow
+                                                opacity: parent.isSelected || btMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+
+
+                                            activeFocusOnTab: true
+                                            Keys.onSpacePressed: { if (modelData.connected) modelData.disconnect(); else modelData.connect(); }
+                                            Keys.onReturnPressed: { if (modelData.connected) modelData.disconnect(); else modelData.connect(); }
+                                            
+                                            RowLayout {
+                                                anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20; spacing: 16
+                                                Text { text: modelData.connected ? "\ue1a8" : "\ue1a7"; font.family: "Material Symbols Outlined"; font.pixelSize: 24; color: modelData.connected ? Theme.primary : Theme.on_surface_variant }
+                                                ColumnLayout {
+                                                    Layout.alignment: Qt.AlignVCenter; spacing: 0; Layout.fillWidth: true
+                                                    Text { text: modelData.name ? modelData.name : "Unknown Device"; font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft }
+                                                    Text { text: modelData.connected ? "Connected" : "Available"; font.family: Vars.fontFamily; font.pixelSize: 11; font.weight: 500; color: Theme.on_surface_variant; visible: text !== ""; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft }
+                                                }
+                                            }
+                                            MouseArea {
+                                                id: btMouse
+                                                anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true
+                                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                                onClicked: (mouse) => {
+                                                    parent.forceActiveFocus();
+                                                    if (mouse.button === Qt.RightButton) {
+                                                        btDelegate.showForget = true;
+                                                    } else {
+                                                        if (modelData.connected) modelData.disconnect(); else modelData.connect();
+                                                    }
+                                                }
+                                            }
+                                            
+                                            // Forget Overlay
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                color: Theme.surface_container_highest
+                                                visible: btDelegate.showForget
+                                                opacity: btDelegate.showForget ? 1.0 : 0.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                                
+                                                RowLayout {
+                                                    anchors.fill: parent; anchors.margins: 16; spacing: 16
+                                                    Text {
+                                                        text: "Forget " + (modelData.name || "Device") + "?"
+                                                        font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface; Layout.fillWidth: true; elide: Text.ElideRight
+                                                    }
+                                                    Rectangle {
+                                                        width: 80; height: 32; radius: 16; color: "transparent"
+                                                        border.color: Theme.outline; border.width: 1
+                                                        Text { anchors.centerIn: parent; text: "Cancel"; color: Theme.on_surface; font.family: Vars.fontFamily; font.pixelSize: 14 }
+                                                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: btDelegate.showForget = false }
+                                                    }
+                                                    Rectangle {
+                                                        width: 80; height: 32; radius: 16; color: Theme.error ? Theme.error : "#ffb4ab"
+                                                        Text { anchors.centerIn: parent; text: "Forget"; color: Theme.on_error ? Theme.on_error : "#690005"; font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: 500 }
+                                                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { if (modelData.forget) modelData.forget(); btDelegate.showForget = false; } }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Pair new device
+                                    Rectangle {
+                                        Layout.fillWidth: true; Layout.preferredHeight: 72
+                                        visible: adapterState
+                                        radius: 16; color: btPairMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                        
+                                        Rectangle { 
+                                            width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.left: parent.left 
+                                            opacity: btPairMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                        }
+                                        Rectangle { 
+                                            width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.right: parent.right 
+                                            opacity: btPairMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                        }
+                                        
+                                        activeFocusOnTab: true
+                                        Keys.onSpacePressed: parent.forceActiveFocus()
+                                        Keys.onReturnPressed: parent.forceActiveFocus()
+                                        
+                                        RowLayout {
+                                            anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20; spacing: 16
+                                            Text { text: "\ue145"; font.family: "Material Symbols Outlined"; font.pixelSize: 24; color: Theme.on_surface }
+                                            Text { text: "Pair new device"; font.family: Vars.fontFamily; font.pixelSize: 16; font.weight: 500; color: Theme.on_surface; Layout.fillWidth: true }
+                                        }
+                                        MouseArea { id: btPairMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { parent.forceActiveFocus(); btContent.isPairingMode = true; } }
+                                    }
+                                }
+
+                                Item { Layout.preferredHeight: Vars.spacingSmall }
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 4
+
+                                    // Discoverable Card
+                                    Rectangle {
+                                        id: discCard
+                                        Layout.fillWidth: true; Layout.preferredHeight: 72; radius: 16; color: discMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                        visible: adapterState
+                                        
+                                        Rectangle { 
+                                            width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left 
+                                            opacity: discMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                        }
+                                        Rectangle { 
+                                            width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right 
+                                            opacity: discMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                        }
+                                        
+                                        activeFocusOnTab: true
+                                        Keys.onSpacePressed: if(adapter) adapter.discoverable = !adapter.discoverable
+                                        Keys.onReturnPressed: if(adapter) adapter.discoverable = !adapter.discoverable
+                                        
+                                        RowLayout {
+                                            anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20; spacing: 16
+                                            ColumnLayout {
+                                                Layout.fillWidth: true; spacing: 2
+                                                Text { text: "Discoverable"; font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft }
+                                                Text { text: "Allow nearby devices to find this one"; font.family: Vars.fontFamily; font.pixelSize: 13; color: Theme.on_surface_variant; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft }
+                                            }
+                                            Rectangle {
+                                                width: 52; height: 32; radius: 16; color: adapter && adapter.discoverable ? Theme.primary : Theme.surface_variant
+                                                border.color: discCard.activeFocus ? Theme.on_surface : "transparent"; border.width: discCard.activeFocus ? 2 : 0
+                                                Rectangle {
+                                                    width: 24; height: 24; radius: 12; color: adapter && adapter.discoverable ? Theme.on_primary : Theme.on_surface_variant
+                                                    anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: adapter && adapter.discoverable ? 24 : 4
+                                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                                    Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16; color: adapter && adapter.discoverable ? Theme.primary : Theme.surface_variant; text: adapter && adapter.discoverable ? "\ue5ca" : "\ue5cd" }
+                                                }
+                                            }
+                                        }
+                                        MouseArea { id: discMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { discCard.forceActiveFocus(); if(adapter) adapter.discoverable = !adapter.discoverable } }
+                                    }
+
+                                    // Pairable Card
+                                    Rectangle {
+                                        id: pairCard
+                                        Layout.fillWidth: true; Layout.preferredHeight: 72; radius: 16; color: pairMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                        visible: adapterState
+                                        
+                                        Rectangle { 
+                                            width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.left: parent.left 
+                                            opacity: pairMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                        }
+                                        Rectangle { 
+                                            width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.right: parent.right 
+                                            opacity: pairMouse.containsMouse ? 0.0 : 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                        }
+                                        
+                                        activeFocusOnTab: true
+                                        Keys.onSpacePressed: if(adapter) adapter.pairable = !adapter.pairable
+                                        Keys.onReturnPressed: if(adapter) adapter.pairable = !adapter.pairable
+                                        
+                                        RowLayout {
+                                            anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20; spacing: 16
+                                            ColumnLayout {
+                                                Layout.fillWidth: true; spacing: 2
+                                                Text { text: "Pairable"; font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft }
+                                                Text { text: "Allow nearby devices to pair with this one"; font.family: Vars.fontFamily; font.pixelSize: 13; color: Theme.on_surface_variant; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft }
+                                            }
+                                            Rectangle {
+                                                width: 52; height: 32; radius: 16; color: adapter && adapter.pairable ? Theme.primary : Theme.surface_variant
+                                                border.color: pairCard.activeFocus ? Theme.on_surface : "transparent"; border.width: pairCard.activeFocus ? 2 : 0
+                                                Rectangle {
+                                                    width: 24; height: 24; radius: 12; color: adapter && adapter.pairable ? Theme.on_primary : Theme.on_surface_variant
+                                                    anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: adapter && adapter.pairable ? 24 : 4
+                                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                                    Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16; color: adapter && adapter.pairable ? Theme.primary : Theme.surface_variant; text: adapter && adapter.pairable ? "\ue5ca" : "\ue5cd" }
+                                                }
+                                            }
+                                        }
+                                        MouseArea { id: pairMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { pairCard.forceActiveFocus(); if(adapter) adapter.pairable = !adapter.pairable } }
+                                    }
+                                }
+                                }
+
+                                // --- PAIRING VIEW ---
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 4
+                                    visible: btContent.isPairingMode
+
+                                    // Pairing Header Card
+                                    Rectangle {
+                                        Layout.fillWidth: true; Layout.preferredHeight: 72
+                                        radius: 16; 
+                                        color: Theme.surface_container
+                                        
+                                        property bool hasDeviceBelow: {
+                                            if (!adapter || !adapter.devices.values) return false;
+                                            for (let i = 0; i < adapter.devices.values.length; ++i) {
+                                                let d = adapter.devices.values[i];
+                                                if (d && !(d.paired || d.connected)) return true;
+                                            }
+                                            return false;
+                                        }
+                                        
+                                        // Square bottom corners for contiguous list
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left; visible: parent.hasDeviceBelow }
+                                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right; visible: parent.hasDeviceBelow }
+                                        
+                                        RowLayout {
+                                            anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20; spacing: 16
+                                            
+                                            // Back button
+                                            Rectangle {
+                                                width: 40; height: 40; radius: 20; color: backMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12)) : "transparent"
+                                                Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 24; color: Theme.on_surface; text: "\ue5c4" }
+                                                MouseArea { id: backMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: btContent.isPairingMode = false }
+                                            }
+
+                                            Text { text: "Pair new device"; font.family: Vars.fontFamily; font.pixelSize: 16; font.weight: 500; color: Theme.on_surface; Layout.fillWidth: true }
+                                            
+                                            // Discovering Toggle
+                                            Rectangle {
+                                                width: 52; height: 32; radius: 16
+                                                property bool isDiscovering: adapter && adapter.discovering
+                                                color: isDiscovering ? Theme.primary : Theme.surface_variant
+                                                Rectangle {
+                                                    width: 24; height: 24; radius: 12
+                                                    color: parent.isDiscovering ? Theme.on_primary : Theme.on_surface_variant
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    anchors.left: parent.left; anchors.leftMargin: parent.isDiscovering ? 24 : 4
+                                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                                    Text { 
+                                                        id: rotIcon
+                                                        anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16
+                                                        color: parent.parent.isDiscovering ? Theme.primary : Theme.surface_variant
+                                                        text: parent.parent.isDiscovering ? "\ue86a" : "\ue5cd" 
+                                                        
+                                                        RotationAnimation {
+                                                            target: rotIcon; property: "rotation"
+                                                            loops: Animation.Infinite; from: 0; to: 360; duration: 2000; running: rotIcon.parent.parent.parent.isDiscovering
+                                                            onRunningChanged: if (!running) rotIcon.rotation = 0
+                                                        }
+                                                    }
+                                                }
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onClicked: {
+                                                        if (adapter) {
+                                                            if (adapter.discovering) adapter.stopDiscovery();
+                                                            else adapter.startDiscovery();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Device List
+                                    Repeater {
+                                        model: adapter && adapterState ? adapter.devices.values : []
+                                        delegate: Rectangle {
+                                            id: btPairDelegate
+                                            Layout.fillWidth: true; Layout.preferredHeight: visible ? 72 : 0
+                                            property bool isSelected: modelData.connected
+                                            property bool showForget: false
+                                            radius: isSelected ? height / 2 : 16
+                                            color: isSelected ? Theme.secondary_container : (btPairItemMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container)
+                                            Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                                            visible: !(modelData.paired || modelData.connected)
+                                            
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.top: parent.top; anchors.left: parent.left
+                                                opacity: parent.isSelected || btPairItemMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.top: parent.top; anchors.right: parent.right
+                                                opacity: parent.isSelected || btPairItemMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            property bool hasDeviceBelow: {
+                                                if (!adapter || !adapter.devices.values) return false;
+                                                for (let i = index + 1; i < adapter.devices.values.length; ++i) {
+                                                    let d = adapter.devices.values[i];
+                                                    if (d && !(d.paired || d.connected)) return true;
+                                                }
+                                                return false;
+                                            }
+                                            
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.bottom: parent.bottom; anchors.left: parent.left
+                                                visible: parent.hasDeviceBelow
+                                                opacity: parent.isSelected || btPairItemMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            Rectangle {
+                                                width: parent.radius; height: parent.radius; color: parent.color
+                                                anchors.bottom: parent.bottom; anchors.right: parent.right
+                                                visible: parent.hasDeviceBelow
+                                                opacity: parent.isSelected || btPairItemMouse.containsMouse ? 0.0 : 1.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                            }
+                                            
+                                            RowLayout {
+                                                anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 20; spacing: 16
+                                                Text { text: "\ue1a7"; font.family: "Material Symbols Outlined"; font.pixelSize: 24; color: Theme.on_surface_variant }
+                                                ColumnLayout {
+                                                    Layout.alignment: Qt.AlignVCenter; spacing: 0; Layout.fillWidth: true
+                                                    Text { text: modelData.name ? modelData.name : "Unknown Device"; font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft }
+                                                    Text { text: "Available to pair"; font.family: Vars.fontFamily; font.pixelSize: 11; font.weight: 500; color: Theme.on_surface_variant; visible: text !== ""; Layout.fillWidth: true; horizontalAlignment: Text.AlignLeft }
+                                                }
+                                            }
+                                            MouseArea {
+                                                id: btPairItemMouse
+                                                anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+                                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                                onClicked: (mouse) => {
+                                                    parent.forceActiveFocus();
+                                                    if (mouse.button === Qt.RightButton) {
+                                                        btPairDelegate.showForget = true;
+                                                    } else {
+                                                        if (!modelData.connected) modelData.connect();
+                                                    }
+                                                }
+                                            }
+                                            
+                                            // Forget Overlay
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                color: Theme.surface_container_highest
+                                                visible: btPairDelegate.showForget
+                                                opacity: btPairDelegate.showForget ? 1.0 : 0.0
+                                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                                
+                                                RowLayout {
+                                                    anchors.fill: parent; anchors.margins: 16; spacing: 16
+                                                    Text {
+                                                        text: "Forget " + (modelData.name || "Device") + "?"
+                                                        font.family: Vars.fontFamily; font.pixelSize: 16; color: Theme.on_surface; Layout.fillWidth: true; elide: Text.ElideRight
+                                                    }
+                                                    Rectangle {
+                                                        width: 80; height: 32; radius: 16; color: "transparent"
+                                                        border.color: Theme.outline; border.width: 1
+                                                        Text { anchors.centerIn: parent; text: "Cancel"; color: Theme.on_surface; font.family: Vars.fontFamily; font.pixelSize: 14 }
+                                                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: btPairDelegate.showForget = false }
+                                                    }
+                                                    Rectangle {
+                                                        width: 80; height: 32; radius: 16; color: Theme.error ? Theme.error : "#ffb4ab"
+                                                        Text { anchors.centerIn: parent; text: "Forget"; color: Theme.on_error ? Theme.on_error : "#690005"; font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: 500 }
+                                                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { if (modelData.forget) modelData.forget(); btPairDelegate.showForget = false; } }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -413,7 +1365,7 @@ Item {
     function updateVariable(key, val) {
         var strVal = String(val);
         console.log("[SettingsApp] Updating " + key + " to " + strVal);
-        Quickshell.execDetached({ command: ["python3", Quickshell.env("HOME") + "/dotfiles/hypr/manager.py", "--" + key, strVal] });
+        Quickshell.execDetached({ command: ["hypr-manager", "--" + key, strVal] });
     }
 
     onExpandedChanged: {
@@ -428,7 +1380,7 @@ Item {
 
     Process {
         id: hyprManagerProc
-        command: ["python3", Quickshell.env("HOME") + "/dotfiles/hypr/manager.py", "-l"]
+        command: ["hypr-manager", "-l"]
         stdout: StdioCollector {
             onStreamFinished: {
                 var lines = this.text.split("\n");
@@ -483,11 +1435,11 @@ Item {
     }
     
     function applyFilter() {
-        var term = searchInput.text.trim().toLowerCase();
+        var term = searchInput.text.trim();
         settingsModel.clear();
         for (var k = 0; k < root.allVars.length; k++) {
             var v = root.allVars[k];
-            if (term === "" || v.key.toLowerCase().indexOf(term) !== -1 || v.help.toLowerCase().indexOf(term) !== -1 || v.category.toLowerCase().indexOf(term) !== -1) {
+            if (term === "" || Vars.fuzzyMatch(term, v.key) || Vars.fuzzyMatch(term, v.help) || Vars.fuzzyMatch(term, v.category)) {
                 settingsModel.append(v);
             }
         }

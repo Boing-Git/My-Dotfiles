@@ -113,3 +113,21 @@ post_hook = 'pkill -SIGUSR1 nvim || true'
 input_path = './templates/light/nvim.lua'
 output_path = '~/.config/color-schemes/material-you/light/nvim.lua'
 post_hook = 'pkill -SIGUSR1 nvim || true'
+
+[templates.spicetify-dark]
+input_path = './templates/dark/spicetify.ini'
+output_path = '~/.config/color-schemes/material-you/dark/spicetify.ini'
+post_hook = "nohup bash -c 'spicetify config color_scheme MaterialYou && spicetify apply' >/dev/null 2>&1 &"
+
+[templates.spicetify-light]
+input_path = './templates/light/spicetify.ini'
+output_path = '~/.config/color-schemes/material-you/light/spicetify.ini'
+post_hook = "nohup bash -c 'spicetify config color_scheme MaterialYou && spicetify apply' >/dev/null 2>&1 &"
+
+[templates.steam-dark]
+input_path = './templates/dark/steam.css'
+output_path = '~/.config/color-schemes/material-you/dark/steam.css'
+
+[templates.steam-light]
+input_path = './templates/light/steam.css'
+output_path = '~/.config/color-schemes/material-you/light/steam.css'

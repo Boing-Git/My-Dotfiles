@@ -3,6 +3,6 @@ import QtQuick
 
 QtObject {
 	<* for name, value in colors *>
-		readonly property color {{name}}: "{{value.light.hex}}"
+		readonly property color {{name}}: "{{value.dark.hex}}"
 	<* endfor *>
 }

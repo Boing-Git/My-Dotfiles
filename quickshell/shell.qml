@@ -115,5 +115,8 @@ ShellRoot {
             root.overviewVisible = false;
             root.screenshotVisible = false;
         }
+        onOpenOverviewRequested: {
+            root.overviewVisible = true;
+        }
     }
 }

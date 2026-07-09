@@ -62,15 +62,15 @@ Item {
         width: root.expanded ? 900 : 100
         height: root.expanded ? 550 : 40
         
-        color: Theme.primary
+        color: Theme.surface_container_high
         radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
         
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
 
         Item {
             anchors.fill: parent
@@ -78,7 +78,7 @@ Item {
             
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
-            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? 200 : 0 } NumberAnimation { duration: root.expanded ? 200 : 100; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
+            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
 
             ColumnLayout {
                 anchors.fill: parent
@@ -93,17 +93,17 @@ Item {
 
                         Rectangle {
                             width: 40; height: 40; radius: Vars.radiusMedium
-                            color: backHover.pressed ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
-                            Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_primary; text: "\ue5cd" }
+                            color: backHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                            Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "\ue5cd" }
                             MouseArea { id: backHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.expanded = false }
-                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                         }
 
                         Text {
                             text: "palette"
                             font.family: "Material Symbols Outlined"
                             font.pixelSize: 28
-                            color: Theme.on_primary
+                            color: Theme.on_surface
                         }
 
                         ColumnLayout {
@@ -113,13 +113,13 @@ Item {
                                 font.family: Vars.fontFamily
                                 font.pixelSize: 22
                                 font.bold: true
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                             }
                             Text {
                                 text: root.currentTheme ? "Active: " + root.currentTheme : "Select a theme"
                                 font.family: Vars.fontFamily
                                 font.pixelSize: 12
-                                color: Theme.on_primary
+                                color: Theme.on_surface_variant
                                 opacity: 0.8
                                 elide: Text.ElideMiddle
                                 Layout.maximumWidth: 320
@@ -131,9 +131,9 @@ Item {
                         id: searchBox
                         Layout.fillWidth: true
                         Layout.preferredHeight: 44
-                        color: searchInput.activeFocus ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08)
-                        border.color: searchInput.activeFocus ? Theme.primary_container : "transparent"
-                        border.width: searchInput.activeFocus ? 2 : 0
+                        color: searchInput.activeFocus ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)
+                        border.color: searchInput.activeFocus ? Theme.primary : Theme.outline
+                        border.width: searchInput.activeFocus ? 2 : 1
                         radius: Vars.radiusMedium
 
                         RowLayout {
@@ -145,7 +145,7 @@ Item {
                                 text: "search"
                                 font.family: "Material Symbols Outlined"
                                 font.pixelSize: 20
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 opacity: 0.7
                             }
 
@@ -154,7 +154,7 @@ Item {
                                 Layout.fillWidth: true
                                 font.family: Vars.fontFamily
                                 font.pixelSize: 14
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 focus: true
                                 selectByMouse: true
 
@@ -162,7 +162,7 @@ Item {
                                     text: "Search themes..."
                                     font.family: Vars.fontFamily
                                     font.pixelSize: 14
-                                    color: Theme.on_primary
+                                    color: Theme.on_surface_variant
                                     opacity: 0.6
                                     visible: !searchInput.text && !searchInput.activeFocus
                                 }
@@ -177,7 +177,7 @@ Item {
                             Text {
                                 text: "✕"
                                 font.pixelSize: 14
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 visible: searchInput.text.length > 0
                                 Layout.alignment: Qt.AlignVCenter
                                 MouseArea {
@@ -199,9 +199,9 @@ Item {
                         }
 
                         background: Rectangle {
-                            color: modeToggleBtn.down ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (modeToggleBtn.hovered ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
+                            color: modeToggleBtn.down ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (modeToggleBtn.hovered ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
                             border.width: 1
-                            border.color: Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.3)
+                            border.color: Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.3)
                             radius: Vars.radiusMedium
                         }
                         contentItem: RowLayout {
@@ -209,13 +209,13 @@ Item {
                             Text {
                                 text: root.currentMode === "dark" ? "dark_mode" : "light_mode"
                                 font.family: "Material Symbols Outlined"
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 font.pixelSize: 18
                             }
                             Text {
                                 text: modeToggleBtn.text
                                 font.family: Vars.fontFamily
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 font.bold: true
                                 font.pixelSize: 14
                             }
@@ -228,7 +228,7 @@ Item {
                         onClicked: loadThemesProc.running = true
 
                         background: Rectangle {
-                            color: refreshBtn.down ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (refreshBtn.hovered ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
+                            color: refreshBtn.down ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (refreshBtn.hovered ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
                             border.width: 0
                             radius: Vars.radiusMedium
                         }
@@ -237,13 +237,13 @@ Item {
                             Text {
                                 text: "refresh"
                                 font.family: "Material Symbols Outlined"
-                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_primary
+                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_surface
                                 font.pixelSize: 18
                             }
                             Text {
                                 text: refreshBtn.text
                                 font.family: Vars.fontFamily
-                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_primary
+                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_surface
                                 font.bold: true
                                 font.pixelSize: 14
                             }
@@ -273,8 +273,8 @@ Item {
                         height: gridView.cellHeight
                         z: -1
 
-                        Behavior on x { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                        Behavior on y { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                        Behavior on x { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                        Behavior on y { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
 
                         Rectangle {
                             anchors.fill: parent
@@ -283,8 +283,8 @@ Item {
                             color: gridView.activeFocus ? Theme.primary_container : "transparent"
                             border.color: Theme.primary_container
                             border.width: gridView.activeFocus ? 2 : 0
-                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                            Behavior on border.width { NumberAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on border.width { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                         }
                     }
 
@@ -330,12 +330,12 @@ Item {
                             anchors.margins: Vars.spacingSmall
                             radius: Vars.radiusMedium
 
-                            color: root.currentTheme === themeName ? Theme.on_primary : (tileMouseArea.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
-                            border.color: Theme.primary_container
+                            color: root.currentTheme === themeName ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : (tileMouseArea.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                            border.color: Theme.primary
                             border.width: (root.currentTheme === themeName) ? 2 : 0
                             clip: true
 
-                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
                             ColumnLayout {
                                 anchors.fill: parent
@@ -348,14 +348,14 @@ Item {
                                     Layout.margins: isCurrentFocus ? 4 : 0
                                     clip: true
                                     
-                                    Behavior on Layout.margins { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    Behavior on Layout.margins { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
 
                                     Text {
                                         anchors.centerIn: parent
                                         text: "palette"
                                         font.family: "Material Symbols Outlined"
                                         font.pixelSize: 48
-                                        color: isCurrentFocus ? Theme.on_primary_container : (root.currentTheme === themeName ? Theme.primary : Theme.on_primary)
+                                        color: isCurrentFocus ? Theme.on_primary_container : (root.currentTheme === themeName ? Theme.primary : Theme.on_surface)
                                         opacity: 0.8
                                     }
                                 }
@@ -364,13 +364,13 @@ Item {
                                     Layout.fillWidth: true
                                     text: themeName
                                     font.family: Vars.fontFamily
-                                    color: isCurrentFocus ? Theme.on_primary_container : (root.currentTheme === themeName ? Theme.primary : Theme.on_primary)
+                                    color: isCurrentFocus ? Theme.on_primary_container : (root.currentTheme === themeName ? Theme.primary : Theme.on_surface)
                                     font.pixelSize: 16
                                     font.weight: root.currentTheme === themeName ? Font.Bold : Font.Normal
                                     elide: Text.ElideRight
                                     horizontalAlignment: Text.AlignHCenter
                                     
-                                    Behavior on color { ColorAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
                                 }
                             }
 

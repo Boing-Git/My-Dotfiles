@@ -5,26 +5,26 @@
 local vars = {
 
     -- General
-    -- Set the browser ("zen-beta", "firefox", "chromium", "brave")
+    -- Set the browser
     Browser = "zen-beta",
-    -- Set the terminal ("wezterm", "foot", "kitty", "alacritty")
+    -- Set the terminal
     Term = "wezterm",
-    -- Set the code editor ("code", "cursor", "zed", "nvim")
-    Editor = "code",
-    -- Set the file manager ("nautilus", "thunar", "dolphin", "nemo")
+    -- Set the code editor
+    Editor = "antigravity",
+    -- Set the file manager
     Files = "nautilus",
-    -- Set the system info app ("btop", "htop", "nvtop")
+    -- Set the system info app
     SysInfo = "btop",
-    -- Enable game mode (hides shell UI)
+    -- Enable game mode (disables animations and system resources taking things out of the shell UI)
     GameMode = false,
-    -- Select layout ("Scrolling", "Dwindle", "Master", "Monocle")
+    -- Select layout for hyprland
     Layout = "Scrolling",
 
     -- Input
     -- Set keyboard layout
     kb_layout = "us",
     -- Set keyboard options
-    kb_options = "",
+    kb_options = "caps:escape",
     -- Set follow mouse mode
     follow_mouse = 1,
     -- Set mouse sensitivity
@@ -42,16 +42,16 @@ local vars = {
     vimkeys = true,
 
     -- Modifiers
-    -- Set the Main modifier ("SUPER", "ALT", "SHIFT", "CTRL")
+    -- Set the Main modifier
     MM = "SUPER",
-    -- Set the Second modifier ("SHIFT", "ALT", "CTRL", "SUPER")
+    -- Set the Second modifier
     SM = "ALT",
-    -- Set the Third modifier ("ALT", "SHIFT", "CTRL", "SUPER")
+    -- Set the Third modifier
     TM = "SHIFT",
-    -- Set the Fourth modifier ("CTRL", "ALT", "SHIFT", "SUPER")
+    -- Set the Fourth modifier 
     QM = "CTRL",
 
-    -- App Launcher
+    -- Quickshell Keybinds
     -- Set the key to open launcher
     QuickLauncherKey = "D",
     -- Set the key to take a screenshot
@@ -80,7 +80,7 @@ local vars = {
     border_size = 2,
     -- Set window rounding
     rounding = 17,
-    -- Set rounding power (higher = sharper corners)
+    -- Set rounding power (higher = larger area the rounding is applied)
     rounding_power = 20,
     -- Set active window opacity
     active_opacity = 1.0,
@@ -103,15 +103,15 @@ local vars = {
     -- Enable blur
     blur_enabled = true,
     -- Set blur size
-    blur_size = 3,
+    blur_size = 10,
     -- Set number of blur passes
-    blur_passes = 1,
+    blur_passes = 3,
     -- Set blur vibrancy
     blur_vibrancy = 0.1696,
 
     -- Groupbar
     -- Enable group bar
-    groupBar = true,
+    groupBar = false,
 
     -- General
     -- Enable resize on border
@@ -134,6 +134,8 @@ local vars = {
     xwayland_use_nearest_neighbor = true,
 
     -- Environment Variables
+    -- Set cursor theme
+    cursor_theme = "GoogleDot-Black",
     -- Set X cursor size
     env_xcursor_size = 24,
     -- Set Hypr cursor size
@@ -142,8 +144,8 @@ local vars = {
     env_qt_scale_factor = 1,
 
     -- Animation Style
-    -- Select animation style ("expressive", "spring", "jelly", "flyingcards", "snappy", "cinematic", "minimal", "fluid", "aggressive", "elegant", "playful", "elastic", "swift", "relaxed", "slipstream", "standard", "fluent", "none")
-    AnimateStyle = "expressive",
+    -- Select animation style for hyprland
+    AnimateStyle = "slipstream",
 }
 
 return vars

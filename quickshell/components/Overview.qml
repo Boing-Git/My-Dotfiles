@@ -56,7 +56,7 @@ Item {
             id: overviewPanel
             required property var modelData
 
-            property bool isAnimating: wAnim.running || hAnim.running
+            property bool isAnimating: oAnim.running || wAnim.running || hAnim.running
             visible: overviewContainer.visibleState || isAnimating
             color: "transparent"
 
@@ -89,9 +89,9 @@ Item {
             HyprlandFocusGrab {
                 id: focusGrab
                 windows: [overviewPanel]
-                active: overviewContainer.visibleState
+                active: overviewContainer.visibleState || overviewPanel.isAnimating
                 onCleared: {
-                    if (active)
+                    if (overviewContainer.visibleState)
                         overviewContainer.closeRequested();
                 }
             }
@@ -130,12 +130,14 @@ Item {
                 height: overviewContainer.visibleState ? targetHeight : 40
 
                 radius: overviewContainer.gameMode ? 0 : (overviewContainer.visibleState ? Vars.radiusExtraLarge : height / 2)
-                color: Theme.primary
-
+                color: Theme.surface_container_high
+                
+                opacity: overviewContainer.visibleState ? 1.0 : 0.0
+                
                 Behavior on radius {
                     enabled: !overviewContainer.gameMode
                     NumberAnimation {
-                        duration: 350
+                        duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
                     }
@@ -144,7 +146,7 @@ Item {
                     enabled: !overviewContainer.gameMode
                     NumberAnimation {
                         id: wAnim
-                        duration: 350
+                        duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
                     }
@@ -153,15 +155,25 @@ Item {
                     enabled: !overviewContainer.gameMode
                     NumberAnimation {
                         id: hAnim
-                        duration: 350
+                        duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
                     }
                 }
+                Behavior on opacity {
+                    enabled: !overviewContainer.gameMode
+                    NumberAnimation {
+                        id: oAnim
+                        duration: Vars.animationDuration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: overviewContainer.visibleState ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate
+                    }
+                }
+
                 Behavior on color {
                     enabled: !overviewContainer.gameMode
                     ColorAnimation {
-                        duration: 350
+                        duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
                         easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
                     }
@@ -172,13 +184,15 @@ Item {
                     anchors.centerIn: parent
                     width: workspaceGrid.implicitWidth
                     height: workspaceGrid.implicitHeight
+                    
+                    scale: Math.min(panelBackground.width / panelBackground.targetWidth, panelBackground.height / panelBackground.targetHeight)
 
                     opacity: overviewContainer.visibleState ? 1.0 : 0.0
                     visible: opacity > 0
                     Behavior on opacity {
                         enabled: !overviewContainer.gameMode
                         NumberAnimation {
-                            duration: 250
+                            duration: Vars.animationDuration
                             easing.type: Easing.BezierSpline
                             easing.bezierCurve: overviewContainer.visibleState ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate
                         }
@@ -213,14 +227,14 @@ Item {
                                     radius: Vars.radiusSmall
                                     clip: true
 
-                                    color: wsContainer.hoveredWhileDragging ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.15) : wsContainer.isFocused ? Theme.primary_container : Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.06)
+                                    color: wsContainer.hoveredWhileDragging ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.15) : wsContainer.isFocused ? Theme.primary_container : Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.06)
                                     border.width: (wsContainer.isFocused || wsContainer.hoveredWhileDragging) ? 2 : 0
                                     border.color: (wsContainer.isFocused || wsContainer.hoveredWhileDragging) ? Theme.on_primary_container : "transparent"
 
                                     Behavior on color {
                                         enabled: !overviewContainer.gameMode
                                         ColorAnimation {
-                                            duration: 200
+                                            duration: Vars.animationDuration
                                             easing.type: Easing.BezierSpline
                                             easing.bezierCurve: Vars.m3ExpressiveSpatialFast
                                         }
@@ -228,7 +242,7 @@ Item {
                                     Behavior on border.color {
                                         enabled: !overviewContainer.gameMode
                                         ColorAnimation {
-                                            duration: 200
+                                            duration: Vars.animationDuration
                                             easing.type: Easing.BezierSpline
                                             easing.bezierCurve: Vars.m3ExpressiveSpatialFast
                                         }
@@ -241,7 +255,7 @@ Item {
                                         font.family: Vars.fontFamily
                                         font.pixelSize: Math.round(overviewPanel.wsHeight * 0.6)
                                         font.weight: 600
-                                        color: wsContainer.isFocused ? Theme.on_primary_container : Theme.on_primary
+                                        color: wsContainer.isFocused ? Theme.on_primary_container : Theme.on_surface_variant
                                         opacity: 0.15
                                     }
 
@@ -258,11 +272,11 @@ Item {
                                         Rectangle {
                                             anchors.fill: parent
                                             radius: wsTile.radius
-                                            color: Theme.on_primary
+                                            color: Theme.on_surface
                                             opacity: parent.containsMouse ? 0.08 : 0
                                             Behavior on opacity {
                                                 NumberAnimation {
-                                                    duration: 120
+                                                    duration: Vars.animationDuration
                                                 }
                                             }
                                         }
@@ -418,9 +432,9 @@ Item {
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: Vars.radiusMedium
-                                    color: Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12)
+                                    color: Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12)
                                     border.width: 1
-                                    border.color: winItem.winData?.floating ? Theme.tertiary_container : Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.2)
+                                    border.color: winItem.winData?.floating ? Theme.tertiary_container : Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.2)
                                 }
 
                                 // Live screen capture
@@ -456,9 +470,9 @@ Item {
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: Vars.radiusMedium
-                                    color: dragArea.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.05)
+                                    color: dragArea.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.05)
                                     border.width: 1
-                                    border.color: Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.1)
+                                    border.color: Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.1)
 
                                     // App icon centered over preview
                                     IconImage {
@@ -549,7 +563,7 @@ Item {
                         Behavior on x {
                             enabled: !overviewContainer.gameMode
                             NumberAnimation {
-                                duration: 200
+                                duration: Vars.animationDuration
                                 easing.type: Easing.BezierSpline
                                 easing.bezierCurve: Vars.m3ExpressiveSpatialFast
                             }
@@ -557,7 +571,7 @@ Item {
                         Behavior on y {
                             enabled: !overviewContainer.gameMode
                             NumberAnimation {
-                                duration: 200
+                                duration: Vars.animationDuration
                                 easing.type: Easing.BezierSpline
                                 easing.bezierCurve: Vars.m3ExpressiveSpatialFast
                             }

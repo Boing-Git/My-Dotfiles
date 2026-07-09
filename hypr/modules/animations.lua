@@ -1,5 +1,14 @@
 local vars = require("modules.variables")
 
+if vars.GameMode then
+    hl.config({
+        animations = {
+            enabled = false
+        }
+    })
+    return
+end
+
 local AnimateStyle = vars.AnimateStyle
 
 local style_map = {

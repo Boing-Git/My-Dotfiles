@@ -1,10 +1,11 @@
 .pragma library
+var animationDuration = 240;
 
 var radiusAmount = 0.5
 var radiusSmall = 8
 var radiusMedium = 16
 var radiusLarge = 24
-var radiusExtraLarge = 32
+var radiusExtraLarge = 38
 
 var spacingSmall = 8
 var spacingMedium = 16

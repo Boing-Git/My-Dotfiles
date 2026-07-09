@@ -324,13 +324,13 @@ Item {
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
         
-        color: Theme.primary
+        color: Theme.surface_container_high
         radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
         // clip removed for shadow
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
 
         // EXPANDED UI
         Item {
@@ -339,51 +339,9 @@ Item {
             
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
-            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? 200 : 0 } NumberAnimation { duration: root.expanded ? 200 : 100; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
+            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
 
-            Rectangle {
-                id: globalCursor
-                color: Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12)
-                radius: Vars.radiusMedium
-                z: -1
-                
-                property real _sx: searchBox.x
-                property real _sy: searchBox.y
-                property real _sw: searchBox.width
-                property real _sh: searchBox.height
-                
-                property real _lx: appListView.x
-                property real _ly: appListView.y
-                property real _lw: appListView.width
-                
-                property real _cy: appListView.contentY
-                property var _ciItem: appListView.currentItem
-                
-                property bool _sf: searchInput.activeFocus || searchInput.focus
-                property bool _lf: appListView.activeFocus || appListView.focus
-                
-                property var mappedRect: {
-                    if (_sf) {
-                        return Qt.rect(mainLayout.x + _sx, mainLayout.y + _sy, _sw, _sh);
-                    } else if (_lf && _ciItem) {
-                        var itemY = _ciItem.y - _cy;
-                        return Qt.rect(mainLayout.x + _lx + 2, mainLayout.y + _ly + itemY + 2, _lw - 4, _ciItem.height - 4);
-                    }
-                    return Qt.rect(mainLayout.x + _sx, mainLayout.y + _sy, _sw, _sh);
-                }
-                
-                x: mappedRect.x
-                y: mappedRect.y
-                width: mappedRect.width
-                height: mappedRect.height
-                opacity: (_sf || _lf) ? 1.0 : 0.0
-                
-                Behavior on x { enabled: !root.gameMode; NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                Behavior on y { enabled: !root.gameMode; NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                Behavior on opacity { enabled: !root.gameMode; NumberAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-            }
+
 
             ColumnLayout {
                 id: mainLayout
@@ -395,20 +353,22 @@ Item {
                     spacing: Vars.spacingMedium
                     
                     Rectangle {
-                        width: 40; height: 40; radius: Vars.radiusMedium
-                        color: backHover.pressed ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
-                        Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_primary; text: "\ue5cd" }
+                        width: 48; height: 48; radius: Vars.radiusMedium
+                        color: backHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                        Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "\ue5cd" }
                         MouseArea { id: backHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.expanded = false }
-                        Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                     }
-                    Text { text: "App Launcher"; font.family: Vars.fontFamily; font.pixelSize: 20; font.weight: 600; color: Theme.on_primary }
+                    Text { text: "App Launcher"; font.family: Vars.fontFamily; font.pixelSize: 20; font.weight: 600; color: Theme.on_surface }
                 }
 
                 Rectangle {
                     id: searchBox
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 44
-                    color: searchInput.activeFocus ? "transparent" : Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08)
+                    Layout.preferredHeight: 48
+                    color: searchInput.activeFocus ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Theme.surface_container_highest
+                    border.color: Theme.primary
+                    border.width: searchInput.activeFocus ? 2 : 0
                     radius: Vars.radiusMedium
 
                     RowLayout {
@@ -421,7 +381,7 @@ Item {
                             Layout.fillWidth: true
                             font.family: Vars.fontFamily
                             font.pixelSize: 14
-                            color: Theme.on_primary
+                            color: Theme.on_surface
                             focus: root.expanded
                             selectByMouse: true
 
@@ -429,8 +389,7 @@ Item {
                                 text: "Search apps..."
                                 font.family: Vars.fontFamily
                                 font.pixelSize: 14
-                                color: Theme.on_primary
-                                opacity: 0.6
+                                color: Theme.on_surface_variant
                                 visible: !searchInput.text && !searchInput.activeFocus
                             }
 
@@ -457,7 +416,7 @@ Item {
                         Text {
                             text: "✕"
                             font.pixelSize: 14
-                            color: Theme.on_primary
+                            color: Theme.on_surface_variant
                             visible: searchInput.text.length > 0
                             Layout.alignment: Qt.AlignVCenter
                             MouseArea {
@@ -560,12 +519,12 @@ Item {
                         Rectangle {
                             anchors.fill: parent
                             anchors.margins: 2
-                            color: itemMouseArea.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent"
+                            color: isCurrent ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : "transparent"
                             radius: Vars.radiusMedium
-                            border.color: Theme.on_primary
-                            border.width: 0
+                            border.color: Theme.primary
+                            border.width: isCurrent ? 2 : 0
 
-                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                         }
 
                         function deleteClipboardItem() {
@@ -609,12 +568,12 @@ Item {
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: Vars.spacingMedium + (isCurrent ? 8 : 0)
-                            anchors.rightMargin: Vars.spacingMedium
-                            spacing: Vars.spacingMedium
+                            anchors.leftMargin: 16 + (isCurrent ? 8 : 0)
+                            anchors.rightMargin: 16
+                            spacing: 16
 
                             Behavior on anchors.leftMargin { 
-                                NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } 
+                                NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } 
                             }
 
                             Rectangle {
@@ -632,7 +591,7 @@ Item {
                                     visible: (modelData.isFile !== true && modelData.isMath !== true && modelData.isSetting !== true && modelData.isClipboard !== true && modelData.isClearAll !== true) || (modelData.isClipboard === true && modelData.clipImagePath !== undefined && modelData.clipImagePath !== "")
                                     
                                     opacity: isCurrent ? 1.0 : (itemMouseArea.containsMouse ? 0.9 : 0.7)
-                                    Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
                                 }
 
                                 Text {
@@ -644,12 +603,12 @@ Item {
                                           (modelData.isSetting ? modelData.iconName : 
                                           (modelData.isClearAll ? "delete" :
                                           (modelData.isFile ? (modelData.isDir ? "folder" : "description") : ""))))
-                                    color: modelData.isClearAll ? Theme.error : (isCurrent ? Theme.on_primary_container : Theme.on_primary)
+                                    color: modelData.isClearAll ? Theme.error : (isCurrent ? Theme.primary : Theme.on_surface)
                                     visible: (modelData.isFile === true || modelData.isMath === true || modelData.isSetting === true || modelData.isClipboard === true || modelData.isClearAll === true) && !(modelData.isClipboard && modelData.clipImagePath !== undefined && modelData.clipImagePath !== "")
                                     
                                     opacity: isCurrent ? 1.0 : (itemMouseArea.containsMouse ? 0.9 : 0.7)
-                                    Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                                    Behavior on color { ColorAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
                                 }
                             }
 
@@ -660,14 +619,14 @@ Item {
                                 font.weight: isCurrent ? Font.DemiBold : Font.Medium
                                 text: modelData.name
                                 
-                                color: modelData.isClearAll ? Theme.error : (isCurrent ? Theme.on_primary_container : Theme.on_primary)
+                                color: modelData.isClearAll ? Theme.error : (isCurrent ? Theme.primary : Theme.on_surface)
                                 opacity: isCurrent ? 1.0 : (itemMouseArea.containsMouse ? 0.8 : 0.6)
                                 
                                 maximumLineCount: 1
                                 elide: Text.ElideRight
                                 
-                                Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                                Behavior on color { ColorAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
                             }
                         }
                     }

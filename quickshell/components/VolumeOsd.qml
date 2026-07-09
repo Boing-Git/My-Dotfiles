@@ -14,6 +14,7 @@ Item {
 
     property bool isVisible: false
     property bool preventShow: false
+    property bool gameMode: false
     property real smoothVolume: Pipewire.defaultAudioSink?.audio?.volume ?? 0
 
     onPreventShowChanged: {
@@ -35,7 +36,8 @@ Item {
     }
 
     Behavior on smoothVolume {
-        NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
+        enabled: !mainContainer.gameMode
+        NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
     }
 
     PwObjectTracker {
@@ -95,8 +97,8 @@ Item {
         layer.enabled: true
         layer.effect: MultiEffect { shadowEnabled: true; shadowBlur: 1.0; shadowColor: Qt.rgba(0,0,0,0.25); shadowVerticalOffset: 4; shadowHorizontalOffset: 0 }
         anchors.centerIn: parent
-        color: Theme.primary
-        radius: height / 2
+        color: Theme.surface_container_high
+        radius: mainContainer.gameMode ? 0 : height / 2
         clip: true
 
         width: mainContainer.isVisible ? 250 : 100
@@ -105,17 +107,18 @@ Item {
         opacity: mainContainer.isVisible ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on width { NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+        Behavior on width { enabled: !mainContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+        Behavior on opacity { enabled: !mainContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
         RowLayout {
             anchors.fill: parent
             anchors.margins: Vars.spacingSmall
-            anchors.leftMargin: Vars.spacingMedium
-            anchors.rightMargin: Vars.spacingMedium
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            spacing: 16
             
             opacity: mainContainer.isVisible ? 1.0 : 0.0
-            Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+            Behavior on opacity { enabled: !mainContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
             Text {
                 id: iconText
@@ -124,7 +127,7 @@ Item {
 
                 font.family: "Material Symbols Outlined"
                 font.pixelSize: 20
-                color: Theme.on_primary
+                color: Theme.primary
                 text: mainContainer.volumeIcon
 
                 onTextChanged: {
@@ -135,8 +138,9 @@ Item {
 
                 SequentialAnimation {
                     id: iconPop
-                    NumberAnimation { target: iconText; property: "scale"; to: 1.25; duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast }
-                    NumberAnimation { target: iconText; property: "scale"; to: 1.0; duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast }
+                    // Disable icon pop when in game mode
+                    NumberAnimation { target: iconText; property: "scale"; to: mainContainer.gameMode ? 1.0 : 1.25; duration: mainContainer.gameMode ? 0 : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast }
+                    NumberAnimation { target: iconText; property: "scale"; to: 1.0; duration: mainContainer.gameMode ? 0 : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast }
                 }
 
                 MouseArea {
@@ -154,9 +158,9 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: Vars.radiusMedium
-                    color: Theme.on_primary
+                    color: Theme.primary
                     opacity: muteHover.pressed ? 0.12 : (muteHover.containsMouse ? 0.08 : 0.0)
-                    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on opacity { enabled: !mainContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                 }
             }
 
@@ -164,21 +168,21 @@ Item {
                 id: sliderTrack
                 Layout.fillWidth: true
                 implicitHeight: sliderMouseArea.containsMouse ? 12 : 8
-                color: Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.2)
+                color: Theme.surface_variant
                 radius: Vars.radiusSmall
                 
-                Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                Behavior on implicitHeight { enabled: !mainContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
 
                 Rectangle {
                     id: fillBar
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    color: sliderMouseArea.pressed ? Theme.on_primary : Theme.on_primary
+                    color: Theme.primary
                     radius: parent.radius
                     width: parent.width * mainContainer.smoothVolume
                     
-                    Behavior on color { ColorAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { enabled: !mainContainer.gameMode; ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                 }
                 
                 Rectangle {
@@ -188,13 +192,13 @@ Item {
                     radius: 8
                     anchors.verticalCenter: parent.verticalCenter
                     x: Math.max(0, Math.min(fillBar.width - width / 2, parent.width - width))
-                    color: Theme.on_primary
+                    color: Theme.primary
                     
                     scale: sliderMouseArea.pressed ? 1.4 : (sliderMouseArea.containsMouse ? 1.2 : 0.0)
                     opacity: scale > 0.0 ? 1.0 : 0.0
                     
-                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on scale { enabled: !mainContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                    Behavior on opacity { enabled: !mainContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                 }
 
                 MouseArea {

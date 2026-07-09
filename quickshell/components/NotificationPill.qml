@@ -81,21 +81,21 @@ Item {
         height: root.expanded ? Math.max(100, root.currentHeight + Vars.spacingLarge * 2) : 40
 
         color: root.expanded ? root.expandedColor : Theme.primary
-        Behavior on color { ColorAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
         radius: root.expanded ? 24 : height / 2
 
         opacity: root.expanded ? 1.0 : 0.0
         visible: true
         Behavior on opacity { 
             SequentialAnimation { 
-                PauseAnimation { duration: root.expanded ? 0 : 350 } 
+                PauseAnimation { duration: root.expanded ? 0 : Vars.animationDuration } 
                 NumberAnimation { duration: 0 } 
             } 
         }
 
-        Behavior on radius { NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on width { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on height { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
 
         MouseArea {
             id: hoverArea
@@ -113,7 +113,7 @@ Item {
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
             // REMOVED PauseAnimation so content appears instantly
-            Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.OutCubic } }
 
             Item {
                 id: notifContainer
@@ -158,7 +158,7 @@ Item {
                             
                             Behavior on opacity { 
                                 NumberAnimation { 
-                                    duration: 150; 
+                                    duration: Vars.animationDuration; 
                                     easing.type: Easing.OutCubic 
                                 } 
                             }

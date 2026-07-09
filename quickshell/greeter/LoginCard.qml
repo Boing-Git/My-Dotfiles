@@ -138,11 +138,11 @@ Rectangle {
     // ── Shake animation for errors ─────────────────────────
     SequentialAnimation {
         id: shakeAnim
-        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: -12; duration: 50 }
-        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: 12; duration: 50 }
-        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: -8; duration: 50 }
-        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: 8; duration: 50 }
-        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: 0; duration: 50 }
+        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: -12; duration: Vars.animationDuration }
+        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: 12; duration: Vars.animationDuration }
+        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: -8; duration: Vars.animationDuration }
+        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: 8; duration: Vars.animationDuration }
+        NumberAnimation { target: passwordBox; property: "anchors.horizontalCenterOffset"; to: 0; duration: Vars.animationDuration }
     }
 
     // ── Main card content ──────────────────────────────────
@@ -154,7 +154,7 @@ Rectangle {
 
         opacity: showSwitcher ? 0.0 : 1.0
         visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+        Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
         // Spacer
         Item { Layout.fillHeight: true }
@@ -266,8 +266,8 @@ Rectangle {
             color: authError ? Theme.error_container : Theme.surface_container_highest
             border.color: passwordInput.activeFocus ? root.accentPrimary : "transparent"
             border.width: 2
-            Behavior on color { ColorAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-            Behavior on border.color { ColorAnimation { duration: 200 } }
+            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+            Behavior on border.color { ColorAnimation { duration: Vars.animationDuration } }
 
             RowLayout {
                 anchors.fill: parent
@@ -318,7 +318,7 @@ Rectangle {
                 Rectangle {
                     width: 36; height: 36; radius: 18
                     color: passwordInput.text.length > 0 ? root.accentPrimary : Theme.surface_container_high
-                    Behavior on color { ColorAnimation { duration: 200 } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
 
                     Text {
                         anchors.centerIn: parent
@@ -349,7 +349,7 @@ Rectangle {
             color: authError ? Theme.error : root.textDim
             visible: statusMessage !== ""
             opacity: visible ? 1.0 : 0.0
-            Behavior on opacity { NumberAnimation { duration: 200 } }
+            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration } }
         }
 
         Item { Layout.preferredHeight: 4 }
@@ -363,7 +363,7 @@ Rectangle {
             Rectangle {
                 width: 48; height: 48; radius: 24
                 color: suspendMouse.containsMouse ? root.surfaceDim : "transparent"
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
                 
                 Text {
                     anchors.centerIn: parent
@@ -385,7 +385,7 @@ Rectangle {
             Rectangle {
                 width: 48; height: 48; radius: 24
                 color: rebootMouse.containsMouse ? root.surfaceDim : "transparent"
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
                 
                 Text {
                     anchors.centerIn: parent
@@ -407,7 +407,7 @@ Rectangle {
             Rectangle {
                 width: 48; height: 48; radius: 24
                 color: powerMouse.containsMouse ? root.surfaceDim : "transparent"
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
                 
                 Text {
                     anchors.centerIn: parent
@@ -464,7 +464,7 @@ Rectangle {
 
         opacity: showSwitcher ? 1.0 : 0.0
         visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+        Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
         // ── Header with back button ──
         RowLayout {
@@ -524,8 +524,8 @@ Rectangle {
                     Layout.preferredHeight: 44
                     radius: currentUserIndex === index ? 14 : 22
                     color: currentUserIndex === index ? root.accentPrimary : root.surfaceDim
-                    Behavior on color { ColorAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                    Behavior on radius { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
                     RowLayout {
                         anchors.fill: parent
@@ -598,8 +598,8 @@ Rectangle {
                         Layout.preferredHeight: 44
                         radius: currentSessionIndex === index ? 14 : 22
                         color: currentSessionIndex === index ? root.accentPrimary : root.surfaceDim
-                        Behavior on color { ColorAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                        Behavior on radius { NumberAnimation { duration: 250; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                        Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
                         RowLayout {
                             anchors.fill: parent

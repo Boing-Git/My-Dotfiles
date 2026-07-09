@@ -54,6 +54,7 @@ The `color-schemes/` directory acts as the brain for system-wide color coordinat
 - GTK & Qt applications (via `qt5ct`, `qt6ct`, `nwg-look`)
 - Terminal Emulators
 - Fuzzel Launcher
+- Spotify (via imperative `spicetify` hooks)
 
 ## 📁 Repository Structure
 
@@ -71,6 +72,7 @@ The `color-schemes/` directory acts as the brain for system-wide color coordinat
 ├── nwg-look/              # GTK settings
 ├── qt5ct/ & qt6ct/        # Qt theme settings
 ├── quickshell/            # QML-based desktop shell
+├── spicetify/             # Dynamic Spotify theming
 └── starship.toml          # Shell prompt configuration
 ```
 

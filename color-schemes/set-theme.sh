@@ -131,6 +131,30 @@ else
     gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3-dark" 2>/dev/null || true
 fi
 
+# Update Spicetify Theme
+SPICETIFY_THEME_FILE="$HOME/.config/spicetify/Themes/text/color.ini"
+if [ -f "$CURRENT_DIR/spicetify.ini" ]; then
+    mkdir -p "$(dirname "$SPICETIFY_THEME_FILE")"
+    rm -f "$SPICETIFY_THEME_FILE"
+    ln -sf "$CURRENT_DIR/spicetify.ini" "$SPICETIFY_THEME_FILE"
+    echo "Linked spicetify.ini to ~/.config/spicetify/Themes/text/color.ini"
+    
+    # Reload Spicetify quietly
+    nohup bash -c "spicetify config color_scheme MaterialYou && spicetify apply" >/dev/null 2>&1 &
+fi
+
+# Update AdwSteamGtk Theme
+STEAM_THEME_FILE="$HOME/.config/AdwSteamGtk/custom.css"
+if [ -f "$CURRENT_DIR/steam.css" ]; then
+    mkdir -p "$(dirname "$STEAM_THEME_FILE")"
+    rm -f "$STEAM_THEME_FILE"
+    ln -sf "$CURRENT_DIR/steam.css" "$STEAM_THEME_FILE"
+    echo "Linked steam.css to AdwSteamGtk custom.css"
+    
+    # Reload Steam theme via adwaita-steam-gtk
+    nohup adwaita-steam-gtk -i >/dev/null 2>&1 &
+fi
+
 # Reload other apps
 hyprctl reload 2>/dev/null || true
 pkill -SIGUSR1 nvim 2>/dev/null || true

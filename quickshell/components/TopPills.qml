@@ -7,8 +7,8 @@ import "../Variables/variables.js" as Vars
 
 PanelWindow {
     id: topWindow
-    exclusionMode: ExclusionMode.Normal
-    exclusiveZone: 50
+    exclusionMode: gameMode ? ExclusionMode.Ignore : ExclusionMode.Normal
+    exclusiveZone: gameMode ? 0 : 50
     anchors {
         top: true
         left: true
@@ -19,6 +19,7 @@ PanelWindow {
     color: "transparent"
 
     signal popupOpened
+    signal openOverviewRequested
 
     property bool gameMode: false
 
@@ -118,11 +119,11 @@ PanelWindow {
         anchors.left: topWindow.gameMode ? parent.left : undefined
         anchors.right: topWindow.gameMode ? parent.right : undefined
         anchors.topMargin: topWindow.gameMode ? 0 : 5
-        opacity: (notificationPopupItem.expanded && !topWindow.gameMode) ? 0.0 : 1.0
+        opacity: ((notificationPopupItem.expanded || volumeOsdItem.isVisible) && !topWindow.gameMode) ? 0.0 : 1.0
         Behavior on opacity {
             enabled: !topWindow.gameMode
             NumberAnimation {
-                duration: 150
+                duration: Vars.animationDuration
             }
         }
 
@@ -144,7 +145,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode ? 0 : 5
     }
 
     Launcher {
@@ -392,21 +393,34 @@ PanelWindow {
                 settingsAppItem.expanded = false;
             }
         }
-        
+
         onOpenColorSchemeRequested: {
             toggleColorScheme();
         }
-        
+
         onOpenSettingsRequested: {
             toggleSettings();
+        }
+
+        onOpenWallpaperRequested: {
+            toggleWallpaper();
+        }
+
+        onOpenPowerMenuRequested: {
+            togglePowerMenu();
+        }
+
+        onOpenOverviewRequested: {
+            topWindow.openOverviewRequested();
         }
     }
 
     VolumeOsd {
         id: volumeOsdItem
+        gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode ? 55 : 5
         preventShow: launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || colorSchemeSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || launcherItem.panel.width > 105 || controlCenterItem.panel.width > 105 || powerMenuItem.panel.width > 105 || polkitItem.panel.width > 105 || notificationPopupItem.panel.width > 105 || emojiPickerItem.panel.width > 105 || wallpaperSwitcherItem.panel.width > 105 || colorSchemeSwitcherItem.panel.width > 105 || settingsAppItem.panel.width > 105
     }
 

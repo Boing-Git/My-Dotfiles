@@ -3,9 +3,9 @@
 * Generated with Matugen
 */
 
-@define-color accent_color {{colors.primary_fixed_dim.dark.hex}};
-@define-color accent_fg_color {{colors.on_primary_fixed.dark.hex}};
-@define-color accent_bg_color {{colors.primary_fixed_dim.dark.hex}};
+@define-color accent_color {{colors.primary.dark.hex}};
+@define-color accent_fg_color {{colors.on_primary.dark.hex}};
+@define-color accent_bg_color {{colors.primary.dark.hex}};
 @define-color window_bg_color {{colors.surface_dim.dark.hex}};
 @define-color window_fg_color {{colors.on_surface.dark.hex}};
 @define-color headerbar_bg_color {{colors.surface_dim.dark.hex}};

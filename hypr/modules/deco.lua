@@ -8,10 +8,10 @@ local colors = Utils.colors
 
 hl.config({
     general = {
-        gaps_in  = vars.gaps_in,
-        gaps_out = vars.gaps_out,
+        gaps_in  = vars.GameMode and 0 or vars.gaps_in,
+        gaps_out = vars.GameMode and 0 or vars.gaps_out,
 
-        border_size = vars.border_size,
+        border_size = vars.GameMode and 0 or vars.border_size,
 
         col = {
             active_border = { colors = { Utils.hex_to_rgba(colors.primary), Utils.hex_to_rgba(colors.tertiary) }, angle = 45 },
@@ -19,22 +19,22 @@ hl.config({
         },
     },
     decoration = {
-        rounding       = vars.rounding,
+        rounding       = vars.GameMode and 0 or vars.rounding,
         rounding_power = vars.rounding_power,
 
         -- Change transparency of focused and unfocused windows
-        active_opacity   = vars.active_opacity, -- ADDED COMMA
-        inactive_opacity = vars.inactive_opacity, -- ADDED COMMA
+        active_opacity   = vars.GameMode and 1.0 or vars.active_opacity,
+        inactive_opacity = vars.GameMode and 1.0 or vars.inactive_opacity,
 
         shadow = {
-            enabled      = vars.shadow_enabled,
+            enabled      = vars.GameMode and false or vars.shadow_enabled,
             range        = vars.shadow_range,
             render_power = vars.shadow_render_power,
             color        = "rgba(000000e0)",
         }, -- ADDED COMMA
 
         blur = {
-            enabled   = vars.blur_enabled,
+            enabled   = vars.GameMode and false or vars.blur_enabled,
             size      = vars.blur_size,
             passes    = vars.blur_passes,
             vibrancy  = vars.blur_vibrancy, 

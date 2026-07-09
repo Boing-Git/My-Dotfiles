@@ -29,18 +29,18 @@ Item {
         }
         width: parent.width
         height: parent.height
-        color: Theme.primary
+        color: Theme.surface_container_high
         radius: root.gameMode ? 0 : height / 2
         z: 1
 
         Rectangle {
             anchors.fill: parent
             radius: root.gameMode ? 0 : height / 2
-            color: dragArea.pressed ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (dragArea.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
+            color: dragArea.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (dragArea.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
             Behavior on color {
                 enabled: !root.gameMode
                 ColorAnimation {
-                    duration: 250
+                    duration: Vars.animationDuration
                     easing.type: Easing.BezierSpline
                     easing.bezierCurve: Vars.m3Standard
                 }
@@ -72,7 +72,7 @@ Item {
             font.family: Vars.fontFamily
             font.pixelSize: 14
             font.weight: 600 // Slightly bolder to match the new crisp aesthetic
-            color: Theme.on_primary
+            color: Theme.on_surface
             anchors.centerIn: parent
             text: root.timeString
         }

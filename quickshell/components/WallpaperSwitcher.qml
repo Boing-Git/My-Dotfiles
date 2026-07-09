@@ -68,15 +68,15 @@ Item {
         width: root.expanded ? 900 : 100
         height: root.expanded ? 550 : 40
         
-        color: Theme.primary
+        color: Theme.surface_container_low
         radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
         
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
 
         Item {
             anchors.fill: parent
@@ -84,7 +84,7 @@ Item {
             
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
-            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? 200 : 0 } NumberAnimation { duration: root.expanded ? 200 : 100; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
+            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
 
             ColumnLayout {
                 anchors.fill: parent
@@ -98,18 +98,18 @@ Item {
                         spacing: Vars.spacingMedium
 
                         Rectangle {
-                            width: 40; height: 40; radius: Vars.radiusMedium
-                            color: backHover.pressed ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
-                            Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_primary; text: "\ue5cd" }
+                            width: 48; height: 48; radius: 16
+                            color: backHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                            Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 24; color: Theme.on_surface; text: "\ue5cd" }
                             MouseArea { id: backHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.expanded = false }
-                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                         }
 
                         Text {
                             text: "wallpaper"
                             font.family: "Material Symbols Outlined"
                             font.pixelSize: 28
-                            color: Theme.on_primary
+                            color: Theme.on_surface
                         }
 
                         ColumnLayout {
@@ -119,13 +119,13 @@ Item {
                                 font.family: Vars.fontFamily
                                 font.pixelSize: 22
                                 font.bold: true
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                             }
                             Text {
                                 text: root.currentWallpaper ? "Active: " + root.currentWallpaper.substring(root.currentWallpaper.lastIndexOf('/') + 1) : "Select a wallpaper"
                                 font.family: Vars.fontFamily
                                 font.pixelSize: 12
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 opacity: 0.8
                                 elide: Text.ElideMiddle
                                 Layout.maximumWidth: 320
@@ -136,10 +136,10 @@ Item {
                     Rectangle {
                         id: searchBox
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 44
-                        color: searchInput.activeFocus ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08)
-                        border.color: searchInput.activeFocus ? Theme.primary_container : "transparent"
-                        border.width: searchInput.activeFocus ? 2 : 0
+                        Layout.preferredHeight: 48
+                        color: searchInput.activeFocus ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Theme.surface_container_high
+                        border.color: searchInput.activeFocus ? Theme.primary : Theme.outline
+                        border.width: searchInput.activeFocus ? 2 : 1
                         radius: Vars.radiusMedium
 
                         RowLayout {
@@ -151,7 +151,7 @@ Item {
                                 text: "search"
                                 font.family: "Material Symbols Outlined"
                                 font.pixelSize: 20
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 opacity: 0.7
                             }
 
@@ -160,7 +160,7 @@ Item {
                                 Layout.fillWidth: true
                                 font.family: Vars.fontFamily
                                 font.pixelSize: 14
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 focus: true
                                 selectByMouse: true
 
@@ -168,7 +168,7 @@ Item {
                                     text: "Search wallpapers..."
                                     font.family: Vars.fontFamily
                                     font.pixelSize: 14
-                                    color: Theme.on_primary
+                                    color: Theme.on_surface
                                     opacity: 0.6
                                     visible: !searchInput.text && !searchInput.activeFocus
                                 }
@@ -187,7 +187,7 @@ Item {
                             Text {
                                 text: "✕"
                                 font.pixelSize: 14
-                                color: Theme.on_primary
+                                color: Theme.on_surface
                                 visible: searchInput.text.length > 0
                                 Layout.alignment: Qt.AlignVCenter
                                 MouseArea {
@@ -204,7 +204,7 @@ Item {
                         onClicked: loadWallpapersProc.running = true
 
                         background: Rectangle {
-                            color: refreshBtn.down ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (refreshBtn.hovered ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
+                            color: refreshBtn.down ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (refreshBtn.hovered ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
                             border.width: 0
                             radius: Vars.radiusMedium
                         }
@@ -213,13 +213,13 @@ Item {
                             Text {
                                 text: "refresh"
                                 font.family: "Material Symbols Outlined"
-                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_primary
+                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_surface
                                 font.pixelSize: 18
                             }
                             Text {
                                 text: refreshBtn.text
                                 font.family: Vars.fontFamily
-                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_primary
+                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_surface
                                 font.bold: true
                                 font.pixelSize: 14
                             }
@@ -249,30 +249,30 @@ Item {
                         
                         background: Rectangle {
                             implicitWidth: 160
-                            color: schemeCombo.pressed ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : (schemeCombo.hovered ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
+                            color: schemeCombo.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (schemeCombo.hovered ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
                             border.width: 0
                             radius: Vars.radiusMedium
                         }
                         contentItem: Text {
-                            text: schemeCombo.displayText
+                            text: schemeCombo.currentText
                             font.family: Vars.fontFamily
-                            color: Theme.on_primary
-                            font.bold: true
-                            font.pixelSize: 12
+                            color: Theme.on_surface
                             verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            elide: Text.ElideRight
+                            font.pixelSize: 14
                         }
                         delegate: ItemDelegate {
                             width: schemeCombo.width
+                            height: 36
                             contentItem: Text {
                                 text: modelData
                                 font.family: Vars.fontFamily
-                                color: Theme.on_primary
-                                font.pixelSize: 12
+                                color: parent.highlighted ? Theme.on_primary : Theme.on_surface
+                                font.pixelSize: 13
+                                verticalAlignment: Text.AlignVCenter
                             }
                             background: Rectangle {
-                                color: parent.highlighted ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : "transparent"
+                                color: parent.highlighted ? Theme.primary : "transparent"
+                                radius: Vars.radiusSmall
                             }
                         }
                         popup: Popup {
@@ -288,7 +288,7 @@ Item {
                                 boundsBehavior: Flickable.StopAtBounds
                             }
                             background: Rectangle {
-                                color: Theme.primary
+                                color: Theme.surface_container_high
                                 border.width: 0
                                 radius: Vars.radiusSmall
                             }
@@ -304,13 +304,13 @@ Item {
                         text: "folder"
                         font.family: "Material Symbols Outlined"
                         font.pixelSize: 20
-                        color: Theme.on_primary
+                        color: Theme.on_surface
                     }
 
                     Text {
                         text: "Folder:"
                         font.family: Vars.fontFamily
-                        color: Theme.on_primary
+                        color: Theme.on_surface
                         font.bold: true
                         font.pixelSize: 14
                     }
@@ -319,8 +319,8 @@ Item {
                         id: pathInputContainer
                         Layout.fillWidth: true
                         Layout.preferredHeight: 32
-                        color: pathInput.activeFocus ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.12) : Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08)
-                        border.color: pathInput.activeFocus ? Theme.primary_container : "transparent"
+                        color: pathInput.activeFocus ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Theme.surface_container_high
+                        border.color: pathInput.activeFocus ? Theme.primary : "transparent"
                         border.width: pathInput.activeFocus ? 2 : 0
                         radius: Vars.radiusSmall
 
@@ -331,7 +331,7 @@ Item {
                             anchors.rightMargin: Vars.spacingSmall
                             font.family: Vars.fontFamily
                             font.pixelSize: 14
-                            color: Theme.on_primary
+                            color: Theme.on_surface
                             verticalAlignment: Text.AlignVCenter
                             text: root.wallpaperDir
                             selectByMouse: true
@@ -391,7 +391,7 @@ Item {
                             
                             background: Rectangle {
                                 color: Theme.primary_container
-                                border.color: Theme.on_primary
+                                border.color: Theme.on_surface
                                 border.width: 1
                                 radius: Vars.radiusSmall
                             }
@@ -415,13 +415,13 @@ Item {
                                     height: 28
                                     z: -1
                                     
-                                    Behavior on y { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    Behavior on y { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
 
                                     Rectangle {
                                         anchors.fill: parent
                                         radius: Vars.radiusSmall
-                                        color: autocompleteListView.activeFocus ? Qt.rgba(Theme.on_primary_container.r, Theme.on_primary_container.g, Theme.on_primary_container.b, 0.15) : "transparent"
-                                        Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                        color: autocompleteListView.activeFocus ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.15) : "transparent"
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
                                     }
                                 }
                                 
@@ -472,15 +472,15 @@ Item {
                                             verticalAlignment: Text.AlignVCenter
                                             text: model.path.replace(Quickshell.env("HOME"), "~")
                                             font.family: Vars.fontFamily
-                                            color: isCurrent ? Theme.primary : Theme.on_primary_container
+                                            color: isCurrent ? Theme.primary : Theme.on_surface
                                             font.pixelSize: 12
                                             
-                                            Behavior on anchors.leftMargin { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                                            Behavior on color { ColorAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                            Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
                                         }
                                     }
                                     background: Rectangle {
-                                        color: parent.hovered ? Qt.rgba(Theme.on_primary_container.r, Theme.on_primary_container.g, Theme.on_primary_container.b, 0.1) : "transparent"
+                                        color: parent.hovered ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.1) : "transparent"
                                         radius: Vars.radiusSmall
                                     }
                                     onClicked: triggerSelection()
@@ -496,7 +496,7 @@ Item {
                     Layout.fillHeight: true
                     clip: true
                     cellWidth: Math.floor(parent.width / 4)
-                    cellHeight: cellWidth * 0.5625
+                    cellHeight: cellWidth * 0.5625 + 48
                     model: sortFilterProxyModel.proxyModel
                     boundsBehavior: Flickable.StopAtBounds
 
@@ -505,27 +505,7 @@ Item {
                     highlightFollowsCurrentItem: false
                     onCurrentIndexChanged: positionViewAtIndex(currentIndex, GridView.Contain)
                     
-                    highlight: Item {
-                        x: gridView.currentItem ? gridView.currentItem.x : 0
-                        y: gridView.currentItem ? gridView.currentItem.y : 0
-                        width: gridView.cellWidth
-                        height: gridView.cellHeight
-                        z: -1
-
-                        Behavior on x { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                        Behavior on y { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: Vars.spacingSmall
-                            radius: Vars.radiusMedium
-                            color: gridView.activeFocus ? Theme.primary_container : "transparent"
-                            border.color: Theme.primary_container
-                            border.width: gridView.activeFocus ? 2 : 0
-                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                            Behavior on border.width { NumberAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                        }
-                    }
+                    // highlight removed to prevent sliding bleed; handled entirely by delegate constraints
 
                     Keys.onEscapePressed: root.expanded = false
                     Keys.onUpPressed: (event) => {
@@ -569,25 +549,24 @@ Item {
                             anchors.margins: Vars.spacingSmall
                             radius: Vars.radiusMedium
 
-                            color: root.currentWallpaper === filePath ? Theme.on_primary : (tileMouseArea.containsMouse ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08) : "transparent")
-                            border.color: Theme.primary_container
-                            border.width: (root.currentWallpaper === filePath) ? 2 : 0
+                            color: isCurrentFocus ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Theme.surface_container_low
+                            border.color: isCurrentFocus ? Theme.primary : (root.currentWallpaper === filePath ? Theme.primary : Theme.outline_variant)
+                            border.width: isCurrentFocus || (root.currentWallpaper === filePath) ? 2 : 1
                             clip: true
 
-                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
 
                             ColumnLayout {
                                 anchors.fill: parent
-                                anchors.margins: Vars.spacingSmall
-                                spacing: Vars.spacingSmall
+                                anchors.margins: 0
+                                spacing: 0
 
                                 Item {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     Layout.margins: isCurrentFocus ? 4 : 0
-                                    clip: true
                                     
-                                    Behavior on Layout.margins { NumberAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    Behavior on Layout.margins { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
 
                                     Loader {
                                         id: mediaLoader
@@ -606,7 +585,7 @@ Item {
                                             sourceSize.width: 400
                                             sourceSize.height: 400
                                             opacity: status === Image.Ready ? 1.0 : 0.0
-                                            Behavior on opacity { NumberAnimation { duration: 250 } }
+                                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration } }
                                         }
                                     }
 
@@ -642,17 +621,27 @@ Item {
                                     }
                                 }
 
-                                Text {
+                                Item {
                                     Layout.fillWidth: true
-                                    text: fileName
-                                    font.family: Vars.fontFamily
-                                    color: isCurrentFocus ? Theme.on_primary_container : (root.currentWallpaper === filePath ? Theme.primary : Theme.on_primary)
-                                    font.pixelSize: 12
-                                    font.weight: root.currentWallpaper === filePath ? Font.Bold : Font.Normal
-                                    elide: Text.ElideRight
-                                    horizontalAlignment: Text.AlignHCenter
+                                    Layout.preferredHeight: 52
                                     
-                                    Behavior on color { ColorAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    Text {
+                                        anchors.fill: parent
+                                        anchors.margins: 8
+                                        text: fileName.replace(/^a_/, '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                                        font.family: Vars.fontFamily
+                                        color: isCurrentFocus ? Theme.primary : Theme.on_surface
+                                        font.pixelSize: 14
+                                        font.weight: root.currentWallpaper === filePath ? Font.Bold : Font.Normal
+                                        wrapMode: Text.Wrap
+                                        maximumLineCount: 2
+                                        elide: Text.ElideRight
+                                        horizontalAlignment: Text.AlignHCenter
+                                        verticalAlignment: Text.AlignVCenter
+                                        lineHeight: 1.1
+                                        
+                                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                                    }
                                 }
                             }
 

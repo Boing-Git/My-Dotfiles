@@ -73,11 +73,11 @@ Item {
 
     SequentialAnimation {
         id: shakeAnim
-        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX - 12; duration: 50 }
-        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX + 12; duration: 50 }
-        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX - 8; duration: 50 }
-        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX + 8; duration: 50 }
-        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX; duration: 50 }
+        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX - 12; duration: Vars.animationDuration }
+        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX + 12; duration: Vars.animationDuration }
+        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX - 8; duration: Vars.animationDuration }
+        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX + 8; duration: Vars.animationDuration }
+        NumberAnimation { target: passwordBox; property: "x"; to: passwordBox.restX; duration: Vars.animationDuration }
     }
 
     onFlowChanged: {
@@ -109,12 +109,12 @@ Item {
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        color: Theme.primary
+        color: Theme.surface_container_high
         radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: 350; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
 
         // EXPANDED UI
         Item {
@@ -122,7 +122,7 @@ Item {
 
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
-            Behavior on opacity { SequentialAnimation { PauseAnimation { duration: root.expanded ? 200 : 0 } NumberAnimation { duration: root.expanded ? 200 : 100; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
+            Behavior on opacity { SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
 
             ColumnLayout {
                 id: contentColumn
@@ -193,8 +193,8 @@ Item {
                         : (root.authError ? Theme.error : "transparent")
                     border.width: passwordInput.activeFocus ? 2 : 1
 
-                    Behavior on color { ColorAnimation { duration: 300; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                    Behavior on border.color { ColorAnimation { duration: 200 } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on border.color { ColorAnimation { duration: Vars.animationDuration } }
 
                     property real restX: x
                     Component.onCompleted: restX = x
@@ -249,7 +249,7 @@ Item {
                     color: root.authError ? Theme.error : Theme.on_primary
                     visible: root.errorMessage !== ""
                     opacity: visible ? 1.0 : 0.0
-                    Behavior on opacity { NumberAnimation { duration: 200 } }
+                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration } }
                 }
 
                 // Buttons: Cancel | Authenticate
@@ -267,7 +267,7 @@ Item {
                             ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.2)
                             : Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.1)
 
-                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
 
                         Text {
                             id: authenticateLabel
@@ -302,7 +302,7 @@ Item {
                             ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.08)
                             : "transparent"
 
-                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
 
                         Text {
                             id: cancelLabel

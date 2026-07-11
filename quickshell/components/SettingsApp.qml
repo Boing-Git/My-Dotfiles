@@ -1333,6 +1333,7 @@ Item {
                                                     if (mouse.button === Qt.RightButton) {
                                                         btPairDelegate.showForget = true;
                                                     } else {
+                                                        if (!modelData.paired) modelData.pair();
                                                         if (!modelData.connected) modelData.connect();
                                                     }
                                                 }

@@ -29,19 +29,31 @@ Item {
 
     function resolveIcon(appId) {
         if (!appId) return "application-x-executable";
+        
+        let searchId = appId;
+        if (appId.startsWith("steam_app_")) searchId = "steam";
+        else if (appId.toLowerCase().includes("zen")) searchId = "zen";
+        
         try {
             if (typeof DesktopEntries !== "undefined") {
-                // Find icon using Quickshell's DesktopEntries service natively
                 let app = null;
-                if (typeof DesktopEntries.getApp === "function") app = DesktopEntries.getApp(appId);
-                else if (typeof DesktopEntries.getByAppId === "function") app = DesktopEntries.getByAppId(appId);
+                if (typeof DesktopEntries.getApp === "function") app = DesktopEntries.getApp(searchId);
+                else if (typeof DesktopEntries.getByAppId === "function") app = DesktopEntries.getByAppId(searchId);
+                
+                if (!app && typeof DesktopEntries.getApp === "function") {
+                    if (searchId === "zen") app = DesktopEntries.getApp("zen-browser") || DesktopEntries.getApp("zen-twilight") || DesktopEntries.getApp("zen-alpha");
+                }
                 
                 if (app && app.icon) return app.icon;
             }
         } catch(e) {
             console.log("Error resolving icon via Quickshell service:", e);
         }
-        return appId; // Fallback to raw appId so Quickshell.iconPath can still attempt resolution
+        
+        if (searchId === "steam") return "steam";
+        if (searchId === "zen") return "zen-browser";
+        
+        return appId;
     }
 
     // Overview config
@@ -405,13 +417,13 @@ Item {
                                 property real scaleY: overviewPanel.wsHeight / (overviewPanel.monitorHeight / overviewPanel.monitorScale)
 
                                 // Final position: cell origin + scaled window position within monitor
-                                property real initX: cellX + Math.max(0, winX * scaleX)
-                                property real initY: cellY + Math.max(0, winY * scaleY)
+                                property real initX: Math.round(cellX + Math.max(0, winX * scaleX))
+                                property real initY: Math.round(cellY + Math.max(0, winY * scaleY))
 
                                 x: initX
                                 y: initY
-                                width: Math.min(winW * scaleX, overviewPanel.wsWidth)
-                                height: Math.min(winH * scaleY, overviewPanel.wsHeight)
+                                width: Math.round(Math.min(winW * scaleX, overviewPanel.wsWidth))
+                                height: Math.round(Math.min(winH * scaleY, overviewPanel.wsHeight))
                                 z: dragArea.drag.active ? 99999 : index
 
                                 clip: true
@@ -548,10 +560,10 @@ Item {
                         readonly property int activeRow: Math.floor((activeWsId - 1) / overviewContainer.gridColumns)
                         readonly property int activeCol: (activeWsId - 1) % overviewContainer.gridColumns
 
-                        x: windowLayer.x + activeCol * (overviewPanel.wsWidth + overviewPanel.wsSpacing)
-                        y: windowLayer.y + activeRow * (overviewPanel.wsHeight + overviewPanel.wsSpacing)
-                        width: overviewPanel.wsWidth
-                        height: overviewPanel.wsHeight
+                        x: Math.round(windowLayer.x + activeCol * (overviewPanel.wsWidth + overviewPanel.wsSpacing))
+                        y: Math.round(windowLayer.y + activeRow * (overviewPanel.wsHeight + overviewPanel.wsSpacing))
+                        width: Math.round(overviewPanel.wsWidth)
+                        height: Math.round(overviewPanel.wsHeight)
                         z: 99999
                         color: "transparent"
                         radius: Vars.radiusSmall

@@ -8,8 +8,13 @@ import Quickshell.Hyprland
 ShellRoot {
     id: root
 
-    Binding { target: Qt.application; property: "name"; value: "quickshell" }
-    Binding { target: Qt.application; property: "organization"; value: "boing" }
+    QtObject {
+        Component.onCompleted: {
+            Qt.application.name = "quickshell"
+            Qt.application.organization = "boing"
+            Qt.application.domain = "boing.quickshell"
+        }
+    }
 
     property bool launcherVisible: false
     property bool screenshotVisible: false

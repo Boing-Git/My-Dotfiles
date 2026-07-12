@@ -229,6 +229,15 @@ hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_S
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ 0; wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"))
 
 --------------------------------------------------------------------------------
+-- ## Display Brightness Inputs (DDC/CI)
+--------------------------------------------------------------------------------
+
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("ddcutil setvcp 10 + 5"))
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("ddcutil setvcp 10 - 5"))
+hl.bind(SM .. " + mouse_up", hl.dsp.exec_cmd("ddcutil setvcp 10 + 5"))
+hl.bind(SM .. " + mouse_down", hl.dsp.exec_cmd("ddcutil setvcp 10 - 5"))
+
+--------------------------------------------------------------------------------
 -- ## Power Management
 --------------------------------------------------------------------------------
 

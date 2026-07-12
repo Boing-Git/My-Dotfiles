@@ -265,7 +265,7 @@ Item {
                                         anchors.centerIn: parent
                                         text: wsContainer.wsId
                                         font.family: Vars.fontFamily
-                                        font.pixelSize: Math.round(overviewPanel.wsHeight * 0.6)
+                                        font.pixelSize: Math.floor(overviewPanel.wsHeight * 0.6)
                                         font.weight: 600
                                         color: wsContainer.isFocused ? Theme.on_primary_container : Theme.on_surface_variant
                                         opacity: 0.15

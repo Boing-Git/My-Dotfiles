@@ -846,7 +846,7 @@ Item {
                                                 color: wifiDevice && wifiDevice.scannerEnabled ? Theme.primary : Theme.on_surface 
                                                 RotationAnimation {
                                                     target: wifiScanIcon; property: "rotation"
-                                                    loops: Animation.Infinite; from: 0; to: 360; duration: 2000; running: wifiDevice && wifiDevice.scannerEnabled
+                                                    loops: Animation.Infinite; from: 0; to: 360; duration: 2000; running: wifiDevice && wifiDevice.scannerEnabled !== undefined ? wifiDevice.scannerEnabled : false
                                                     onRunningChanged: if (!running) wifiScanIcon.rotation = 0
                                                 }
                                             }
@@ -1037,7 +1037,12 @@ Item {
                                                     if (mouse.button === Qt.RightButton) {
                                                         btDelegate.showForget = true;
                                                     } else {
-                                                        if (modelData.connected) modelData.disconnect(); else modelData.connect();
+                                                        if (modelData.connected) {
+                                                            modelData.disconnect();
+                                                        } else {
+                                                            modelData.trusted = true;
+                                                            modelData.connect();
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1232,7 +1237,7 @@ Item {
                                             // Discovering Toggle
                                             Rectangle {
                                                 width: 52; height: 32; radius: 16
-                                                property bool isDiscovering: adapter && adapter.discovering
+                                                property bool isDiscovering: adapter && adapter.discovering !== undefined ? adapter.discovering : false
                                                 color: isDiscovering ? Theme.primary : Theme.surface_variant
                                                 Rectangle {
                                                     width: 24; height: 24; radius: 12
@@ -1333,8 +1338,12 @@ Item {
                                                     if (mouse.button === Qt.RightButton) {
                                                         btPairDelegate.showForget = true;
                                                     } else {
-                                                        if (!modelData.paired) modelData.pair();
-                                                        if (!modelData.connected) modelData.connect();
+                                                        if (!modelData.paired) {
+                                                            modelData.pair();
+                                                            modelData.trusted = true;
+                                                        } else if (!modelData.connected) {
+                                                            modelData.connect();
+                                                        }
                                                     }
                                                 }
                                             }

@@ -1,28 +1,28 @@
 {
   "checksum": ":)",
-  "wallpaper": "/home/boing/Pictures/Wallpapers/Dharmx/minimal/a_landscape_of_mountains_and_a_sunset_01.png",
+  "wallpaper": "/home/boing/Pictures/Wallpapers/Wallpapers-Bank/wallpapers/Fantasy-Garden.png",
   "alpha": "100",
   "special": {
-    "background": "#d8dae0",
-    "foreground": "#181c20",
-    "cursor": "#31628d"
+    "background": "#dfdacc",
+    "foreground": "#1d1c13",
+    "cursor": "#695f11"
   },
   "colors": {
-    "color0": "#d8dae0",
-    "color1": "#041c34",
-    "color2": "#3f5f83",
-    "color3": "#6a4789",
-    "color4": "#31628d",
-    "color5": "#695779",
-    "color6": "#d0e3fc",
-    "color7": "#42474e",
-    "color8": "#dee3eb",
-    "color9": "#23639b",
-    "color10": "#4f78a6",
-    "color11": "#845aa9",
-    "color12": "#3e7cb3",
-    "color13": "#836d96",
-    "color14": "#cfe5ff",
-    "color15": "#181c20"
+    "color0": "#dfdacc",
+    "color1": "#2e2902",
+    "color2": "#756b31",
+    "color3": "#34734f",
+    "color4": "#695f11",
+    "color5": "#416651",
+    "color6": "#f4e9b4",
+    "color7": "#4a4739",
+    "color8": "#e8e2d0",
+    "color9": "#726608",
+    "color10": "#998c3f",
+    "color11": "#459568",
+    "color12": "#958718",
+    "color13": "#55856a",
+    "color14": "#fae983",
+    "color15": "#1d1c13"
   }
 }

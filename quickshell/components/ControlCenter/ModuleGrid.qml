@@ -10,7 +10,7 @@ import "../../Variables/variables.js" as Vars
 import "../.."
 
 ColumnLayout {
-    id: moduleGrid
+    id: moduleGridRoot
     
     property bool isEditorMode: false
     property real baseCellWidth: (width / 4) - 12
@@ -72,6 +72,30 @@ ColumnLayout {
         layoutSettings.availableLayout = JSON.stringify(availArr);
     }
 
+    function activateModule(moduleId) {
+        for (let i = 0; i < availableTiles.count; i++) {
+            if (availableTiles.get(i).moduleId === moduleId) {
+                let payload = { "moduleId": availableTiles.get(i).moduleId, "expanded": false };
+                availableTiles.remove(i);
+                activeTiles.append(payload);
+                saveLayout();
+                return;
+            }
+        }
+    }
+
+    function deactivateModule(moduleId) {
+        for (let i = 0; i < activeTiles.count; i++) {
+            if (activeTiles.get(i).moduleId === moduleId) {
+                let payload = { "moduleId": activeTiles.get(i).moduleId, "expanded": false };
+                activeTiles.remove(i);
+                availableTiles.append(payload);
+                saveLayout();
+                return;
+            }
+        }
+    }
+
     function loadLayout() {
         let defaultActive = [
             {"moduleId": "wifi", "expanded": false},
@@ -121,9 +145,9 @@ ColumnLayout {
             
             property bool isExpanded: model.expanded !== undefined ? model.expanded : false
             
-            width: isExpanded ? (moduleGrid.baseCellWidth * 2) + 12 : moduleGrid.baseCellWidth
+            width: isExpanded ? (moduleGridRoot.baseCellWidth * 2) + 12 : moduleGridRoot.baseCellWidth
             height: 64
-            keys: ["active_module", "available_module"]
+            keys: ["m3_module"]
             
             Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             
@@ -131,9 +155,11 @@ ColumnLayout {
 
             property int visualIndex: DelegateModel.itemsIndex
             property string dragMode: "active_module"
+            property string moduleId: model.moduleId
+            property var rootItem: moduleGridRoot
 
             onEntered: function(drag) {
-                if (!moduleGrid.isEditorMode) return;
+                if (!moduleGridRoot.isEditorMode) return;
                 if (!drag.source) return;
                 
                 // WARNING: If using a custom C++ QAbstractListModel or external JS array, 
@@ -153,10 +179,10 @@ ColumnLayout {
                         let mIdVal = availableTiles.get(from).moduleId;
                         availableTiles.remove(from, 1);
                         activeTiles.insert(activeDropArea.visualIndex, { "moduleId": mIdVal, "expanded": false });
-                        moduleGrid.saveLayout();
+                        moduleGridRoot.saveLayout();
                     }
                 } else {
-                    moduleGrid.saveLayout();
+                    moduleGridRoot.saveLayout();
                 }
             }
 
@@ -175,74 +201,163 @@ ColumnLayout {
                 Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                 Behavior on color { ColorAnimation { duration: 150 } }
                 
-                property string mId: model.moduleId
+                property string moduleId: model.moduleId
                 
-                property bool isActive: (mId === "wifi" ? Networking.wifiEnabled : false) || 
-                                        (mId === "bluetooth" ? moduleGrid.adapterState : false) || 
-                                        (mId === "audio" ? (moduleGrid.audioNode && !moduleGrid.audioNode.audio.muted) : false) || 
-                                        (mId === "display" ? false : false) ||
-                                        (mId === "peace" ? NotificationService.peaceMode : false)
+                property bool isActive: (moduleId === "wifi" ? Networking.wifiEnabled : false) || 
+                                        (moduleId === "bluetooth" ? moduleGridRoot.adapterState : false) || 
+                                        (moduleId === "audio" ? (moduleGridRoot.audioNode && !moduleGridRoot.audioNode.audio.muted) : false) || 
+                                        (moduleId === "display" ? false : false) ||
+                                        (moduleId === "peace" ? NotificationService.peaceMode : false)
                                         
-                property string mIcon: mId === "wifi" ? moduleGrid.wifiIcon :
-                                       mId === "bluetooth" ? moduleGrid.bluetoothIcon :
-                                       mId === "audio" ? (moduleGrid.audioNode && moduleGrid.audioNode.audio.muted ? "\ue04f" : "\ue050") :
-                                       mId === "display" ? "\ue30d" :
-                                       mId === "peace" ? "\ue15c" :
-                                       mId === "color" ? "palette" :
-                                       mId === "wallpaper" ? "wallpaper" :
-                                       mId === "overview" ? "grid_view" : ""
+                property string mIcon: moduleId === "wifi" ? moduleGridRoot.wifiIcon :
+                                       moduleId === "bluetooth" ? moduleGridRoot.bluetoothIcon :
+                                       moduleId === "audio" ? (moduleGridRoot.audioNode && moduleGridRoot.audioNode.audio.muted ? "\ue04f" : "\ue050") :
+                                       moduleId === "display" ? "\ue30d" :
+                                       moduleId === "peace" ? "\ue15c" :
+                                       moduleId === "color" ? "palette" :
+                                       moduleId === "wallpaper" ? "wallpaper" :
+                                       moduleId === "overview" ? "grid_view" : ""
                                        
-                property string mTitle: mId === "wifi" ? "Wi-Fi" :
-                                        mId === "bluetooth" ? "Bluetooth" :
-                                        mId === "audio" ? "Audio" :
-                                        mId === "display" ? "Display" :
-                                        mId === "peace" ? "Peace" :
-                                        mId === "color" ? "Colors" :
-                                        mId === "wallpaper" ? "Wallpaper" :
-                                        mId === "overview" ? "Overview" : ""
+                property string mTitle: moduleId === "wifi" ? "Wi-Fi" :
+                                        moduleId === "bluetooth" ? "Bluetooth" :
+                                        moduleId === "audio" ? "Audio" :
+                                        moduleId === "display" ? "Display" :
+                                        moduleId === "peace" ? "Peace" :
+                                        moduleId === "color" ? "Colors" :
+                                        moduleId === "wallpaper" ? "Wallpaper" :
+                                        moduleId === "overview" ? "Overview" : ""
                                         
-                property string mSubtext: mId === "wifi" ? (moduleGrid.activeNet ? moduleGrid.activeNet.name : "Off") :
-                                          mId === "bluetooth" ? (moduleGrid.connectDevice ? moduleGrid.connectDevice.name : (moduleGrid.adapterState ? "On" : "Off")) :
-                                          mId === "audio" ? (moduleGrid.audioNode && moduleGrid.audioNode.audio.muted ? "Muted" : "Active") :
-                                          mId === "display" ? "Default" :
-                                          mId === "peace" ? (isActive ? "Active" : "Inactive") :
-                                          mId === "color" ? "Change Theme" :
-                                          mId === "wallpaper" ? "Switcher" :
-                                          mId === "overview" ? "Workspaces" : ""
+                function getExpandedSubtitle() {
+                    switch(moduleId) {
+                        case "wifi": 
+                            return moduleGridRoot.activeNet ? moduleGridRoot.activeNet.name : "Not Connected";
+                        case "bluetooth": 
+                            return moduleGridRoot.connectDevice ? moduleGridRoot.connectDevice.name : (moduleGridRoot.adapterState ? "On" : "Available");
+                        case "audio": 
+                            return moduleGridRoot.audioNode && moduleGridRoot.audioNode.audio.muted ? "Muted" : "Active";
+                        case "display": 
+                            return "Default";
+                        case "peace":
+                            return isActive ? "Active" : "Inactive";
+                        case "color":
+                            return "Change Theme";
+                        case "wallpaper":
+                            return "Switcher";
+                        case "overview":
+                            return "Workspaces";
+                        default: 
+                            return "";
+                    }
+                }
                                           
                 function doAction() {
-                    if (mId === "wifi") moduleGrid.subMenuRequested("wifi");
-                    else if (mId === "bluetooth") moduleGrid.subMenuRequested("bluetooth");
-                    else if (mId === "display") moduleGrid.subMenuRequested("display");
-                    else if (mId === "color") moduleGrid.openColorSchemeRequested()
-                    else if (mId === "wallpaper") moduleGrid.openWallpaperRequested()
-                    else if (mId === "overview") moduleGrid.openOverviewRequested()
+                    if (moduleId === "wifi") moduleGridRoot.subMenuRequested("wifi");
+                    else if (moduleId === "bluetooth") moduleGridRoot.subMenuRequested("bluetooth");
+                    else if (moduleId === "display") moduleGridRoot.subMenuRequested("display");
+                    else if (moduleId === "color") moduleGridRoot.openColorSchemeRequested()
+                    else if (moduleId === "wallpaper") moduleGridRoot.openWallpaperRequested()
+                    else if (moduleId === "overview") moduleGridRoot.openOverviewRequested()
                     else doToggle();
                 }
                 
                 function doToggle() {
-                    if (mId === "wifi") Networking.wifiEnabled = !Networking.wifiEnabled;
-                    else if (mId === "bluetooth") { if (moduleGrid.adapter) moduleGrid.adapter.enabled = !moduleGrid.adapter.enabled }
-                    else if (mId === "audio") { if (moduleGrid.audioNode) moduleGrid.audioNode.audio.muted = !moduleGrid.audioNode.audio.muted }
-                    else if (mId === "peace") NotificationService.peaceMode = !NotificationService.peaceMode;
+                    if (moduleId === "wifi") Networking.wifiEnabled = !Networking.wifiEnabled;
+                    else if (moduleId === "bluetooth") { if (moduleGridRoot.adapter) moduleGridRoot.adapter.enabled = !moduleGridRoot.adapter.enabled }
+                    else if (moduleId === "audio") { if (moduleGridRoot.audioNode) moduleGridRoot.audioNode.audio.muted = !moduleGridRoot.audioNode.audio.muted }
+                    else if (moduleId === "peace") NotificationService.peaceMode = !NotificationService.peaceMode;
                     else doAction();
                 }
 
                 // --- INSERT YOUR WORKING MODULE UI HERE ---
                 Item {
+                    id: contentWrapper
                     anchors.fill: parent
+                    anchors.margins: 12
                     clip: true
                     
-                    Text { 
-                        anchors.centerIn: parent
-                        font.family: "Material Symbols Outlined"
-                        font.pixelSize: 24
-                        color: tileDelegate.isActive ? Theme.primary : Theme.on_surface_variant
-                        text: tileDelegate.mIcon
+                    // State 1: The Collapsed UI (Pure Centered Icon)
+                    Item {
+                        id: collapsedUI
+                        anchors.fill: parent
+                        opacity: activeDropArea.isExpanded ? 0.0 : 1.0
+                        Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                        visible: opacity > 0
+                        
+                        Text {
+                            anchors.centerIn: parent
+                            width: 32
+                            height: 32
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                            font.family: "Material Symbols Outlined"
+                            font.pixelSize: 24
+                            color: tileDelegate.isActive ? Theme.primary : Theme.on_surface_variant
+                            text: tileDelegate.mIcon
+                        }
                     }
+                    
+                    // State 2: The Expanded UI (Left-Aligned List Item)
+                    Item {
+                        id: expandedUI
+                        anchors.fill: parent
+                        opacity: activeDropArea.isExpanded ? 1.0 : 0.0
+                        Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                        visible: opacity > 0
+                        
+                        RowLayout {
+                            anchors.fill: parent
+                            spacing: 16
+                            
+                            // Static Icon Container
+                            Item {
+                                Layout.preferredWidth: 32
+                                Layout.preferredHeight: 32
+                                Layout.alignment: Qt.AlignVCenter
+                                
+                                Text {
+                                    anchors.centerIn: parent
+                                    font.family: "Material Symbols Outlined"
+                                    font.pixelSize: 24
+                                    color: tileDelegate.isActive ? Theme.primary : Theme.on_surface_variant
+                                    text: tileDelegate.mIcon
+                                }
+                            }
+                            
+                            // Morphing Text Column
+                            ColumnLayout {
+                                Layout.alignment: Qt.AlignVCenter
+                                Layout.fillWidth: true
+                                
+                                Text {
+                                    Layout.alignment: Qt.AlignLeft
+                                    horizontalAlignment: Text.AlignLeft
+                                    text: tileDelegate.mTitle
+                                    font.family: Vars.fontFamily
+                                    font.pixelSize: 16
+                                    font.weight: 600
+                                    color: Theme.on_surface
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                }
+                                
+                                Text {
+                                    Layout.alignment: Qt.AlignLeft
+                                    horizontalAlignment: Text.AlignLeft
+                                    color: Theme.on_surface_variant
+                                    font.family: Vars.fontFamily
+                                    font.pixelSize: 14
+                                    elide: Text.ElideRight
+                                    Layout.fillWidth: true
+                                    
+                                    text: tileDelegate.getExpandedSubtitle()
+                                }
+                            }
+                        }
+                    }
+                    
                     MouseArea { 
                         anchors.fill: parent; cursorShape: Qt.PointingHandCursor; 
-                        onClicked: { if (!moduleGrid.isEditorMode) tileDelegate.doAction() } 
+                        onClicked: { if (!moduleGridRoot.isEditorMode) tileDelegate.doAction() } 
                     }
                 }
                 // --- END WORKING MODULE UI ---
@@ -250,7 +365,7 @@ ColumnLayout {
                 // ---- EDITOR OVERLAY ----
                 Item {
                     anchors.fill: parent
-                    opacity: moduleGrid.isEditorMode ? 1.0 : 0.0
+                    opacity: moduleGridRoot.isEditorMode ? 1.0 : 0.0
                     visible: opacity > 0
                     Behavior on opacity { NumberAnimation { duration: 150 } }
 
@@ -277,7 +392,7 @@ ColumnLayout {
                             tileDelegate.Drag.drop();
                             tileDelegate.x = 0;
                             tileDelegate.y = 0;
-                            moduleGrid.saveLayout();
+                            rootItem.saveLayout();
                         }
                     }
 
@@ -313,7 +428,7 @@ ColumnLayout {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 model.expanded = !model.expanded
-                                moduleGrid.saveLayout()
+                                moduleGridRoot.saveLayout()
                             }
                         }
                     }
@@ -323,131 +438,8 @@ ColumnLayout {
                 
                 Drag.active: dragArea.drag.active
                 Drag.source: activeDropArea
-                Drag.keys: ["active_module"]
-            }
-        }
-    }
-
-    DelegateModel {
-        id: availableVisualModel
-        model: availableTiles
-        delegate: DropArea {
-            id: availableDropArea
-            width: moduleGrid.baseCellWidth
-            height: 64
-            keys: ["available_module", "active_module"]
-            
-            z: availDragArea.drag.active ? 100 : 1
-            
-            property int visualIndex: DelegateModel.itemsIndex
-            property string dragMode: "available_module"
-            
-            // To pass the index easily on drop from available to active:
-            property int sourceIndex: model.index
-
-            onEntered: function(drag) {
-                if (!moduleGrid.isEditorMode) return;
-                if (!drag.source) return;
-                
-                let from = drag.source.visualIndex;
-                let to = availableDropArea.visualIndex;
-                
-                if (from !== undefined && to !== undefined && from !== to && drag.source !== availableDropArea) {
-                    availableVisualModel.items.move(from, to);
-                    drag.source.visualIndex = to; // Anti-thrashing guard
-                }
-            }
-            onDropped: function(drag) {
-                if (drag.source.dragMode === "active_module") {
-                    let from = drag.source.visualIndex;
-                    if (from >= 0 && from < activeTiles.count) {
-                        let mIdVal = activeTiles.get(from).moduleId;
-                        activeTiles.remove(from, 1);
-                        availableTiles.insert(availableDropArea.visualIndex, { "moduleId": mIdVal, "expanded": false });
-                        moduleGrid.saveLayout();
-                    }
-                } else {
-                    moduleGrid.saveLayout();
-                }
-            }
-
-            Rectangle {
-                id: availDelegate
-                property int visualIndex: DelegateModel.itemsIndex
-
-                x: 0
-                y: 0
-                width: availableDropArea.width
-                height: availableDropArea.height
-                radius: 16
-                
-                color: availDragArea.drag.active ? Theme.surface_container_highest : Theme.surface_container
-                scale: availDragArea.drag.active ? 1.05 : 1.0
-                
-                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                Behavior on color { ColorAnimation { duration: 150 } }
-
-                property string mId: model.moduleId
-                property string mIcon: mId === "wifi" ? moduleGrid.wifiIcon : mId === "bluetooth" ? moduleGrid.bluetoothIcon : mId === "audio" ? "\ue050" : mId === "display" ? "\ue30d" : mId === "peace" ? "\ue15c" : mId === "color" ? "palette" : mId === "wallpaper" ? "wallpaper" : mId === "overview" ? "grid_view" : ""
-
-                // --- INSERT YOUR WORKING MODULE UI HERE ---
-                Text {
-                    anchors.centerIn: parent
-                    font.family: "Material Symbols Outlined"; font.pixelSize: 24
-                    color: Theme.on_surface_variant
-                    text: availDelegate.mIcon
-                }
-                // --- END WORKING MODULE UI ---
-
-                // ---- EDITOR OVERLAY ----
-                Item {
-                    anchors.fill: parent
-                    opacity: moduleGrid.isEditorMode ? 1.0 : 0.0
-                    visible: opacity > 0
-                    Behavior on opacity { NumberAnimation { duration: 150 } }
-
-                    // Overlay to show edit mode is active, slightly dimming the content
-                    Rectangle {
-                        anchors.fill: parent; radius: 16
-                        color: availDragArea.drag.active ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.0) : (availDragArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08) : Qt.rgba(0, 0, 0, 0.1))
-                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3EmphasizedDecelerate } }
-                    }
-
-                    // Full Card Drag Handle
-                    MouseArea {
-                        id: availDragArea
-                        anchors.fill: parent
-                        cursorShape: Qt.OpenHandCursor
-                        
-                        drag.target: availDelegate
-
-                        onPressed: {
-                            cursorShape = Qt.ClosedHandCursor;
-                        }
-                        onReleased: {
-                            cursorShape = Qt.OpenHandCursor;
-                            availDelegate.Drag.drop();
-                            availDelegate.x = 0;
-                            availDelegate.y = 0;
-                            moduleGrid.saveLayout();
-                        }
-                    }
-
-                    // Top-Left Drag Indicator Badge
-                    Text {
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.margins: 12
-                        font.family: "Material Symbols Outlined"; font.pixelSize: 20
-                        color: Theme.on_surface_variant
-                        text: "drag_indicator"
-                    }
-                }
-                
-
-                Drag.active: availDragArea.drag.active
-                Drag.source: availableDropArea
-                Drag.keys: ["available_module"]
+                z: dragArea.drag.active ? 100 : 1
+                Drag.keys: ["m3_module"]
             }
         }
     }
@@ -460,17 +452,13 @@ ColumnLayout {
     DropArea {
         Layout.fillWidth: true
         Layout.preferredHeight: activeFlow.implicitHeight > 64 ? activeFlow.implicitHeight : 64
-        keys: ["available_module"]
-        onDropped: function(drag) {
-            if (drag.source.dragMode === "available_module") {
-                let from = drag.source.sourceIndex; // from availableDropArea.sourceIndex
-                if (from >= 0 && from < availableTiles.count) {
-                    let mIdVal = availableTiles.get(from).moduleId;
-                    availableTiles.remove(from, 1);
-                    activeTiles.append({ "moduleId": mIdVal, "expanded": false });
-                    moduleGrid.saveLayout();
-                }
+        keys: ["m3_module"]
+        onDropped: function(drop) {
+            if (drop.source && drop.source.moduleId) {
+                moduleGridRoot.activateModule(drop.source.moduleId);
+                drop.accept();
             }
+            moduleGridRoot.saveLayout();
         }
         
         Flow {
@@ -488,44 +476,171 @@ ColumnLayout {
         }
     }
 
+    DelegateModel {
+        id: availableVisualModel
+        model: availableTiles
+        delegate: DropArea {
+            id: availableDropArea
+            width: GridView.view ? GridView.view.cellWidth : 80
+            height: GridView.view ? GridView.view.cellHeight : 80
+            keys: ["m3_module"]
+            
+            z: availDragArea.drag.active ? 100 : 1
+            
+            property int visualIndex: DelegateModel.itemsIndex
+            property string dragMode: "available_module"
+            property string moduleId: model.moduleId
+            property var rootItem: moduleGridRoot
+
+            onPositionChanged: function(drag) {
+                if (!moduleGridRoot.isEditorMode) return;
+                if (!drag.source) return;
+                if (drag.source.dragMode !== "available_module") return;
+                
+                let from = drag.source.visualIndex;
+                let hoverIndex = availableDropArea.visualIndex;
+                
+                if (from !== undefined && hoverIndex !== undefined && from !== hoverIndex && drag.source !== availableDropArea) {
+                    let isLeftHalf = drag.x < availableDropArea.width / 2;
+                    let targetIndex = hoverIndex;
+                    
+                    if (from < hoverIndex && !isLeftHalf) {
+                        targetIndex = hoverIndex;
+                    } else if (from < hoverIndex && isLeftHalf) {
+                        targetIndex = hoverIndex - 1;
+                    } else if (from > hoverIndex && isLeftHalf) {
+                        targetIndex = hoverIndex;
+                    } else if (from > hoverIndex && !isLeftHalf) {
+                        targetIndex = hoverIndex + 1;
+                    }
+                    
+                    if (from !== targetIndex) {
+                        availableVisualModel.items.move(from, targetIndex);
+                        drag.source.visualIndex = targetIndex;
+                    }
+                }
+            }
+            
+            Rectangle {
+                id: availDelegate
+                anchors.centerIn: parent
+                width: GridView.view ? GridView.view.cellWidth - 16 : 100
+                height: GridView.view ? GridView.view.cellHeight - 16 : 48
+                radius: 16
+                
+                color: availDragArea.drag.active ? Theme.surface_container_highest : Theme.surface_container_high
+                scale: availDragArea.drag.active ? 1.05 : 1.0
+                
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                Behavior on color { ColorAnimation { duration: 150 } }
+
+                property string mIcon: moduleId === "wifi" ? moduleGridRoot.wifiIcon : moduleId === "bluetooth" ? moduleGridRoot.bluetoothIcon : moduleId === "audio" ? "\ue050" : moduleId === "display" ? "\ue30d" : moduleId === "peace" ? "\ue15c" : moduleId === "color" ? "palette" : moduleId === "wallpaper" ? "wallpaper" : moduleId === "overview" ? "grid_view" : ""
+                property string mName: moduleId.charAt(0).toUpperCase() + moduleId.slice(1)
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 12
+                    
+                    Text {
+                        Layout.alignment: Qt.AlignVCenter
+                        font.family: "Material Symbols Outlined"
+                        font.pixelSize: 24
+                        color: Theme.on_surface_variant
+                        text: availDelegate.mIcon
+                    }
+                    Text {
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.fillWidth: true
+                        font.family: Vars.fontFamily
+                        font.pixelSize: 14
+                        font.weight: 500
+                        color: Theme.on_surface_variant
+                        text: availDelegate.mName
+                        elide: Text.ElideRight
+                    }
+                }
+
+                MouseArea {
+                    id: availDragArea
+                    anchors.fill: parent
+                    cursorShape: Qt.OpenHandCursor
+                    drag.target: availDelegate
+
+                    onPressed: { cursorShape = Qt.ClosedHandCursor; }
+                    onReleased: {
+                        cursorShape = Qt.OpenHandCursor;
+                        availDelegate.Drag.drop();
+                        availDelegate.x = 0;
+                        availDelegate.y = 0;
+                        rootItem.saveLayout();
+                    }
+                }
+                
+                Drag.active: availDragArea.drag.active
+                Drag.source: availableDropArea
+                Drag.keys: ["m3_module"]
+            }
+        }
+    }
+
+    // ==========================================
+    // MODULE STASH (HOLDING AREA)
+    // ==========================================
     ColumnLayout {
-        id: availableGridWrapper
+        id: moduleStashContainer
         Layout.fillWidth: true
-        visible: moduleGrid.isEditorMode
         Layout.topMargin: 16
+        visible: moduleGridRoot.isEditorMode
         spacing: 12
 
         Text {
             text: "Available Modules"
-            font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: 600; color: Theme.on_surface_variant
+            font.family: Vars.fontFamily
+            font.pixelSize: 14
+            font.weight: Font.DemiBold
+            color: Theme.on_surface_variant
         }
 
         DropArea {
+            id: stashDropArea
             Layout.fillWidth: true
-            Layout.preferredHeight: availableFlow.implicitHeight > 64 ? availableFlow.implicitHeight : 64
-            keys: ["active_module"]
-            onDropped: function(drag) {
-                if (drag.source.dragMode === "active_module") {
-                    let from = drag.source.visualIndex;
-                    if (from >= 0 && from < activeTiles.count) {
-                        let mIdVal = activeTiles.get(from).moduleId;
-                        activeTiles.remove(from, 1);
-                        availableTiles.append({ "moduleId": mIdVal, "expanded": false });
-                        moduleGrid.saveLayout();
-                    }
+            Layout.preferredHeight: Math.ceil(availableTiles.count / 2) * 64 + 16 > 64 ? Math.ceil(availableTiles.count / 2) * 64 + 16 : 64
+            keys: ["m3_module"]
+
+            onDropped: function(drop) {
+                if (drop.source && drop.source.moduleId) {
+                    moduleGridRoot.deactivateModule(drop.source.moduleId);
+                    drop.accept();
                 }
+                moduleGridRoot.saveLayout();
             }
 
-            Flow {
-                id: availableFlow
+            Rectangle {
                 anchors.fill: parent
-                spacing: 12
+                color: stashDropArea.containsDrag ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08) : Theme.surface
+                border.color: Theme.outline_variant
+                border.width: 1
+                radius: 16
                 
-                move: Transition {
-                    NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
-                }
-                
-                Repeater {
+                Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
+                GridView {
+                    id: availableFlow
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    
+                    cellWidth: width / 2
+                    cellHeight: 64
+                    
+                    // Allow scrollbar width if needed, but clip:false helps.
+                    boundsBehavior: Flickable.StopAtBounds
+                    clip: !moduleGridRoot.isEditorMode
+
+                    move: Transition {
+                        NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }
+                    }
+                    
                     model: availableVisualModel
                 }
             }

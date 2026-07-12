@@ -116,7 +116,7 @@ Item {
                     Behavior on x { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
                 }
                 Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.currentSubMenu === "" ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } }
-                clip: true
+                clip: !root.isEditorMode
                 boundsBehavior: Flickable.StopAtBounds
 
                 ColumnLayout {

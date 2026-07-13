@@ -1,17 +1,22 @@
 pragma Singleton
 import QtQuick
+import "variables.js" as Vars
 
 QtObject {
+    function withAlpha(hexString, alpha) {
+        let col = Qt.color(hexString);
+        return Qt.rgba(col.r, col.g, col.b, alpha);
+    }
 	
-		readonly property color background: "#282828"
+		readonly property color background: Vars.translucent ? withAlpha("#282828", 0.7) : "#282828"
 	
-		readonly property color surface: "#282828"
+		readonly property color surface: Vars.translucent ? withAlpha("#282828", 0.7) : Vars.translucent ? withAlpha("#282828", 0.7) : "#282828"
 	
-		readonly property color surface_dim: "#282828"
+		readonly property color surface_dim: Vars.translucent ? withAlpha("#282828", 0.7) : Vars.translucent ? withAlpha("#282828", 0.7) : "#282828"
 	
-		readonly property color surface_bright: "#7c6f64"
+		readonly property color surface_bright: Vars.translucent ? withAlpha("#7c6f64", 0.7) : Vars.translucent ? withAlpha("#7c6f64", 0.7) : "#7c6f64"
 	
-		readonly property color surface_variant: "#7c6f64"
+		readonly property color surface_variant: Vars.translucent ? withAlpha("#7c6f64", 0.7) : Vars.translucent ? withAlpha("#7c6f64", 0.7) : "#7c6f64"
 	
 		readonly property color on_surface: "#ebdbb2"
 	

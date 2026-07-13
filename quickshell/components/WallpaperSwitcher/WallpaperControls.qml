@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Effects
+import Quickshell
 import "../.."
 import "../../Variables/variables.js" as Vars
 import QtCore
@@ -18,6 +19,9 @@ ColumnLayout {
     property var autocompleteProcRef: null
     property var autocompleteModelRef: null
     property alias filterText: searchInput.text
+
+    function focusSearch() { searchInput.forceActiveFocus(); }
+    function clearSearch() { searchInput.text = ""; }
 
     RowLayout {
         Layout.fillWidth: true

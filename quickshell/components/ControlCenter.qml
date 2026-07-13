@@ -107,7 +107,7 @@ Item {
                 anchors.fill: parent
                 anchors.margins: Vars.spacingLarge * 1.5
                 contentHeight: mainDashboardView.implicitHeight
-                interactive: !root.isEditorMode
+                interactive: true
                 
                 opacity: root.currentSubMenu === "" ? 1.0 : 0.0
                 visible: opacity > 0
@@ -116,7 +116,7 @@ Item {
                     Behavior on x { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
                 }
                 Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.currentSubMenu === "" ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } }
-                clip: !root.isEditorMode
+                clip: true
                 boundsBehavior: Flickable.StopAtBounds
 
                 ColumnLayout {
@@ -171,7 +171,7 @@ Item {
                                 onClicked: {
                                     refreshAnim.restart();
                                     Quickshell.execDetached({ command: ["hyprctl", "reload"] });
-                                    Quickshell.execDetached({ command: ["bash", "-c", "qs kill; sleep 0.1; qs"] });
+                                    Quickshell.execDetached({ command: ["bash", "-c", "pkill quickshell; sleep 0.2; quickshell"] });
                                 }
                             }
                             Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }

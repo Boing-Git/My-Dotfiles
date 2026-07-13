@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Effects
 import ".."
+import "./ColorSchemeSwitcher" as CS
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
@@ -39,9 +40,9 @@ Item {
     
     onExpandedChanged: {
         if (!expanded) {
-            searchInput.text = "";
+            controlBar.searchText = "";
         } else {
-            searchInput.forceActiveFocus();
+            controlBar.forceSearchFocus();
             loadThemesProc.running = true;
         }
     }
@@ -63,7 +64,7 @@ Item {
         width: root.expanded ? 900 : 100
         height: root.expanded ? 550 : 40
         
-        color: Theme.surface_container_high
+        color: Theme.surface
         radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
         
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
@@ -85,303 +86,36 @@ Item {
                 anchors.fill: parent
                 spacing: Vars.spacingMedium
 
-                RowLayout {
+                CS.ControlBar {
+                    id: controlBar
                     Layout.fillWidth: true
-                    spacing: Vars.spacingMedium
+                    currentTheme: root.currentTheme
+                    currentMode: root.currentMode
 
-                    RowLayout {
-                        spacing: Vars.spacingMedium
-
-
-
-                        Text {
-                            text: "palette"
-                            font.family: "Material Symbols Outlined"
-                            font.pixelSize: 28
-                            color: Theme.on_surface
-                        }
-
-                        ColumnLayout {
-                            spacing: 4
-                            Text {
-                                text: "Color Schemes"
-                                font.family: Vars.fontFamily
-                                font.pixelSize: 22
-                                font.bold: true
-                                color: Theme.on_surface
-                            }
-                            Text {
-                                text: root.currentTheme ? "Active: " + root.currentTheme : "Select a theme"
-                                font.family: Vars.fontFamily
-                                font.pixelSize: 12
-                                color: Theme.on_surface_variant
-                                opacity: 0.8
-                                elide: Text.ElideMiddle
-                                Layout.maximumWidth: 320
-                            }
+                    onEscapePressed: root.expanded = false
+                    onSearchDownPressed: themeGrid.forceActiveFocus()
+                    onModeToggled: {
+                        root.currentMode = root.currentMode === "dark" ? "light" : "dark";
+                        if (root.currentTheme !== "") {
+                            root.executeThemeChange(root.currentTheme);
                         }
                     }
-
-                    Rectangle {
-                        id: searchBox
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 44
-                        color: searchInput.activeFocus ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)
-                        border.color: searchInput.activeFocus ? Theme.primary : Theme.outline
-                        border.width: searchInput.activeFocus ? 2 : 1
-                        radius: Vars.radiusMedium
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.leftMargin: Vars.spacingMedium
-                            anchors.rightMargin: Vars.spacingMedium
-
-                            Text {
-                                text: "search"
-                                font.family: "Material Symbols Outlined"
-                                font.pixelSize: 20
-                                color: Theme.on_surface
-                                opacity: 0.7
-                            }
-
-                            TextInput {
-                                id: searchInput
-                                Layout.fillWidth: true
-                                font.family: Vars.fontFamily
-                                font.pixelSize: 14
-                                color: Theme.on_surface
-                                focus: true
-                                selectByMouse: true
-
-                                Text {
-                                    text: "Search themes..."
-                                    font.family: Vars.fontFamily
-                                    font.pixelSize: 14
-                                    color: Theme.on_surface_variant
-                                    opacity: 0.6
-                                    visible: !searchInput.text && !searchInput.activeFocus
-                                }
-
-                                Keys.onDownPressed: (event) => {
-                                    gridView.forceActiveFocus();
-                                    event.accepted = true;
-                                }
-                                Keys.onEscapePressed: root.expanded = false
-                            }
-
-                            Text {
-                                text: "✕"
-                                font.pixelSize: 14
-                                color: Theme.on_surface
-                                visible: searchInput.text.length > 0
-                                Layout.alignment: Qt.AlignVCenter
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: searchInput.text = ""
-                                }
-                            }
-                        }
-                    }
-
-                    Button {
-                        id: modeToggleBtn
-                        text: root.currentMode === "dark" ? "Dark Mode" : "Light Mode"
-                        onClicked: {
-                            root.currentMode = root.currentMode === "dark" ? "light" : "dark";
-                            if (root.currentTheme !== "") {
-                                root.executeThemeChange(root.currentTheme);
-                            }
-                        }
-
-                        background: Rectangle {
-                            color: modeToggleBtn.down ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (modeToggleBtn.hovered ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
-                            border.width: 1
-                            border.color: Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.3)
-                            radius: Vars.radiusMedium
-                        }
-                        contentItem: RowLayout {
-                            spacing: Vars.spacingSmall
-                            Text {
-                                text: root.currentMode === "dark" ? "dark_mode" : "light_mode"
-                                font.family: "Material Symbols Outlined"
-                                color: Theme.on_surface
-                                font.pixelSize: 18
-                            }
-                            Text {
-                                text: modeToggleBtn.text
-                                font.family: Vars.fontFamily
-                                color: Theme.on_surface
-                                font.bold: true
-                                font.pixelSize: 14
-                            }
-                        }
-                    }
-
-                    Button {
-                        id: refreshBtn
-                        text: "Scan"
-                        onClicked: loadThemesProc.running = true
-
-                        background: Rectangle {
-                            color: refreshBtn.down ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (refreshBtn.hovered ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
-                            border.width: 0
-                            radius: Vars.radiusMedium
-                        }
-                        contentItem: RowLayout {
-                            spacing: Vars.spacingSmall
-                            Text {
-                                text: "refresh"
-                                font.family: "Material Symbols Outlined"
-                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_surface
-                                font.pixelSize: 18
-                            }
-                            Text {
-                                text: refreshBtn.text
-                                font.family: Vars.fontFamily
-                                color: (refreshBtn.down || refreshBtn.hovered) ? Theme.primary : Theme.on_surface
-                                font.bold: true
-                                font.pixelSize: 14
-                            }
-                        }
-                    }
+                    onRefreshClicked: loadThemesProc.running = true
                 }
 
-                GridView {
-                    id: gridView
+                CS.ThemeGrid {
+                    id: themeGrid
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    clip: true
-                    cellWidth: Math.floor(parent.width / 4)
-                    cellHeight: cellWidth * 0.5625
                     model: sortFilterProxyModel.proxyModel
-                    boundsBehavior: Flickable.StopAtBounds
+                    currentTheme: root.currentTheme
+                    searchInput: controlBar
 
-                    focus: true
-                    keyNavigationEnabled: true
-                    highlightFollowsCurrentItem: false
-                    onCurrentIndexChanged: positionViewAtIndex(currentIndex, GridView.Contain)
-                    
-                    highlight: Item {
-                        x: gridView.currentItem ? gridView.currentItem.x : 0
-                        y: gridView.currentItem ? gridView.currentItem.y : 0
-                        width: gridView.cellWidth
-                        height: gridView.cellHeight
-                        z: -1
-
-                        Behavior on x { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                        Behavior on y { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: Vars.spacingSmall
-                            radius: Vars.radiusMedium
-                            color: gridView.activeFocus ? Theme.primary_container : "transparent"
-                            border.color: Theme.primary_container
-                            border.width: gridView.activeFocus ? 2 : 0
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                            Behavior on border.width { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-                        }
+                    onThemeSelected: (themeName) => {
+                        root.executeThemeChange(themeName);
+                        root.expanded = false;
                     }
-
-                    Keys.onEscapePressed: root.expanded = false
-                    Keys.onUpPressed: (event) => {
-                        if (currentIndex < 4) {
-                            searchInput.forceActiveFocus();
-                        } else {
-                            moveCurrentIndexUp();
-                        }
-                        event.accepted = true;
-                    }
-                    Keys.onDownPressed: (event) => {
-                        moveCurrentIndexDown();
-                        event.accepted = true;
-                    }
-                    Keys.onLeftPressed: (event) => {
-                        moveCurrentIndexLeft();
-                        event.accepted = true;
-                    }
-                    Keys.onRightPressed: (event) => {
-                        moveCurrentIndexRight();
-                        event.accepted = true;
-                    }
-                    Keys.onReturnPressed: (event) => {
-                        if (currentItem) currentItem.triggerSelection();
-                        event.accepted = true;
-                    }
-
-                    delegate: Item {
-                        id: delegateItem
-                        width: gridView.cellWidth
-                        height: gridView.cellHeight
-
-                        function triggerSelection() {
-                            executeThemeChange(themeName);
-                        }
-
-                        property bool isCurrentFocus: delegateItem.GridView.isCurrentItem && gridView.activeFocus
-                        
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: Vars.spacingSmall
-                            radius: Vars.radiusMedium
-
-                            color: root.currentTheme === themeName ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : (tileMouseArea.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
-                            border.color: Theme.primary
-                            border.width: (root.currentTheme === themeName) ? 2 : 0
-                            clip: true
-
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
-
-                            ColumnLayout {
-                                anchors.fill: parent
-                                anchors.margins: Vars.spacingSmall
-                                spacing: Vars.spacingSmall
-
-                                Item {
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                    Layout.margins: isCurrentFocus ? 4 : 0
-                                    clip: true
-                                    
-                                    Behavior on Layout.margins { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: "palette"
-                                        font.family: "Material Symbols Outlined"
-                                        font.pixelSize: 48
-                                        color: isCurrentFocus ? Theme.on_primary_container : (root.currentTheme === themeName ? Theme.primary : Theme.on_surface)
-                                        opacity: 0.8
-                                    }
-                                }
-
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: themeName
-                                    font.family: Vars.fontFamily
-                                    color: isCurrentFocus ? Theme.on_primary_container : (root.currentTheme === themeName ? Theme.primary : Theme.on_surface)
-                                    font.pixelSize: 16
-                                    font.weight: root.currentTheme === themeName ? Font.Bold : Font.Normal
-                                    elide: Text.ElideRight
-                                    horizontalAlignment: Text.AlignHCenter
-                                    
-                                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                                }
-                            }
-
-                            MouseArea {
-                                id: tileMouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                preventStealing: false
-                                onClicked: {
-                                    gridView.currentIndex = index;
-                                    delegateItem.triggerSelection();
-                                    root.expanded = false;
-                                }
-                            }
-                        }
-                    }
+                    onEscapePressed: root.expanded = false
                 }
             }
         }
@@ -414,7 +148,7 @@ Item {
 
     QtObject {
         id: sortFilterProxyModel
-        property string filterText: searchInput.text
+        property string filterText: controlBar.searchText
         onFilterTextChanged: updateVisualGrid()
         function updateVisualGrid() {
             proxyModel.clear();

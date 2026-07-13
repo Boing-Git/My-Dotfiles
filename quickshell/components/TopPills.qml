@@ -2,6 +2,7 @@ import QtQuick
 import ".."
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Wayland
 import Quickshell.Io
 import "../Variables/variables.js" as Vars
 
@@ -17,6 +18,8 @@ PanelWindow {
 
     implicitHeight: 750
     color: "transparent"
+    
+    BackgroundEffect.blurRegion: mask
 
     signal popupOpened
     signal openOverviewRequested
@@ -125,7 +128,7 @@ PanelWindow {
         anchors.left: topWindow.gameMode ? parent.left : undefined
         anchors.right: topWindow.gameMode ? parent.right : undefined
         anchors.topMargin: topWindow.gameMode ? 0 : 5
-        opacity: ((notificationPopupItem.expanded || volumeOsdItem.isVisible) && !topWindow.gameMode) ? 0.0 : 1.0
+        opacity: ((launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || colorSchemeSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || volumeOsdItem.isVisible || workspacesItem.overlayVisible) && !topWindow.gameMode) ? 0.0 : 1.0
         Behavior on opacity {
             enabled: !topWindow.gameMode
             NumberAnimation {
@@ -152,6 +155,7 @@ PanelWindow {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.topMargin: topWindow.gameMode ? 0 : 5
+        forceHidePill: launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || colorSchemeSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || volumeOsdItem.isVisible
     }
 
     Launcher {

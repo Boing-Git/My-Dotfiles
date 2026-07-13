@@ -142,7 +142,8 @@ ColumnLayout {
     DropArea {
         id: stashDropArea
         Layout.fillWidth: true
-        Layout.preferredHeight: Math.max(96, Math.ceil((availableTiles ? availableTiles.count : 0) / 4) * (64 + 12) + 16)
+        Layout.preferredHeight: Math.max(96, availableFlow.contentHeight + 16)
+        Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
         keys: ["m3_module"]
 
         onDropped: function(drop) {
@@ -172,6 +173,7 @@ ColumnLayout {
                 
                 boundsBehavior: Flickable.StopAtBounds
                 clip: !moduleStashContainer.isEditorMode
+                interactive: false
 
                 move: Transition {
                     NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutCubic }

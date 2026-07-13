@@ -8,12 +8,11 @@ import Quickshell.Hyprland
 ShellRoot {
     id: root
 
-    QtObject {
-        Component.onCompleted: {
-            Qt.application.name = "quickshell"
-            Qt.application.organization = "boing"
-            Qt.application.domain = "boing.quickshell"
-        }
+    property bool _initApp: {
+        Qt.application.name = "quickshell";
+        Qt.application.organization = "boing";
+        Qt.application.domain = "boing.quickshell";
+        return true;
     }
 
     property bool launcherVisible: false

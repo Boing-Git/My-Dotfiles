@@ -1,5 +1,10 @@
 .pragma library
 var animationDuration = 240;
+var translucent = true;
+
+var overviewGridRows = 2;
+var overviewGridColumns = 5;
+var overviewScale = 1;
 
 var radiusAmount = 0.5
 var radiusSmall = 8

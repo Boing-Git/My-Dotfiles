@@ -13,6 +13,7 @@ Item {
     height: 40
 
     property bool gameMode: false
+    property bool forceHidePill: false
 
     property var currentWorkspace: Hyprland.focusedWorkspace
     property int activeWsId: currentWorkspace ? currentWorkspace.id : 1
@@ -63,7 +64,7 @@ Item {
         color: Theme.surface_container_high
         radius: height / 2
         clip: true
-        opacity: overlayVisible ? 1.0 : 0.0
+        opacity: (overlayVisible && !mainContainer.forceHidePill) ? 1.0 : 0.0
         visible: opacity > 0
         Behavior on opacity { enabled: !mainContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.OutCubic } }
 

@@ -47,9 +47,9 @@ Item {
     
     onExpandedChanged: {
         if (!expanded) {
-            searchInput.text = "";
+            controls.clearSearch();
         } else {
-            searchInput.forceActiveFocus();
+            controls.focusSearch();
         }
     }
 
@@ -142,26 +142,28 @@ Item {
         }
         onExited: (code, status) => {
             Quickshell.execDetached({ command: ['bash', '-c', '.config/quickshell/sync_colors.py'] });
-            Quickshell.execDetached({ command: ['bash', '-c', 'qs kill; sleep 0.1; qs'] });
+            Quickshell.execDetached({ command: ['bash', '-c', 'pkill quickshell; sleep 0.2; quickshell'] });
         }
     }
 
     ListModel { id: wallpaperModel }
 
+    ListModel { id: proxyModelObj }
+    
     QtObject {
         id: sortFilterProxyModel
         property string filterText: controls.filterText
         onFilterTextChanged: updateVisualGrid()
         function updateVisualGrid() {
-            proxyModel.clear();
+            proxyModelObj.clear();
             for (var i = 0; i < wallpaperModel.count; i++) {
                 var item = wallpaperModel.get(i);
                 if (Vars.fuzzyMatch(filterText, item.fileName)) {
-                    proxyModel.append({ "filePath": item.filePath, "fileName": item.fileName });
+                    proxyModelObj.append({ "filePath": item.filePath, "fileName": item.fileName });
                 }
             }
         }
-        property ListModel proxyModel: ListModel {}
+        property var proxyModel: proxyModelObj
     }
 
     Process {

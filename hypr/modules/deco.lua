@@ -7,6 +7,12 @@ local vars = require("modules.variables")
 local colors = Utils.colors
 
 hl.config({
+    layerrule = {
+        "blur, org.quickshell",
+        "ignorealpha 0.5, org.quickshell",
+        "blur, overview",
+        "ignorealpha 0.5, overview"
+    },
     general = {
         gaps_in  = vars.GameMode and 0 or vars.gaps_in,
         gaps_out = vars.GameMode and 0 or vars.gaps_out,

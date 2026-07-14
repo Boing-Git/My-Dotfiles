@@ -93,7 +93,7 @@ Item {
                         NumberAnimation {
                             duration: Vars.animationDuration
                             easing.type: Easing.BezierSpline
-                            easing.bezierCurve: Vars.m3ExpressiveSpatialFast
+                            easing.bezierCurve: Vars.customExpressiveSpatialSlow
                         }
                     }
 
@@ -104,7 +104,7 @@ Item {
                         ColorAnimation {
                             duration: Vars.animationDuration
                             easing.type: Easing.BezierSpline
-                            easing.bezierCurve: Vars.m3ExpressiveSpatialFast
+                            easing.bezierCurve: Vars.customExpressiveSpatialSlow
                         }
                     }
 

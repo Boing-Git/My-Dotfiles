@@ -113,6 +113,7 @@ ShellRoot {
 
     TopPills {
         id: topPills
+        onToggleFloatingSettings: floatingSettings.toggle()
         onPopupOpened: {
             root.overviewVisible = false;
             root.screenshotVisible = false;
@@ -120,5 +121,10 @@ ShellRoot {
         onOpenOverviewRequested: {
             root.overviewVisible = true;
         }
+    }
+
+    SettingsWindow {
+        id: floatingSettings
+        onRequestWidgetToggle: topPills.toggleSettings()
     }
 }

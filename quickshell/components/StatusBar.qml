@@ -40,7 +40,7 @@ Rectangle {
                 radius: height / 2
 
                 Behavior on color {
-                    ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
+                    ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard }
                 }
 
                 property var trayItem: modelData 

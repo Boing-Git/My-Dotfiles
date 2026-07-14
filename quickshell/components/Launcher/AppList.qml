@@ -117,7 +117,7 @@ ListView {
             border.color: Theme.primary
             border.width: isCurrent ? 2 : 0
 
-            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
         }
 
         function deleteClipboardItem() {
@@ -158,7 +158,7 @@ ListView {
             spacing: 16
 
             Behavior on anchors.leftMargin { 
-                NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } 
+                NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } 
             }
 
             Rectangle {
@@ -176,7 +176,7 @@ ListView {
                     visible: (modelData.isFile !== true && modelData.isMath !== true && modelData.isSetting !== true && modelData.isClipboard !== true && modelData.isClearAll !== true) || (modelData.isClipboard === true && modelData.clipImagePath !== undefined && modelData.clipImagePath !== "")
                     
                     opacity: isCurrent ? 1.0 : (itemMouseArea.containsMouse ? 0.9 : 0.7)
-                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                 }
 
                 Text {
@@ -192,8 +192,8 @@ ListView {
                     visible: (modelData.isFile === true || modelData.isMath === true || modelData.isSetting === true || modelData.isClipboard === true || modelData.isClearAll === true) && !(modelData.isClipboard && modelData.clipImagePath !== undefined && modelData.clipImagePath !== "")
                     
                     opacity: isCurrent ? 1.0 : (itemMouseArea.containsMouse ? 0.9 : 0.7)
-                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                 }
             }
 
@@ -210,8 +210,8 @@ ListView {
                 maximumLineCount: 1
                 elide: Text.ElideRight
                 
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
         }
     }

@@ -201,7 +201,7 @@ Item {
                     color: closeHover.pressed ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.12) : (closeHover.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.08) : "transparent")
                     Layout.alignment: Qt.AlignVCenter
                     
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
 
                     Text {
                         anchors.centerIn: parent
@@ -295,7 +295,7 @@ Item {
                         border.width: 1
 
                         Behavior on color {
-                            ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
+                            ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard }
                         }
 
                         Text {

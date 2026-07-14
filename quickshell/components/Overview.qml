@@ -166,7 +166,7 @@ Item {
                     NumberAnimation {
                         duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
+                        easing.bezierCurve: Vars.customExpressiveSpatialSlow
                     }
                 }
                 Behavior on width {
@@ -175,7 +175,7 @@ Item {
                         id: wAnim
                         duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
+                        easing.bezierCurve: Vars.customExpressiveSpatialSlow
                     }
                 }
                 Behavior on height {
@@ -184,7 +184,7 @@ Item {
                         id: hAnim
                         duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
+                        easing.bezierCurve: Vars.customExpressiveSpatialSlow
                     }
                 }
                 Behavior on opacity {
@@ -193,7 +193,7 @@ Item {
                         id: oAnim
                         duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
-                        easing.bezierCurve: overviewContainer.visibleState ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate
+                        easing.bezierCurve: overviewContainer.visibleState ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate
                     }
                 }
 
@@ -202,7 +202,7 @@ Item {
                     ColorAnimation {
                         duration: Vars.animationDuration
                         easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
+                        easing.bezierCurve: Vars.customExpressiveSpatialSlow
                     }
                 }
 
@@ -221,7 +221,7 @@ Item {
                         NumberAnimation {
                             duration: Vars.animationDuration
                             easing.type: Easing.BezierSpline
-                            easing.bezierCurve: overviewContainer.visibleState ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate
+                            easing.bezierCurve: overviewContainer.visibleState ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate
                         }
                     }
 

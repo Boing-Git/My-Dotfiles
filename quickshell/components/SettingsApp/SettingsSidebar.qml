@@ -16,6 +16,8 @@ ColumnLayout {
     Repeater {
         model: [
             { id: "hyprland", name: "Hyprland", subtitle: "Configuration, appearance", icon: "\ue8b8" }, // settings
+            { id: "quickshell", name: "Quickshell", subtitle: "Interface, layout, theme", icon: "\ue1b1" }, // widgets
+            { id: "bezier", name: "Motion", subtitle: "Custom curve editor", icon: "\ue922" }, // timeline
             { id: "wifi", name: "Wi-Fi", subtitle: "Wi-Fi, ethernet", icon: rootSidebar.wifiIcon },
             { id: "bluetooth", name: "Bluetooth", subtitle: "Bluetooth, pairing", icon: rootSidebar.bluetoothIcon }
         ]
@@ -24,7 +26,7 @@ ColumnLayout {
             Layout.preferredHeight: 72
             property bool isSelected: rootSidebar.currentSection === modelData.id
             radius: isSelected ? height / 2 : 16
-            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             color: isSelected ? Theme.secondary_container : (navHover.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container)
             border.color: activeFocus ? Theme.on_surface : "transparent"
             border.width: activeFocus ? 2 : 0
@@ -38,26 +40,26 @@ ColumnLayout {
                 width: parent.radius; height: parent.radius; color: parent.color
                 anchors.top: parent.top; anchors.left: parent.left
                 opacity: (index > 0 && !parent.isSelected) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
             Rectangle {
                 width: parent.radius; height: parent.radius; color: parent.color
                 anchors.top: parent.top; anchors.right: parent.right
                 opacity: (index > 0 && !parent.isSelected) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
             // Square-off bottom corners if not the last item
             Rectangle {
                 width: parent.radius; height: parent.radius; color: parent.color
                 anchors.bottom: parent.bottom; anchors.left: parent.left
-                opacity: (index < 2 && !parent.isSelected) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                opacity: (index < 4 && !parent.isSelected) ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
             Rectangle {
                 width: parent.radius; height: parent.radius; color: parent.color
                 anchors.bottom: parent.bottom; anchors.right: parent.right
-                opacity: (index < 2 && !parent.isSelected) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                opacity: (index < 4 && !parent.isSelected) ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
 
             RowLayout {

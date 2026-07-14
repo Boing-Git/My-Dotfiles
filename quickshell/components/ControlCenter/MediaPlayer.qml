@@ -87,17 +87,17 @@ Rectangle {
             source: albumArtContainer.currentUrl
             fillMode: Image.PreserveAspectCrop
             opacity: source !== "" ? 1.0 : 0.0
-            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: albumArtNew.source !== "" ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } }
+            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: albumArtNew.source !== "" ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate } }
         }
 
         ParallelAnimation {
             id: slideAnim
             NumberAnimation { 
                 id: slideOutOld
-                target: albumArtOld; property: "x"; duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast 
+                target: albumArtOld; property: "x"; duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow 
             }
             NumberAnimation { 
-                target: albumArtNew; property: "x"; to: 0; duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast 
+                target: albumArtNew; property: "x"; to: 0; duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow 
             }
             onFinished: {
                 albumArtOld.visible = false;
@@ -199,7 +199,7 @@ Rectangle {
                     font.pixelSize: 20
                     font.weight: 700
                     color: mprisPlayer && mprisPlayer.trackArtUrl ? "white" : Theme.on_surface
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
@@ -208,7 +208,7 @@ Rectangle {
                     font.family: Vars.fontFamily
                     font.pixelSize: 14
                     color: mprisPlayer && mprisPlayer.trackArtUrl ? "white" : Theme.on_surface
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     opacity: 0.8
                     elide: Text.ElideRight
                     Layout.fillWidth: true
@@ -218,7 +218,7 @@ Rectangle {
                     font.family: Vars.fontFamily
                     font.pixelSize: 12
                     color: mprisPlayer && mprisPlayer.trackArtUrl ? "white" : Theme.on_surface
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     opacity: 0.6
                     elide: Text.ElideRight
                     Layout.fillWidth: true
@@ -235,17 +235,17 @@ Rectangle {
                     Text { 
                         anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 24
                         color: mprisPlayer && mprisPlayer.trackArtUrl ? "white" : Theme.on_primary_container; text: "\ue045" 
-                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     }
                     MouseArea { anchors.fill: parent; onClicked: { mediaPlayerRoot.slideDirection = -1; if(mprisPlayer) mprisPlayer.previous(); } cursorShape: Qt.PointingHandCursor }
                 }
                 
                 Rectangle {
                     width: 56; height: 56; radius: 28; color: mprisPlayer && mprisPlayer.trackArtUrl ? "white" : Theme.primary
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     Text { 
                         anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 32; color: mprisPlayer && mprisPlayer.trackArtUrl ? "black" : Theme.on_surface
-                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                         text: mprisPlayer && mprisPlayer.isPlaying ? "\ue034" : "\ue037"
                     }
                     MouseArea { 
@@ -262,7 +262,7 @@ Rectangle {
                     Text { 
                         anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 24
                         color: mprisPlayer && mprisPlayer.trackArtUrl ? "white" : Theme.on_primary_container; text: "\ue044" 
-                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     }
                     MouseArea { anchors.fill: parent; onClicked: { mediaPlayerRoot.slideDirection = 1; if(mprisPlayer) mprisPlayer.next(); } cursorShape: Qt.PointingHandCursor }
                 }
@@ -282,8 +282,8 @@ Rectangle {
                 width: mprisPlayer && mprisPlayer.length > 0 && mprisPlayer.position !== undefined ? parent.width * (mprisPlayer.position / mprisPlayer.length) : 0
                 radius: 2
                 color: mprisPlayer && mprisPlayer.trackArtUrl ? "white" : Theme.on_primary_container
-                Behavior on width { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
-                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                Behavior on width { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
             }
             
             MouseArea {

@@ -85,9 +85,9 @@ Item {
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
 
         // EXPANDED PANEL CONTAINER
         Item {
@@ -97,7 +97,7 @@ Item {
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
             clip: true
-            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
+            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate } } }
 
             // ------------------------------------------
             // VIEW 1: MAIN DASHBOARD MENU
@@ -113,9 +113,9 @@ Item {
                 visible: opacity > 0
                 transform: Translate {
                     x: root.currentSubMenu === "" ? 0 : -40
-                    Behavior on x { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                    Behavior on x { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                 }
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.currentSubMenu === "" ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } }
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.currentSubMenu === "" ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate } }
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
 
@@ -145,8 +145,8 @@ Item {
                                 id: editHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
                                 onClicked: root.isEditorMode = !root.isEditorMode 
                             }
-                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                         }
                         
                         // Refresh Button (Mock)
@@ -163,7 +163,7 @@ Item {
                                     from: 0; to: 360
                                     duration: 700
                                     easing.type: Easing.BezierSpline
-                                    easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
+                                    easing.bezierCurve: Vars.customExpressiveSpatialSlow
                                 }
                             }
                             MouseArea { 
@@ -174,7 +174,7 @@ Item {
                                     Quickshell.execDetached({ command: ["bash", "-c", "pkill quickshell; sleep 0.2; quickshell"] });
                                 }
                             }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                         }
                         
                         // Settings Button
@@ -191,7 +191,7 @@ Item {
                                     from: 0; to: 360
                                     duration: 700
                                     easing.type: Easing.BezierSpline
-                                    easing.bezierCurve: Vars.m3ExpressiveSpatialSlow
+                                    easing.bezierCurve: Vars.customExpressiveSpatialSlow
                                 }
                             }
                             MouseArea { 
@@ -202,7 +202,7 @@ Item {
                                     root.openSettingsRequested();
                                 } 
                             }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                         }
                         
                         // Power Button
@@ -214,7 +214,7 @@ Item {
                                 id: powerHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
                                 onClicked: { root.expanded = false; root.openPowerMenuRequested() } 
                             }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                         }
                     }
 

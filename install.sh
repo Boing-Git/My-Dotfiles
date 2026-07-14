@@ -12,10 +12,10 @@ if grep -qi "nixos" /etc/os-release; then
     mkdir -p ~/.config/hypr
     git clone https://github.com/Boing-Git/Hyprland-Dotfiles ~/.config/hypr
     
-    echo "Setting up hypr-manager CLI tool..."
+    echo "Setting up omniformis CLI tool..."
     mkdir -p ~/.local/bin
-    chmod +x ~/.config/hypr/manager.py
-    ln -sf ~/.config/hypr/manager.py ~/.local/bin/hypr-manager
+    chmod +x ~/.config/scripts/omniformis.py
+    ln -sf ~/.config/scripts/omniformis.py ~/.local/bin/omniformis
     
     echo "Adding ~/.local/bin to Fish PATH..."
     if command -v fish >/dev/null 2>&1; then
@@ -151,10 +151,10 @@ elif grep -qi "arch" /etc/os-release; then
     echo '[Icon Theme]' > ~/.icons/default/index.theme
     echo 'Inherits=GoogleDot-Black' >> ~/.icons/default/index.theme
     
-    echo "Setting up hypr-manager CLI tool..."
+    echo "Setting up omniformis CLI tool..."
     mkdir -p ~/.local/bin
-    chmod +x ~/.config/hypr/manager.py
-    ln -sf ~/.config/hypr/manager.py ~/.local/bin/hypr-manager
+    chmod +x ~/.config/scripts/omniformis.py
+    ln -sf ~/.config/scripts/omniformis.py ~/.local/bin/omniformis
     
     echo "Adding ~/.local/bin to Fish PATH..."
     if command -v fish >/dev/null 2>&1; then

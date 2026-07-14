@@ -25,6 +25,9 @@ Item {
     property alias panel: panel
     property alias panelMask: panelMask
     
+    property bool isFloatingInstance: false
+    signal detachToggled(bool isFloating)
+    
     property string currentSection: "hyprland" // "hyprland", "wifi", "bluetooth"
     
     // Wi-Fi
@@ -83,9 +86,9 @@ Item {
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
 
         Item {
             anchors.fill: parent
@@ -93,7 +96,7 @@ Item {
             
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
-            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } } }
+            Behavior on opacity { enabled: !root.gameMode; SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate } } }
 
             RowLayout {
                 anchors.fill: parent
@@ -116,7 +119,21 @@ Item {
                             color: backHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (backHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
                             Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "\ue5cd" }
                             MouseArea { id: backHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.expanded = false }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
+                        }
+                        
+                        Rectangle {
+                            width: 48; height: 48; radius: Vars.radiusMedium
+                            color: detachHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (detachHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                            Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: root.isFloatingInstance ? "\ue5ce" : "\ue89b" }
+                            MouseArea { 
+                                id: detachHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
+                                onClicked: {
+                                    root.expanded = false; 
+                                    root.detachToggled(!root.isFloatingInstance);
+                                }
+                            }
+                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                         }
                         
                         Text {
@@ -157,21 +174,37 @@ Item {
                 StackLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    currentIndex: root.currentSection === "hyprland" ? 0 : (root.currentSection === "wifi" ? 1 : 2)
+                    currentIndex: {
+                        if (root.currentSection === "hyprland") return 0;
+                        if (root.currentSection === "quickshell") return 1;
+                        if (root.currentSection === "bezier") return 2;
+                        if (root.currentSection === "wifi") return 3;
+                        return 4;
+                    }
 
                     // 0: Hyprland Settings
                     HyprlandPage {
                         id: hyprlandPage
                     }
 
-                    // 1: Wi-Fi Settings
+                    // 1: Quickshell Settings
+                    QuickshellPage {
+                        id: quickshellPage
+                    }
+
+                    // 2: Bezier Editor
+                    BezierEditorPage {
+                        id: bezierPage
+                    }
+
+                    // 3: Wi-Fi Settings
                     WifiPage {
                         id: wifiPage
                         wifiDevice: root.wifiDevice
                         panelRef: root.panel
                     }
 
-                    // 2: Bluetooth Settings
+                    // 4: Bluetooth Settings
                     BluetoothPage {
                         id: bluetoothPage
                         adapter: root.adapter

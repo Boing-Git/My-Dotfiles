@@ -42,7 +42,7 @@ Item {
                 ColorAnimation {
                     duration: Vars.animationDuration
                     easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Vars.m3Standard
+                    easing.bezierCurve: Vars.customStandard
                 }
             }
         }

@@ -40,6 +40,7 @@ ColumnLayout {
     Flickable {
         Layout.fillWidth: true; Layout.fillHeight: true
         contentHeight: btContent.childrenRect.height; clip: true
+        flickDeceleration: 1000; maximumFlickVelocity: 4000
 
         ColumnLayout {
             id: btContent
@@ -74,8 +75,8 @@ ColumnLayout {
                             return false;
                         }
                         
-                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left; visible: rootBluetoothPage.adapterState && parent.hasDeviceBelow; opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } } }
-                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right; visible: rootBluetoothPage.adapterState && parent.hasDeviceBelow; opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } } }
+                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left; visible: rootBluetoothPage.adapterState && parent.hasDeviceBelow; opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } } }
+                        Rectangle { width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right; visible: rootBluetoothPage.adapterState && parent.hasDeviceBelow; opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } } }
                         
                         activeFocusOnTab: true
                         Keys.onSpacePressed: if(rootBluetoothPage.adapter) rootBluetoothPage.adapter.enabled = !rootBluetoothPage.adapter.enabled
@@ -95,7 +96,7 @@ ColumnLayout {
                                     color: rootBluetoothPage.adapterState ? Theme.on_primary : Theme.on_surface_variant
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.left: parent.left; anchors.leftMargin: rootBluetoothPage.adapterState ? 24 : 4
-                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                                     Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16; color: rootBluetoothPage.adapterState ? Theme.primary : Theme.surface_variant; text: rootBluetoothPage.adapterState ? "\ue5ca" : "\ue5cd" }
                                 }
                             }
@@ -131,7 +132,7 @@ ColumnLayout {
                             property bool isSelected: modelData.connected
                             property bool showForget: false
                             radius: isSelected ? 36 : 16
-                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                             color: isSelected ? Theme.secondary_container : (btMouse.containsMouse ? Qt.tint(Theme.surface_container, Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08)) : Theme.surface_container)
                             Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
                             
@@ -139,13 +140,13 @@ ColumnLayout {
                                 width: parent.radius; height: parent.radius; color: parent.color
                                 anchors.top: parent.top; anchors.left: parent.left
                                 opacity: parent.isSelected ? 0.0 : 1.0
-                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                             }
                             Rectangle {
                                 width: parent.radius; height: parent.radius; color: parent.color
                                 anchors.top: parent.top; anchors.right: parent.right
                                 opacity: parent.isSelected ? 0.0 : 1.0
-                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                             }
                             property bool hasDeviceBelow: {
                                 if (!rootBluetoothPage.adapter || !rootBluetoothPage.adapter.devices.values) return false;
@@ -161,14 +162,14 @@ ColumnLayout {
                                 anchors.bottom: parent.bottom; anchors.left: parent.left
                                 visible: parent.hasDeviceBelow
                                 opacity: parent.isSelected ? 0.0 : 1.0
-                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                             }
                             Rectangle {
                                 width: parent.radius; height: parent.radius; color: parent.color
                                 anchors.bottom: parent.bottom; anchors.right: parent.right
                                 visible: parent.hasDeviceBelow
                                 opacity: parent.isSelected ? 0.0 : 1.0
-                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                             }
 
                             activeFocusOnTab: true
@@ -210,7 +211,7 @@ ColumnLayout {
                                 color: Theme.surface_container_highest
                                 visible: btDelegate.showForget
                                 opacity: btDelegate.showForget ? 1.0 : 0.0
-                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                                 
                                 RowLayout {
                                     anchors.fill: parent; anchors.margins: 16; spacing: 16
@@ -243,11 +244,11 @@ ColumnLayout {
                         
                         Rectangle { 
                             width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.left: parent.left 
-                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         Rectangle { 
                             width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.right: parent.right 
-                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         
                         activeFocusOnTab: true
@@ -278,11 +279,11 @@ ColumnLayout {
                         
                         Rectangle { 
                             width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.left: parent.left 
-                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         Rectangle { 
                             width: 16; height: 16; color: parent.color; anchors.bottom: parent.bottom; anchors.right: parent.right 
-                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         
                         activeFocusOnTab: true
@@ -302,7 +303,7 @@ ColumnLayout {
                                 Rectangle {
                                     width: 24; height: 24; radius: 12; color: rootBluetoothPage.adapter && rootBluetoothPage.adapter.discoverable ? Theme.on_primary : Theme.on_surface_variant
                                     anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: rootBluetoothPage.adapter && rootBluetoothPage.adapter.discoverable ? 24 : 4
-                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                                     Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16; color: rootBluetoothPage.adapter && rootBluetoothPage.adapter.discoverable ? Theme.primary : Theme.surface_variant; text: rootBluetoothPage.adapter && rootBluetoothPage.adapter.discoverable ? "\ue5ca" : "\ue5cd" }
                                 }
                             }
@@ -319,11 +320,11 @@ ColumnLayout {
                         
                         Rectangle { 
                             width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.left: parent.left 
-                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         Rectangle { 
                             width: 16; height: 16; color: parent.color; anchors.top: parent.top; anchors.right: parent.right 
-                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            opacity: 1.0; Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         
                         activeFocusOnTab: true
@@ -343,7 +344,7 @@ ColumnLayout {
                                 Rectangle {
                                     width: 24; height: 24; radius: 12; color: rootBluetoothPage.adapter && rootBluetoothPage.adapter.pairable ? Theme.on_primary : Theme.on_surface_variant
                                     anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: rootBluetoothPage.adapter && rootBluetoothPage.adapter.pairable ? 24 : 4
-                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                    Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                                     Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16; color: rootBluetoothPage.adapter && rootBluetoothPage.adapter.pairable ? Theme.primary : Theme.surface_variant; text: rootBluetoothPage.adapter && rootBluetoothPage.adapter.pairable ? "\ue5ca" : "\ue5cd" }
                                 }
                             }
@@ -400,7 +401,7 @@ ColumnLayout {
                                 color: parent.isDiscovering ? Theme.on_primary : Theme.on_surface_variant
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left; anchors.leftMargin: parent.isDiscovering ? 24 : 4
-                                Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                                 Text { 
                                     id: rotIcon
                                     anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16
@@ -443,13 +444,13 @@ ColumnLayout {
                             width: parent.radius; height: parent.radius; color: parent.color
                             anchors.top: parent.top; anchors.left: parent.left
                             opacity: parent.isSelected ? 0.0 : 1.0
-                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         Rectangle {
                             width: parent.radius; height: parent.radius; color: parent.color
                             anchors.top: parent.top; anchors.right: parent.right
                             opacity: parent.isSelected ? 0.0 : 1.0
-                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         property bool hasDeviceBelow: {
                             if (!rootBluetoothPage.adapter || !rootBluetoothPage.adapter.devices.values) return false;
@@ -467,14 +468,14 @@ ColumnLayout {
                             anchors.bottom: parent.bottom; anchors.left: parent.left
                             visible: parent.hasDeviceBelow
                             opacity: parent.isSelected ? 0.0 : 1.0
-                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         Rectangle {
                             width: parent.radius; height: parent.radius; color: parent.color
                             anchors.bottom: parent.bottom; anchors.right: parent.right
                             visible: parent.hasDeviceBelow
                             opacity: parent.isSelected ? 0.0 : 1.0
-                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                         }
                         
                         RowLayout {
@@ -526,7 +527,7 @@ ColumnLayout {
                             color: Theme.surface_container_highest
                             visible: btPairDelegate.showForget
                             opacity: btPairDelegate.showForget ? 1.0 : 0.0
-                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                            Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                             
                             RowLayout {
                                 anchors.fill: parent; anchors.margins: 16; spacing: 16

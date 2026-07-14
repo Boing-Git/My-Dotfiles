@@ -144,8 +144,27 @@ local vars = {
     env_qt_scale_factor = 1,
 
     -- Animation Style
-    -- Select animation style for hyprland
+    -- Select animation style for hyprland ("slipstream", "expressive", "relaxed", "custom", "none")
     AnimateStyle = "slipstream",
+    
+    -- --- Custom Animation Profile ---
+    
+    -- Custom Curves
+    -- Set Custom Standard Curve
+    CustomStandard = "0.20, 0.00, 0.00, 1.00",
+    -- Set Custom Standard Decelerate Curve
+    CustomStandardDecelerate = "0.0, 0.0, 0.0, 1.0",
+    -- Set Custom Standard Accelerate Curve
+    CustomStandardAccelerate = "0.3, 0.0, 1.0, 1.0",
+    -- Set Custom Emphasized Decelerate Curve
+    CustomEmphasizedDecelerate = "0.05, 0.7, 0.1, 1.0",
+    -- Set Custom Emphasized Accelerate Curve
+    CustomEmphasizedAccelerate = "0.3, 0.0, 0.8, 0.15",
+    -- Set Custom Expressive Spatial Fast Curve
+    CustomExpressiveSpatialFast = "0.42, 1.67, 0.21, 0.9",
+    -- Set Custom Expressive Spatial Slow Curve
+    CustomExpressiveSpatialSlow = "0.39, 1.29, 0.35, 0.98",
+
 }
 
 return vars

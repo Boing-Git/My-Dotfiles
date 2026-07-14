@@ -8,6 +8,9 @@ import "../Variables/variables.js" as Vars
 
 PanelWindow {
     id: topWindow
+    
+    signal toggleFloatingSettings()
+    
     exclusionMode: gameMode ? ExclusionMode.Ignore : ExclusionMode.Normal
     exclusiveZone: gameMode ? 0 : 50
     anchors {
@@ -512,6 +515,9 @@ PanelWindow {
         anchors.topMargin: 5
         focusWindow: topWindow
         forceHidePill: launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || colorSchemeSwitcherItem.expanded || volumeOsdItem.isVisible
+        onDetachToggled: function(isFloating) {
+            if (isFloating) topWindow.toggleFloatingSettings();
+        }
 
         onExpandedChanged: {
             if (expanded) {

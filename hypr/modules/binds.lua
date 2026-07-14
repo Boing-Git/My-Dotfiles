@@ -90,8 +90,8 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"))
 hl.bind("XF86AudioStop", hl.dsp.exec_cmd("playerctl pause"))
 
 -- Kill/restart shell
-hl.bind(QM .." + " .. MM .. " + " .. TM .. " + " .. ShellRestartKey, hl.dsp.exec_cmd("qs  kill"))
-hl.bind(QM .." + " .. MM .. " + " .. SM .. " + " .. ShellRestartKey, hl.dsp.exec_cmd("qs  kill; sleep .1; qs"))
+hl.bind(QM .." + " .. MM .. " + " .. TM .. " + " .. ShellRestartKey, hl.dsp.exec_cmd("omniformis qs kill"))
+hl.bind(QM .." + " .. MM .. " + " .. SM .. " + " .. ShellRestartKey, hl.dsp.exec_cmd("omniformis qs kill; sleep .1; omniformis qs start -d"))
 
 --------------------------------------------------------------------------------
 -- ## Workspaces Loops (Programmatic & Scriptless)

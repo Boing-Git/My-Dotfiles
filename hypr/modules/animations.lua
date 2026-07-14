@@ -30,13 +30,18 @@ local style_map = {
     slipstream = "slipStream",
     standard = "Standard",
     fluent = "Fluent",
+    custom = "Custom",
     none = "None"
 }
 
 local style_lower = AnimateStyle and string.lower(AnimateStyle) or "expressive"
 local module_name = style_map[style_lower] or "Expressive"
 
-require("modules.animations." .. module_name)
+if style_lower == "custom" then
+    require("modules.animations.Custom")
+else
+    require("modules.animations." .. module_name)
+end
 
 animations = {
     enabled = true,
@@ -63,6 +68,7 @@ local layer_styles = {
     aggressive = "fade",
     wind = "slide",
     slipstream = "slide",
+    custom = "fade",
     none = "fade"
 }
 

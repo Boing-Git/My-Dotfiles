@@ -63,7 +63,7 @@ PanelWindow {
         color: Theme.scrim // Unified scrim color
         opacity: 0.0
         Behavior on opacity {
-            NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard }
+            NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard }
         }
     }
 

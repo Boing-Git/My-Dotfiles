@@ -442,7 +442,7 @@ ColumnLayout {
                     else if (moduleId === "bluetooth") { if (activeDelegateWrapper.gridRoot.adapter) activeDelegateWrapper.gridRoot.adapter.enabled = !activeDelegateWrapper.gridRoot.adapter.enabled }
                     else if (moduleId === "audio") { if (activeDelegateWrapper.gridRoot.audioNode) activeDelegateWrapper.gridRoot.audioNode.audio.muted = !activeDelegateWrapper.gridRoot.audioNode.audio.muted }
                     else if (moduleId === "peace") NotificationService.peaceMode = !NotificationService.peaceMode;
-                    else if (moduleId === "game_mode") Quickshell.execDetached({ command: ["hypr-manager", "--GameMode", moduleGridRoot.gameMode ? "false" : "true"] });
+                    else if (moduleId === "game_mode") Quickshell.execDetached({ command: ["omniformis", "hypr", "--GameMode", moduleGridRoot.gameMode ? "false" : "true"] });
                     else doAction();
                 }
 
@@ -573,7 +573,7 @@ ColumnLayout {
                     Rectangle {
                         anchors.fill: parent; radius: 16
                         color: dragArea.drag.active ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.0) : (dragArea.containsMouse ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.08) : Qt.rgba(0, 0, 0, 0.1))
-                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3EmphasizedDecelerate } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customEmphasizedDecelerate } }
                     }
 
                     // Full Card Drag Handle

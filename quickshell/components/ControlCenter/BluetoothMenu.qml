@@ -23,9 +23,9 @@ ColumnLayout {
     visible: opacity > 0
     transform: Translate {
         x: isActive ? 0 : 40
-        Behavior on x { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+        Behavior on x { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
     }
-    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: isActive ? Vars.m3StandardDecelerate : Vars.m3StandardAccelerate } }
+    Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: isActive ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate } }
 
     // Header
     RowLayout {
@@ -37,7 +37,7 @@ ColumnLayout {
             color: backHoverBt.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (backHoverBt.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
             Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "\ue5c4" }
             MouseArea { id: backHoverBt; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: bluetoothMenu.backRequested() }
-            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
         }
         Text { text: "Bluetooth Devices"; font.family: Vars.fontFamily; font.pixelSize: 24; font.weight: Font.Bold; color: Theme.on_surface; Layout.fillWidth: true }
         
@@ -50,7 +50,7 @@ ColumnLayout {
                 color: adapterState ? Theme.on_primary : Theme.on_surface_variant
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left; anchors.leftMargin: adapterState ? 28 : 4
-                Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
             }
             MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: if(adapter) adapter.enabled = !adapter.enabled }
         }
@@ -71,9 +71,9 @@ ColumnLayout {
                     visible: modelData.paired || modelData.connected
                     Layout.fillWidth: true; Layout.preferredHeight: visible ? 64 : 0
                     radius: 16
-                    Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     color: modelData.connected ? Theme.secondary_container : (btMouse.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (btMouse.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : Theme.surface_container_low))
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     
                     RowLayout {
                         anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 16; spacing: 12
@@ -81,14 +81,14 @@ ColumnLayout {
                         Rectangle {
                             Layout.preferredWidth: 40; Layout.preferredHeight: 40
                             radius: modelData.connected ? 12 : 20
-                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             color: modelData.connected ? Qt.rgba(Theme.on_secondary_container.r, Theme.on_secondary_container.g, Theme.on_secondary_container.b, 0.15) : Qt.rgba(Theme.on_surface_variant.r, Theme.on_surface_variant.g, Theme.on_surface_variant.b, 0.1)
                             Text {
                                 anchors.centerIn: parent
                                 font.family: "Material Symbols Outlined"; font.pixelSize: 22
                                 color: modelData.connected ? Theme.on_secondary_container : Theme.on_surface_variant
                                 text: modelData.connected ? "\ue1a8" : "\ue1a7"
-                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                         }
                         
@@ -97,12 +97,12 @@ ColumnLayout {
                             Text { 
                                 text: modelData.name ? modelData.name : "Unknown Device"; font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: Font.Bold
                                 color: modelData.connected ? Theme.on_secondary_container : Theme.on_surface_variant
-                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                             Text { 
                                 text: modelData.connected ? "Connected" : "Paired"; font.family: Vars.fontFamily; font.pixelSize: 12; opacity: 0.8
                                 color: modelData.connected ? Theme.on_secondary_container : Theme.on_surface_variant
-                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                         }
                         

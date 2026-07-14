@@ -17,7 +17,7 @@ ColumnLayout {
     property var allVars: []
 
     function updateVariable(key, val) {
-        var proc = Qt.createQmlObject('import Quickshell.Io; Process { command: ["hypr-manager", "--' + key + '", "' + val + '"]; onExited: destroy() }', rootPage);
+        var proc = Qt.createQmlObject('import Quickshell.Io; Process { command: ["omniformis", "hypr", "--' + key + '", "' + val + '"]; onExited: destroy() }', rootPage);
         proc.running = true;
     }
 
@@ -102,7 +102,8 @@ ColumnLayout {
         clip: true
         spacing: 4
         model: settingsModel
-        boundsBehavior: Flickable.StopAtBounds
+        flickDeceleration: 1000
+        maximumFlickVelocity: 4000
         focus: true
         KeyNavigation.up: searchInput
         
@@ -154,25 +155,25 @@ ColumnLayout {
                 width: parent.radius; height: parent.radius; color: parent.color
                 anchors.top: parent.top; anchors.left: parent.left
                 opacity: (index > 0 && settingsModel.get(index).category === settingsModel.get(index - 1).category) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
             Rectangle {
                 width: parent.radius; height: parent.radius; color: parent.color
                 anchors.top: parent.top; anchors.right: parent.right
                 opacity: (index > 0 && settingsModel.get(index).category === settingsModel.get(index - 1).category) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
             Rectangle {
                 width: parent.radius; height: parent.radius; color: parent.color
                 anchors.bottom: parent.bottom; anchors.left: parent.left
                 opacity: (index < settingsModel.count - 1 && settingsModel.get(index).category === settingsModel.get(index + 1).category) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
             Rectangle {
                 width: parent.radius; height: parent.radius; color: parent.color
                 anchors.bottom: parent.bottom; anchors.right: parent.right
                 opacity: (index < settingsModel.count - 1 && settingsModel.get(index).category === settingsModel.get(index + 1).category) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialSlow } }
+                Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
             }
             
             function triggerAction() {
@@ -227,14 +228,14 @@ ColumnLayout {
                     width: 52; height: 32; radius: 16
                     color: delegateRoot.itemVal === "true" ? Theme.primary : Theme.surface_variant
                     border.color: delegateRoot.activeFocus ? Theme.on_surface : "transparent"; border.width: delegateRoot.activeFocus ? 2 : 0
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     
                     Rectangle {
                         width: 24; height: 24; radius: 12
                         color: delegateRoot.itemVal === "true" ? Theme.on_primary : Theme.on_surface_variant
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left; anchors.leftMargin: delegateRoot.itemVal === "true" ? 24 : 4
-                        Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                        Behavior on anchors.leftMargin { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                         
                         Text {
                             anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16
@@ -372,7 +373,8 @@ ColumnLayout {
                             implicitHeight: contentHeight
                             model: combo.popup.visible ? combo.delegateModel : null
                             currentIndex: combo.highlightedIndex
-                            boundsBehavior: Flickable.StopAtBounds
+                            flickDeceleration: 1000
+                            maximumFlickVelocity: 4000
                         }
                     }
                 }
@@ -382,7 +384,7 @@ ColumnLayout {
 
     Process {
         id: hyprManagerProc
-        command: ["hypr-manager", "-l"]
+        command: ["omniformis", "hypr", "-l"]
         stdout: StdioCollector {
             onStreamFinished: {
                 var lines = this.text.split("\n");

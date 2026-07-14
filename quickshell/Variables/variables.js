@@ -29,6 +29,14 @@ var m3EmphasizedAccelerate = [0.3, 0.0, 0.8, 0.15];
 var m3ExpressiveSpatialFast = [0.42, 1.67, 0.21, 0.9];
 var m3ExpressiveSpatialSlow = [0.39, 1.29, 0.35, 0.98];
 
+var customStandard = [0.20, 0.00, 0.00, 1.00];
+var customStandardDecelerate = [0.0, 0.0, 0.0, 1.0];
+var customStandardAccelerate = [0.3, 0.0, 1.0, 1.0];
+var customEmphasizedDecelerate = [0.05, 0.7, 0.1, 1.0];
+var customEmphasizedAccelerate = [0.3, 0.0, 0.8, 0.15];
+var customExpressiveSpatialFast = [0.42, 1.67, 0.21, 0.9];
+var customExpressiveSpatialSlow = [0.39, 1.29, 0.35, 0.98];
+
 function fuzzyMatch(pattern, str) {
     if (!pattern) return true;
     if (!str) return false;

@@ -36,7 +36,7 @@ ColumnLayout {
             color: backHoverDisp.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (backHoverDisp.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
             Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "\ue5c4" }
             MouseArea { id: backHoverDisp; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: displayMenu.backRequested() }
-            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
         }
         Text { text: "Display Scale"; font.family: Vars.fontFamily; font.pixelSize: 24; font.weight: Font.Bold; color: Theme.on_surface; Layout.fillWidth: true }
     }
@@ -56,9 +56,9 @@ ColumnLayout {
                     property bool isScaleActive: Hyprland.focusedMonitor && Math.abs(Hyprland.focusedMonitor.scale - modelData) < 0.01
                     Layout.fillWidth: true; Layout.preferredHeight: 64
                     radius: isScaleActive ? 16 : 32
-                    Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     color: isScaleActive ? Theme.secondary_container : (dispMouse.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (dispMouse.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : Theme.surface_container_low))
-                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                     
                     RowLayout {
                         anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 16; spacing: 12
@@ -66,14 +66,14 @@ ColumnLayout {
                         Rectangle {
                             Layout.preferredWidth: 40; Layout.preferredHeight: 40
                             radius: isScaleActive ? 12 : 20
-                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             color: isScaleActive ? Qt.rgba(Theme.on_secondary_container.r, Theme.on_secondary_container.g, Theme.on_secondary_container.b, 0.15) : Qt.rgba(Theme.on_surface_variant.r, Theme.on_surface_variant.g, Theme.on_surface_variant.b, 0.1)
                             Text {
                                 anchors.centerIn: parent
                                 font.family: "Material Symbols Outlined"; font.pixelSize: 22
                                 color: isScaleActive ? Theme.on_secondary_container : Theme.on_surface_variant
                                 text: "\ue30d"
-                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                         }
                         
@@ -82,12 +82,12 @@ ColumnLayout {
                             Text { 
                                 text: modelData + "x Scale"; font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: Font.Bold
                                 color: isScaleActive ? Theme.on_secondary_container : Theme.on_surface_variant
-                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                             Text { 
                                 text: isScaleActive ? "Active" : "Apply scale"; font.family: Vars.fontFamily; font.pixelSize: 12; opacity: 0.8
                                 color: isScaleActive ? Theme.on_secondary_container : Theme.on_surface_variant
-                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+                                Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                         }
                         

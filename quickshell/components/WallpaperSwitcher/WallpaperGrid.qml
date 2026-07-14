@@ -71,7 +71,7 @@ GridView {
             border.width: isCurrentFocus || (rootRef && rootRef.currentWallpaper === filePath) ? 2 : 1
             clip: true
 
-            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3Standard } }
+            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
 
             ColumnLayout {
                 anchors.fill: parent
@@ -83,7 +83,7 @@ GridView {
                     Layout.fillHeight: true
                     Layout.margins: isCurrentFocus ? 4 : 0
                     
-                    Behavior on Layout.margins { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                    Behavior on Layout.margins { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
 
                     Loader {
                         id: mediaLoader
@@ -157,7 +157,7 @@ GridView {
                         verticalAlignment: Text.AlignVCenter
                         lineHeight: 1.1
                         
-                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.m3ExpressiveSpatialFast } }
+                        Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                     }
                 }
             }

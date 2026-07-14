@@ -9,11 +9,11 @@
     /* --- MATUGEN COLOR MAPPING --- */
 
     /* Primary Accents (Blue mapping) */
-    --blue1: #c8e6ff;
-    --blue2: #c8e6ff;
-    --blue3: #246488;
-    --blue4: #001e2e;
-    --blue5: #94cdf7;
+    --blue1: #cee5ff;
+    --blue2: #1471ad;
+    --blue3: #00588a;
+    --blue4: #ffffff;
+    --blue5: #96ccff;
 
     /* Error / Danger (Red mapping) */
     --red1: #E85E75;
@@ -23,26 +23,26 @@
     --red5: #7D1224;
 
     /* Secondary Accents (Pink mapping -> Secondary) */
-    --pink1: #d3e5f5;
-    --pink2: #d3e5f5;
-    --pink3: #4f606e;
-    --pink4: #0b1d29;
+    --pink1: #cee5ff;
+    --pink2: #c9e2ff;
+    --pink3: #486179;
+    --pink4: #2f4860;
     /* ИСПРАВЛЕНО: inverse_secondary -> on_secondary (это темный цвет в темной теме) */
     --pink5: #ffffff;
 
     /* Tertiary Accents (Teal mapping -> Tertiary) */
-    --teal1: #e9ddff;
-    --teal2: #e9ddff;
-    --teal3: #63597c;
-    --teal4: #1f1635;
+    --teal1: #f9d8ff;
+    --teal2: #8d57a1;
+    --teal3: #733f87;
+    --teal4: #ffffff;
     /* ИСПРАВЛЕНО: inverse_tertiary -> on_tertiary */
     --teal5: #ffffff;
 
     /* Purple mapping */
     --purple1: #997FDC;
-    --purple2: #b7c9d8;
-    --purple3: #4f606e;
-    --purple4: #0b1d29;
+    --purple2: #afc9e5;
+    --purple3: #486179;
+    --purple4: #2f4860;
     --purple5: #3D2380;
 
     /* Green & Yellow (Static) */
@@ -59,19 +59,19 @@
     --yellow5: #6E520D;
 
     /* Neutrals / Greys (Surface Mapping) */
-    --grey1: #71787e;
-    --grey2: #c1c7ce;
-    --grey3: #dfe3e8;
-    --grey4: #e5e8ed;
-    --grey5: #ebeef3;
-    --grey6: #f6f9fe;
-    --grey7: #d7dadf;
+    --grey1: #707881;
+    --grey2: #c0c7d1;
+    --grey3: #e0e2e8;
+    --grey4: #e6e8ee;
+    --grey5: #eceef3;
+    --grey6: #f7f9ff;
+    --grey7: #d8dadf;
     --grey8: #000000;
 
     /* Text */
     --white1: #181c20;
-    --white2: #41484d;
-    --white3: #41484d;
+    --white2: #404750;
+    --white3: #404750;
     --white4: #C2C2C2;
     --white5: #ADADAD;
 

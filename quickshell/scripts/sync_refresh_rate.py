@@ -29,4 +29,4 @@ if os.path.exists(vars_js):
     print(f"Updated animationDuration to {refresh_rate} in variables.js")
 
 # Reload Quickshell
-subprocess.run("pkill -9 .quickshell-wra; qs", shell=True)
+subprocess.run("omniformis qs kill; omniformis qs start -d", shell=True)

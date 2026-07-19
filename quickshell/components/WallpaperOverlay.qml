@@ -85,8 +85,8 @@ PanelWindow {
             anchors.fill: parent
             visible: false
             layer.enabled: true
-            layer.samples: 16 // Ultra-smooth MSAA for mask edges
             layer.smooth: true
+            layer.format: ShaderEffectSource.RGBA8
             layer.textureMirroring: ShaderEffectSource.MirrorVertically
 
             Image {
@@ -95,16 +95,14 @@ PanelWindow {
                 anchors.horizontalCenterOffset: root.currentMaskOffsetX
                 anchors.verticalCenterOffset: root.currentMaskOffsetY
 
-                // The SVG path expects a 100x100 bounding box.
                 property real calculatedSize: Math.min(parent.width, parent.height) * root.currentMaskScale
                 width: calculatedSize
                 height: calculatedSize
 
-                // Keep a static high-res sourceSize to prevent the SVG engine from re-rasterizing every frame during the scale animation
-                sourceSize.width: Math.max(parent.width, parent.height)
-                sourceSize.height: Math.max(parent.width, parent.height)
+                // Oversample by 2x to guarantee absolute highest-resolution QPainter rasterization
+                sourceSize.width: Math.max(parent.width, parent.height) * 2
+                sourceSize.height: Math.max(parent.width, parent.height) * 2
 
-                // Animate changes to size (either through scale slider or shape swap)
                 Behavior on calculatedSize {
                     NumberAnimation {
                         duration: 800
@@ -114,16 +112,21 @@ PanelWindow {
 
                 smooth: true
                 antialiasing: true
-                mipmap: true // <-- FIX: Smooths the SVG when it scales down
+                mipmap: true // Trilinear filtering during OpenGL downscaling
 
                 property string currentPathName: root.currentMaskShape
                 property string currentPath: m3.getPath(currentPathName)
 
+                // Pure native SVG rasterization without custom shape-rendering tags that might break AA
+                source: {
+                    var sz = Math.round(sourceSize.width);
+                    if (sz <= 0) return "";
+                    return "data:image/svg+xml;utf8,<svg width='" + sz + "' height='" + sz + "' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='" + currentPath + "' fill='white'/></svg>";
+                }
+
                 onCurrentPathNameChanged: {
                     if (maskCanvas.status === Image.Ready) {
                         shapeAnim.restart();
-                    } else {
-                        maskCanvas.updateSource();
                     }
                 }
 
@@ -136,9 +139,6 @@ PanelWindow {
                         duration: 250
                         easing.type: Easing.InBack
                     }
-                    ScriptAction {
-                        script: maskCanvas.updateSource()
-                    }
                     NumberAnimation {
                         target: maskCanvas
                         property: "scale"
@@ -147,12 +147,6 @@ PanelWindow {
                         easing.type: Easing.OutElastic
                     }
                 }
-
-                function updateSource() {
-                    maskCanvas.source = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' shape-rendering='geometricPrecision'><path d='" + maskCanvas.currentPath + "' fill='white'/></svg>";
-                }
-
-                Component.onCompleted: updateSource()
             } // Close maskCanvas
         } // Close maskContainer
 
@@ -229,9 +223,6 @@ PanelWindow {
             maskSource: maskContainer
             antialiasing: true
             smooth: true
-            layer.enabled: true
-            layer.smooth: true
-            layer.samples: 8
         }
     } // Close Item parent
 } // Close PanelWindow

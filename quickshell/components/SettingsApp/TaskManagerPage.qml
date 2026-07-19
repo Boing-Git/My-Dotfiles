@@ -21,6 +21,7 @@ Item {
     property var processModel: []
     property var autostartModel: []
     property string processFilter: "mem"
+    property string processSearchText: ""
     
     onProcessFilterChanged: {
         if (currentTab === 1 && rootTaskManager.visible) psProc.running = true;
@@ -151,6 +152,14 @@ Item {
                         }
                     }
                 }
+                
+                if (rootTaskManager.processSearchText !== "") {
+                    let searchLower = rootTaskManager.processSearchText.toLowerCase();
+                    // Split the search string and join with .* to create a fuzzy match regex (e.g. "ffx" -> /f.*f.*x/i)
+                    let fuzzyRegex = new RegExp(searchLower.split('').join('.*'), 'i');
+                    procs = procs.filter(p => fuzzyRegex.test(p.name) || p.pid.toString().includes(searchLower));
+                }
+                
                 rootTaskManager.processModel = procs;
             }
         }
@@ -301,7 +310,7 @@ Item {
             Flickable {
                 Layout.fillWidth: true; Layout.fillHeight: true
                 contentHeight: monitoringLayout.implicitHeight
-                clip: true; boundsBehavior: Flickable.StopAtBounds
+                clip: true; // boundsBehavior: Flickable.StopAtBounds
                 interactive: true
                 flickDeceleration: 1500
                 maximumFlickVelocity: 3000
@@ -395,7 +404,7 @@ Item {
             Flickable {
                 Layout.fillWidth: true; Layout.fillHeight: true
                 contentHeight: managingLayout.implicitHeight
-                clip: true; boundsBehavior: Flickable.StopAtBounds
+                clip: true; // boundsBehavior: Flickable.StopAtBounds
                 interactive: true
                 flickDeceleration: 1500
                 maximumFlickVelocity: 3000
@@ -551,6 +560,47 @@ Item {
                             RowLayout {
                                 Layout.fillWidth: true
                                 Text { text: "Top Processes"; font.family: Vars.fontFamily; font.pixelSize: 22; font.weight: Font.Bold; color: Theme.on_surface; Layout.fillWidth: true }
+                                
+                                // Search Bar
+                                Rectangle {
+                                    Layout.preferredWidth: 200
+                                    Layout.preferredHeight: 40
+                                    radius: 20
+                                    color: Theme.surface_container_high
+                                    
+                                    RowLayout {
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 16; anchors.rightMargin: 16
+                                        spacing: 8
+                                        Text {
+                                            text: "search"
+                                            font.family: "Material Symbols Outlined"
+                                            font.pixelSize: 18
+                                            color: procSearchInput.activeFocus ? Theme.primary : Theme.on_surface_variant
+                                        }
+                                        TextInput {
+                                            id: procSearchInput
+                                            Layout.fillWidth: true; Layout.fillHeight: true
+                                            verticalAlignment: TextInput.AlignVCenter
+                                            font.family: Vars.fontFamily
+                                            font.pixelSize: 14
+                                            color: Theme.on_surface
+                                            clip: true
+                                            onTextChanged: {
+                                                rootTaskManager.processSearchText = text;
+                                                psProc.running = true; // refresh immediately on typing
+                                            }
+                                            Text {
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                text: "Search..."
+                                                color: Theme.on_surface_variant
+                                                font.family: Vars.fontFamily
+                                                font.pixelSize: 14
+                                                visible: !procSearchInput.text && !procSearchInput.activeFocus
+                                            }
+                                        }
+                                    }
+                                }
                                 
                                 // Segmented Control Filter
                                 Rectangle {

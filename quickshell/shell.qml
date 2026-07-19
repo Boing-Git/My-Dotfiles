@@ -15,6 +15,24 @@ ShellRoot {
         return true;
     }
 
+    property string globalOsIconPath: ""
+
+    Process {
+        id: osCheckProcess
+        command: ["sh", "-c", "cat /etc/os-release | grep '^ID='"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let text = this.text.trim();
+                if (text.includes("nixos")) {
+                    root.globalOsIconPath = "file:///home/boing/Dotfiles/quickshell/assets/nixos-logo.png";
+                } else if (text.includes("arch")) {
+                    root.globalOsIconPath = "file:///home/boing/Dotfiles/quickshell/assets/arch-logo.png";
+                }
+            }
+        }
+    }
+
     property bool launcherVisible: false
     property bool screenshotVisible: false
     property bool powerMenuVisible: false
@@ -98,6 +116,10 @@ ShellRoot {
         }
     }
 
+    ScreenFrame {
+        id: screenFrame
+    }
+
     WallpaperOverlay {
         // This will sit on the WlrLayer.Background
     }
@@ -107,13 +129,6 @@ ShellRoot {
     }
     DesktopCalender {
         // Draggable analog clock on the WlrLayer.Bottom
-    }
-
-    Overview {
-        visibleState: root.overviewVisible
-        onCloseRequested: {
-            root.overviewVisible = false;
-        }
     }
 
     // Launcher is now inside TopPills.qml
@@ -136,5 +151,12 @@ ShellRoot {
     SettingsWindow {
         id: floatingSettings
         onRequestWidgetToggle: topPills.toggleSettings()
+    }
+
+    Overview {
+        visibleState: root.overviewVisible
+        onCloseRequested: {
+            root.overviewVisible = false;
+        }
     }
 }

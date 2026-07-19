@@ -29,6 +29,33 @@ Item {
     // Navigation state: "" (Main Dashboard), "wifi" (Wi-Fi Settings), "bluetooth" (Bluetooth Settings)
     property string currentSubMenu: ""
     property bool isEditorMode: false
+    property string systemUptime: ""
+
+    Process {
+        id: uptimeProc
+        command: ["uptime"]
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let output = this.text.trim();
+                if (output !== "") {
+                    let tokens = output.split(/\s+/).filter(t => t !== "");
+                    if (tokens.length >= 3) {
+                        // 1st: 04:22:28, 2nd: up, 3rd: 1:02,
+                        root.systemUptime = tokens[2].replace(",", "");
+                    } else {
+                        root.systemUptime = output;
+                    }
+                }
+            }
+        }
+    }
+    Timer {
+        interval: 60000 // Refresh every minute
+        running: root.expanded
+        repeat: true
+        onTriggered: uptimeProc.running = true
+    }
     
     signal closeRequested()
     signal popupOpened()
@@ -52,6 +79,7 @@ Item {
     onExpandedChanged: {
         if (expanded) {
             forceActiveFocus();
+            uptimeProc.running = true;
         } else {
             isEditorMode = false;
             currentSubMenu = "";
@@ -88,7 +116,10 @@ Item {
         height: targetHeight
         
         color: Vars.translucent ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.85) : Theme.surface
-        radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        topLeftRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        topRightRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        bottomLeftRadius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        bottomRightRadius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
         
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
@@ -125,7 +156,7 @@ Item {
                 }
                 Behavior on opacity { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.currentSubMenu === "" ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate } }
                 clip: true
-                boundsBehavior: Flickable.StopAtBounds
+                // boundsBehavior: Flickable.StopAtBounds
 
                 ColumnLayout {
                     id: mainDashboardView
@@ -137,92 +168,148 @@ Item {
                         Layout.fillWidth: true
                         spacing: 2
                         
-                        RowLayout {
-                            spacing: 8
-                            Text { text: "Control Center"; font.family: Vars.fontFamily; font.pixelSize: 18; font.weight: Font.Bold; color: Theme.on_surface }
+                        Rectangle {
+                            Layout.preferredHeight: 40
+                            Layout.preferredWidth: logoLayout.implicitWidth + 16
+                            radius: 20
+                            color: Theme.surface_container_high
+                            clip: true
+                            
+                            RowLayout {
+                                id: logoLayout
+                                anchors.centerIn: parent
+                                spacing: 8
+                                
+                                Image {
+                                    source: typeof globalOsIconPath !== "undefined" && globalOsIconPath !== "" ? globalOsIconPath : ""
+                                    fillMode: Image.PreserveAspectFit
+                                    Layout.preferredHeight: 28
+                                    Layout.preferredWidth: source.toString() !== "" ? 28 : 0
+                                    visible: source.toString() !== ""
+                                    smooth: true
+                                    antialiasing: true
+                                }
+                                Text { 
+                                    text: (typeof globalOsIconPath !== "undefined" && globalOsIconPath !== "") ? "" : "Control Center"; 
+                                    font.family: Vars.fontFamily; 
+                                    font.pixelSize: 18; 
+                                    font.weight: Font.Bold; 
+                                    color: Theme.on_surface;
+                                    visible: text !== ""
+                                }
+                                Rectangle {
+                                    width: 4
+                                    height: 4
+                                    radius: 2
+                                    color: Theme.primary
+                                    visible: root.systemUptime !== ""
+                                }
+                                Text {
+                                    text: root.systemUptime
+                                    font.family: Vars.fontFamily
+                                    font.pixelSize: 18
+                                    font.weight: Font.Medium
+                                    color: Theme.primary
+                                    visible: root.systemUptime !== ""
+                                }
+                            }
                         }
                         
                         Item { Layout.fillWidth: true }
                         
-                        // Edit Button
                         Rectangle {
-                            width: 36; height: 36; radius: root.isEditorMode ? 10 : height / 2
-                            color: editHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (editHover.containsMouse || root.isEditorMode ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
-                            Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: root.isEditorMode ? Theme.primary : Theme.on_surface; text: "edit" }
-                            MouseArea { 
-                                id: editHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
-                                onClicked: root.isEditorMode = !root.isEditorMode 
-                            }
-                            Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
-                        }
-                        
-                        // Refresh Button (Mock)
-                        Rectangle {
-                            width: 36; height: 36; radius: 12
-                            color: refreshHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (refreshHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
-                            Text { 
-                                id: refreshIcon
-                                anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "refresh" 
-                                RotationAnimation {
-                                    id: refreshAnim
-                                    target: refreshIcon
-                                    property: "rotation"
-                                    from: 0; to: 360
-                                    duration: 700
-                                    easing.type: Easing.BezierSpline
-                                    easing.bezierCurve: Vars.customExpressiveSpatialSlow
+                            Layout.preferredHeight: 40
+                            Layout.preferredWidth: btnLayout.implicitWidth + 16
+                            radius: 20
+                            color: Theme.surface_container_high
+                            clip: true
+                            
+                            RowLayout {
+                                id: btnLayout
+                                anchors.centerIn: parent
+                                spacing: 4
+                                
+                                // Edit Button
+                                Rectangle {
+                                    Layout.preferredWidth: 32; Layout.preferredHeight: 32; radius: 16
+                                    color: editHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (editHover.containsMouse || root.isEditorMode ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                                    Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 18; color: root.isEditorMode ? Theme.primary : Theme.on_surface; text: "edit" }
+                                    MouseArea { 
+                                        id: editHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
+                                        onClicked: root.isEditorMode = !root.isEditorMode 
+                                    }
+                                    Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
+                                }
+                                
+                                // Refresh Button
+                                Rectangle {
+                                    Layout.preferredWidth: 32; Layout.preferredHeight: 32; radius: 16
+                                    color: refreshHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (refreshHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                                    Text { 
+                                        id: refreshIcon
+                                        anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 18; color: Theme.on_surface; text: "refresh" 
+                                        RotationAnimation {
+                                            id: refreshAnim
+                                            target: refreshIcon
+                                            property: "rotation"
+                                            from: 0; to: 360
+                                            duration: 700
+                                            easing.type: Easing.BezierSpline
+                                            easing.bezierCurve: Vars.customExpressiveSpatialSlow
+                                        }
+                                    }
+                                    MouseArea { 
+                                        id: refreshHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
+                                        onClicked: {
+                                            refreshAnim.restart();
+                                            Quickshell.execDetached({ command: ["hyprctl", "reload"] });
+                                            Quickshell.execDetached({ command: ["bash", "-c", "pkill quickshell; sleep 0.2; quickshell"] });
+                                        }
+                                    }
+                                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
+                                }
+                                
+                                // Settings Button
+                                Rectangle {
+                                    Layout.preferredWidth: 32; Layout.preferredHeight: 32; radius: 16
+                                    color: settingsHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (settingsHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                                    Text { 
+                                        id: settingsIcon
+                                        anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 18; color: Theme.on_surface; text: "settings" 
+                                        RotationAnimation {
+                                            id: settingsAnim
+                                            target: settingsIcon
+                                            property: "rotation"
+                                            from: 0; to: 360
+                                            duration: 700
+                                            easing.type: Easing.BezierSpline
+                                            easing.bezierCurve: Vars.customExpressiveSpatialSlow
+                                        }
+                                    }
+                                    MouseArea { 
+                                        id: settingsHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
+                                        onClicked: { 
+                                            settingsAnim.restart();
+                                            root.expanded = false; 
+                                            root.openSettingsRequested();
+                                        } 
+                                    }
+                                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
+                                }
+                                
+                                // Power Button
+                                Rectangle {
+                                    Layout.preferredWidth: 32; Layout.preferredHeight: 32; radius: 16
+                                    color: powerHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (powerHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+                                    Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 18; color: Theme.on_surface; text: "power_settings_new" }
+                                    MouseArea { 
+                                        id: powerHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
+                                        onClicked: { root.expanded = false; root.openPowerMenuRequested() } 
+                                    }
+                                    Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                                 }
                             }
-                            MouseArea { 
-                                id: refreshHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
-                                onClicked: {
-                                    refreshAnim.restart();
-                                    Quickshell.execDetached({ command: ["hyprctl", "reload"] });
-                                    Quickshell.execDetached({ command: ["bash", "-c", "pkill quickshell; sleep 0.2; quickshell"] });
-                                }
-                            }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
-                        }
-                        
-                        // Settings Button
-                        Rectangle {
-                            width: 36; height: 36; radius: 12
-                            color: settingsHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (settingsHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
-                            Text { 
-                                id: settingsIcon
-                                anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "settings" 
-                                RotationAnimation {
-                                    id: settingsAnim
-                                    target: settingsIcon
-                                    property: "rotation"
-                                    from: 0; to: 360
-                                    duration: 700
-                                    easing.type: Easing.BezierSpline
-                                    easing.bezierCurve: Vars.customExpressiveSpatialSlow
-                                }
-                            }
-                            MouseArea { 
-                                id: settingsHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
-                                onClicked: { 
-                                    settingsAnim.restart();
-                                    root.expanded = false; 
-                                    root.openSettingsRequested();
-                                } 
-                            }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
-                        }
-                        
-                        // Power Button
-                        Rectangle {
-                            width: 36; height: 36; radius: 12
-                            color: powerHover.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (powerHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
-                            Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 20; color: Theme.on_surface; text: "power_settings_new" }
-                            MouseArea { 
-                                id: powerHover; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; 
-                                onClicked: { root.expanded = false; root.openPowerMenuRequested() } 
-                            }
-                            Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                         }
                     }
 

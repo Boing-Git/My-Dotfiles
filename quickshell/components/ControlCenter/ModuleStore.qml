@@ -171,7 +171,7 @@ ColumnLayout {
                 cellWidth: moduleStashContainer.baseCellWidth + 12
                 cellHeight: 64 + 12
                 
-                boundsBehavior: Flickable.StopAtBounds
+                // boundsBehavior: Flickable.StopAtBounds
                 clip: !moduleStashContainer.isEditorMode
                 interactive: false
 

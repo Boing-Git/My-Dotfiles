@@ -1,5 +1,5 @@
 return {
-    image = "/home/boing/Pictures/Wallpapers/Wallpapers-Bank/wallpapers/Lofi - Chill Room.png",
+    image = "/home/boing/Pictures/Wallpapers/Wallpapers-Bank/wallpapers/Orange-Balls.png",
 
     background = "0xfffff8f6",
 
@@ -9,7 +9,7 @@ return {
 
     inverse_on_surface = "0xffffedea",
 
-    inverse_primary = "0xffffb4a7",
+    inverse_primary = "0xffffb4a6",
 
     inverse_surface = "0xff392e2c",
 
@@ -21,11 +21,11 @@ return {
 
     on_primary = "0xffffffff",
 
-    on_primary_container = "0xff3a0905",
+    on_primary_container = "0xff3a0a04",
 
-    on_primary_fixed = "0xff3a0905",
+    on_primary_fixed = "0xff3a0a04",
 
-    on_primary_fixed_variant = "0xff73342a",
+    on_primary_fixed_variant = "0xff733429",
 
     on_secondary = "0xffffffff",
 
@@ -37,7 +37,7 @@ return {
 
     on_surface = "0xff231918",
 
-    on_surface_variant = "0xff534341",
+    on_surface_variant = "0xff534340",
 
     on_tertiary = "0xffffffff",
 
@@ -45,19 +45,19 @@ return {
 
     on_tertiary_fixed = "0xff251a00",
 
-    on_tertiary_fixed_variant = "0xff564419",
+    on_tertiary_fixed_variant = "0xff564519",
 
     outline = "0xff857370",
 
     outline_variant = "0xffd8c2be",
 
-    primary = "0xff904b40",
+    primary = "0xff904b3e",
 
     primary_container = "0xffffdad4",
 
     primary_fixed = "0xffffdad4",
 
-    primary_fixed_dim = "0xffffb4a7",
+    primary_fixed_dim = "0xffffb4a6",
 
     scrim = "0xff000000",
 
@@ -67,17 +67,17 @@ return {
 
     secondary_fixed = "0xffffdad4",
 
-    secondary_fixed_dim = "0xffe7bdb6",
+    secondary_fixed_dim = "0xffe7bdb5",
 
     shadow = "0xff000000",
 
-    source_color = "0xffdd311f",
+    source_color = "0xffc71500",
 
     surface = "0xfffff8f6",
 
     surface_bright = "0xfffff8f6",
 
-    surface_container = "0xfffceae7",
+    surface_container = "0xfffceae6",
 
     surface_container_high = "0xfff7e4e1",
 
@@ -89,16 +89,16 @@ return {
 
     surface_dim = "0xffe8d6d3",
 
-    surface_tint = "0xff904b40",
+    surface_tint = "0xff904b3e",
 
     surface_variant = "0xfff5ddd9",
 
     tertiary = "0xff6f5c2e",
 
-    tertiary_container = "0xfffbe0a6",
+    tertiary_container = "0xfffae0a6",
 
-    tertiary_fixed = "0xfffbe0a6",
+    tertiary_fixed = "0xfffae0a6",
 
-    tertiary_fixed_dim = "0xffdec48c",
+    tertiary_fixed_dim = "0xffddc48c",
 
 }

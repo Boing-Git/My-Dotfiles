@@ -211,7 +211,7 @@ ColumnLayout {
                     implicitHeight: contentHeight
                     model: schemeCombo.popup.visible ? schemeCombo.delegateModel : null
                     currentIndex: schemeCombo.highlightedIndex
-                    boundsBehavior: Flickable.StopAtBounds
+                    // boundsBehavior: Flickable.StopAtBounds
                     flickDeceleration: 1500
                     maximumFlickVelocity: 3000
                 }
@@ -332,7 +332,7 @@ ColumnLayout {
                     clip: true
                     implicitHeight: Math.min(contentHeight, 150)
                     model: autocompleteModelRef
-                    boundsBehavior: Flickable.StopAtBounds
+                    // boundsBehavior: Flickable.StopAtBounds
                     flickDeceleration: 1500
                     maximumFlickVelocity: 3000
                     

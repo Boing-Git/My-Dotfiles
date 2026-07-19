@@ -39,8 +39,8 @@ ColumnLayout {
 
     Flickable {
         Layout.fillWidth: true; Layout.fillHeight: true
-        contentHeight: btContent.childrenRect.height; clip: true
-        boundsBehavior: Flickable.StopAtBounds
+        contentHeight: btContent.implicitHeight; clip: true
+        // boundsBehavior: Flickable.StopAtBounds
         flickDeceleration: 1500
         maximumFlickVelocity: 3000
 
@@ -504,21 +504,20 @@ ColumnLayout {
                                             rootBluetoothPage.adapter.pairable = true;
                                         }
                                         modelData.pair();
-                                        Quickshell.execDetached({ command: ["bash", "-c", `
-                                            for i in {1..60}; do
-                                                if bluetoothctl info ${modelData.address} | grep -q "Paired: yes"; then
-                                                    bluetoothctl trust ${modelData.address}
-                                                    sleep 0.5
-                                                    bluetoothctl connect ${modelData.address}
-                                                    break
-                                                fi
-                                                sleep 0.5
-                                            done
-                                        `] });
                                     } else {
                                         modelData.trusted = true;
                                         modelData.connect();
                                     }
+                                }
+                            }
+                        }
+                        
+                        Connections {
+                            target: modelData
+                            function onPairedChanged() {
+                                if (modelData.paired) {
+                                    modelData.trusted = true;
+                                    modelData.connect();
                                 }
                             }
                         }

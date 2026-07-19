@@ -18,6 +18,11 @@ ColumnLayout {
     // Remove anchors.fill to allow dynamic implicit height
     anchors.margins: Vars.spacingLarge
     spacing: Vars.spacingMedium
+
+    FontLoader {
+        id: filledIconFont
+        source: "../../assets/MaterialSymbolsRounded-Filled.ttf"
+    }
     
     opacity: isActive ? 1.0 : 0.0
     visible: opacity > 0
@@ -60,7 +65,7 @@ ColumnLayout {
         id: bluetoothFlickable
         Layout.fillWidth: true
         Layout.preferredHeight: Math.min(contentHeight, 450)
-        contentHeight: bluetoothListContainer.childrenRect.height; clip: true
+        contentHeight: bluetoothListContainer.implicitHeight; clip: true
 
         ColumnLayout {
             id: bluetoothListContainer
@@ -83,12 +88,13 @@ ColumnLayout {
                             Layout.preferredWidth: 40; Layout.preferredHeight: 40
                             radius: modelData.connected ? 12 : 20
                             Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
-                            color: modelData.connected ? Theme.on_primary : Qt.rgba(Theme.on_surface_variant.r, Theme.on_surface_variant.g, Theme.on_surface_variant.b, 0.1)
+                            color: modelData.connected ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.2) : Qt.rgba(Theme.on_surface_variant.r, Theme.on_surface_variant.g, Theme.on_surface_variant.b, 0.1)
                             Text {
                                 anchors.centerIn: parent
-                                font.family: "Material Symbols Outlined"; font.pixelSize: 22
-                                color: modelData.connected ? Theme.surface : Theme.on_surface_variant
-                                text: modelData.connected ? "\ue1a8" : "\ue1a7"
+                                font.family: modelData.connected ? filledIconFont.name : "Material Symbols Outlined"
+                                font.pixelSize: 22
+                                color: modelData.connected ? Theme.on_primary : Theme.on_surface_variant
+                                text: modelData.connected ? "\ue1a7" : "\ue1a7" // Same unicode, just filled font
                                 Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                         }
@@ -97,12 +103,12 @@ ColumnLayout {
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter; spacing: 0
                             Text { 
                                 text: modelData.name ? modelData.name : "Unknown Device"; font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: Font.Bold
-                                color: modelData.connected ? Theme.surface : Theme.on_surface_variant
+                                color: modelData.connected ? Theme.on_primary : Theme.on_surface_variant
                                 Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                             Text { 
                                 text: modelData.connected ? "Connected" : "Paired"; font.family: Vars.fontFamily; font.pixelSize: 12; opacity: 0.8
-                                color: modelData.connected ? Theme.surface : Theme.on_surface_variant
+                                color: modelData.connected ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.75) : Theme.on_surface_variant
                                 Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                         }

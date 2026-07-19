@@ -1,28 +1,28 @@
 {
   "checksum": ":)",
-  "wallpaper": "/home/boing/Pictures/Wallpapers/Wallpapers-Bank/wallpapers/Lofi - Chill Room.png",
+  "wallpaper": "/home/boing/Pictures/Wallpapers/Wallpapers-Bank/wallpapers/Orange-Balls.png",
   "alpha": "100",
   "special": {
     "background": "#1a1110",
     "foreground": "#f1dfdb",
-    "cursor": "#ffb4a7"
+    "cursor": "#ffb4a6"
   },
   "colors": {
     "color0": "#1a1110",
     "color1": "#ffd6cd",
-    "color2": "#f1b6ac",
-    "color3": "#e9c881",
-    "color4": "#ffb4a7",
-    "color5": "#dec48c",
+    "color2": "#f1b6ab",
+    "color3": "#e8c881",
+    "color4": "#ffb4a6",
+    "color5": "#ddc48c",
     "color6": "#6c342b",
     "color7": "#d8c2be",
-    "color8": "#534341",
-    "color9": "#ffb4a7",
-    "color10": "#e99081",
-    "color11": "#e2b555",
-    "color12": "#ff8974",
-    "color13": "#d3b064",
-    "color14": "#7b2e22",
+    "color8": "#534340",
+    "color9": "#ffb4a6",
+    "color10": "#e99180",
+    "color11": "#e0b656",
+    "color12": "#ff8973",
+    "color13": "#d1b065",
+    "color14": "#7b2f21",
     "color15": "#f1dfdb"
   }
 }

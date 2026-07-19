@@ -51,7 +51,7 @@ Item {
         contentHeight: aboutLayout.implicitHeight
         clip: true
         interactive: true
-        boundsBehavior: Flickable.StopAtBounds
+        // boundsBehavior: Flickable.StopAtBounds
 
         ColumnLayout {
             id: aboutLayout

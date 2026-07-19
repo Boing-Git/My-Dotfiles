@@ -11,6 +11,7 @@ ListView {
     
     Layout.fillWidth: true
     Layout.fillHeight: true
+    implicitHeight: contentHeight
     
     property var launcherModel
     property alias searchText: searchInputTextObj.text
@@ -23,12 +24,12 @@ ListView {
     signal appLaunched()
     signal escapePressed()
     signal focusSearchBar()
+    signal openSettingsRequested()
 
     clip: true
     spacing: 4
     
     orientation: ListView.Vertical
-    boundsBehavior: Flickable.StopAtBounds
     flickDeceleration: 1500
     maximumFlickVelocity: 3000
 
@@ -84,12 +85,29 @@ ListView {
         height: 48
 
         function triggerSelection() {
+            if (modelData.command[0] === "INTERNAL:SETTINGS") {
+                root.openSettingsRequested();
+                root.escapePressed();
+                return;
+            }
             if (modelData.command[0] === "INTERNAL:CLIPBOARD") {
                 root.searchText = "/clipboard ";
+                root.focusSearchBar();
                 return;
             }
             if (modelData.command[0] === "INTERNAL:EMOJI") {
                 root.searchText = "/emoji ";
+                root.focusSearchBar();
+                return;
+            }
+            if (modelData.command[0] === "INTERNAL:CALCULATOR") {
+                root.searchText = "=";
+                root.focusSearchBar();
+                return;
+            }
+            if (modelData.command[0] === "INTERNAL:WEB_SEARCH") {
+                root.searchText = "/web ";
+                root.focusSearchBar();
                 return;
             }
             if (modelData.command[0] === "INTERNAL:CLEAR_CLIPBOARD") {

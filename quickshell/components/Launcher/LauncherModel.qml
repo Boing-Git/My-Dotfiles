@@ -191,30 +191,12 @@ Item {
         var settingsOptions = [
             {
                 name: "Settings",
-                command: ["quickshell", "-c", "SettingsApp.open()"],
+                command: ["INTERNAL:SETTINGS"],
                 workingDirectory: Quickshell.env("HOME"),
                 icon: "",
                 isFile: false,
                 isSetting: true,
                 iconName: "settings"
-            },
-            {
-                name: "Wi-Fi",
-                command: ["quickshell", "-c", "SettingsApp.openPage('wifi')"],
-                workingDirectory: Quickshell.env("HOME"),
-                icon: "",
-                isFile: false,
-                isSetting: true,
-                iconName: "wifi"
-            },
-            {
-                name: "Bluetooth",
-                command: ["quickshell", "-c", "SettingsApp.openPage('bluetooth')"],
-                workingDirectory: Quickshell.env("HOME"),
-                icon: "",
-                isFile: false,
-                isSetting: true,
-                iconName: "bluetooth"
             },
             {
                 name: "Clipboard Manager",
@@ -233,11 +215,44 @@ Item {
                 isFile: false,
                 isSetting: true,
                 iconName: "emoji_emotions"
+            },
+            {
+                name: "Calculator",
+                command: ["INTERNAL:CALCULATOR"],
+                workingDirectory: Quickshell.env("HOME"),
+                icon: "",
+                isFile: false,
+                isSetting: true,
+                iconName: "calculate"
+            },
+            {
+                name: "Search the Web",
+                command: ["INTERNAL:WEB_SEARCH"],
+                workingDirectory: Quickshell.env("HOME"),
+                icon: "",
+                isFile: false,
+                isSetting: true,
+                iconName: "travel_explore"
             }
         ];
 
         if (text.startsWith("/")) {
             var query = text.substring(1).trim();
+            if (query === "") {
+                return settingsOptions;
+            }
+            if (query.startsWith("web")) {
+                var webQuery = query.substring(3).trim();
+                return [{
+                    name: "Search Google for: " + (webQuery === "" ? "..." : webQuery),
+                    command: webQuery === "" ? [] : ["xdg-open", "https://www.google.com/search?q=" + encodeURIComponent(webQuery)],
+                    workingDirectory: Quickshell.env("HOME"),
+                    icon: "",
+                    isFile: false,
+                    isSetting: true,
+                    iconName: "travel_explore"
+                }];
+            }
             if (query.startsWith("emoji")) {
                 if (query === "emoji") return emojiModel;
                 var emojiQuery = query.substring(5).trim();

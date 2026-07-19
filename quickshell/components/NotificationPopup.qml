@@ -56,22 +56,76 @@ Item {
     Rectangle {
         id: panel
         layer.enabled: true
-        layer.effect: MultiEffect { shadowEnabled: !root.gameMode; shadowBlur: 1.0; shadowColor: Qt.rgba(0,0,0,0.25); shadowVerticalOffset: 4; shadowHorizontalOffset: 0 }
+        layer.effect: MultiEffect {
+            shadowEnabled: !root.gameMode
+            shadowBlur: 1.0
+            shadowColor: Qt.rgba(0, 0, 0, 0.25)
+            shadowVerticalOffset: 4
+            shadowHorizontalOffset: 0
+        }
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
         width: root.expanded ? 380 : 100
         height: root.expanded ? contentColumn.implicitHeight + 24 : 40
 
-        color: Theme.surface_container_high
-        radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusLarge : height / 2)
+        color: Theme.surface
+        topLeftRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        topRightRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        bottomLeftRadius: root.gameMode || Vars.panelStyle === "Flat" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        bottomRightRadius: root.gameMode || Vars.panelStyle === "Flat" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
 
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
-        Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
-        Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on topLeftRadius {
+            enabled: !root.gameMode
+            NumberAnimation {
+                duration: Vars.animationDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Vars.customExpressiveSpatialSlow
+            }
+        }
+        Behavior on topRightRadius {
+            enabled: !root.gameMode
+            NumberAnimation {
+                duration: Vars.animationDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Vars.customExpressiveSpatialSlow
+            }
+        }
+        Behavior on bottomLeftRadius {
+            enabled: !root.gameMode
+            NumberAnimation {
+                duration: Vars.animationDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Vars.customExpressiveSpatialSlow
+            }
+        }
+        Behavior on bottomRightRadius {
+            enabled: !root.gameMode
+            NumberAnimation {
+                duration: Vars.animationDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Vars.customExpressiveSpatialSlow
+            }
+        }
+        Behavior on width {
+            enabled: !root.gameMode
+            NumberAnimation {
+                duration: Vars.animationDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Vars.customExpressiveSpatialSlow
+            }
+        }
+        Behavior on height {
+            enabled: !root.gameMode
+            NumberAnimation {
+                duration: Vars.animationDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Vars.customExpressiveSpatialSlow
+            }
+        }
 
         // EXPANDED UI
         Item {
@@ -80,7 +134,18 @@ Item {
 
             opacity: root.expanded ? 1.0 : 0.0
             visible: opacity > 0
-            Behavior on opacity { SequentialAnimation { PauseAnimation { duration: root.expanded ? Vars.animationDuration : 0 } NumberAnimation { duration: root.expanded ? Vars.animationDuration : Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: root.expanded ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate } } }
+            Behavior on opacity {
+                SequentialAnimation {
+                    PauseAnimation {
+                        duration: root.expanded ? Vars.animationDuration : 0
+                    }
+                    NumberAnimation {
+                        duration: root.expanded ? Vars.animationDuration : Vars.animationDuration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: root.expanded ? Vars.customEmphasizedDecelerate : Vars.customEmphasizedAccelerate
+                    }
+                }
+            }
 
             ColumnLayout {
                 id: contentColumn
@@ -111,9 +176,17 @@ Item {
 
                     // Close all button
                     Rectangle {
-                        width: 28; height: 28; radius: 14
+                        width: 28
+                        height: 28
+                        radius: 14
                         color: closeAllHover.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : "transparent"
-                        Text { anchors.centerIn: parent; font.family: "Material Symbols Outlined"; font.pixelSize: 16; color: Theme.on_surface; text: "\ue5cd" }
+                        Text {
+                            anchors.centerIn: parent
+                            font.family: "Material Symbols Outlined"
+                            font.pixelSize: 16
+                            color: Theme.on_surface
+                            text: "\ue5cd"
+                        }
                         MouseArea {
                             id: closeAllHover
                             anchors.fill: parent
@@ -124,7 +197,11 @@ Item {
                                 root.expanded = false;
                             }
                         }
-                        Behavior on color { ColorAnimation { duration: Vars.animationDuration } }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: Vars.animationDuration
+                            }
+                        }
                     }
                 }
 

@@ -4,7 +4,7 @@ var translucent = false;
 
 var overviewGridRows = 2;
 var overviewGridColumns = 5;
-var overviewScale = 1.05;
+var overviewScale = 0.9;
 
 var radiusAmount = 0.5
 var radiusSmall = 8
@@ -17,16 +17,17 @@ var spacingMedium = 16
 var spacingLarge = 24
 
 var paddingSmall = 8
-var paddingMedium = 16
+var paddingMedium = 15
 var paddingLarge = 24
 
 var wallpaperMaskEnabled = true;
-var wallpaperMaskScale = 0.85;
-var wallpaperMaskShape = "Clamshell";
+var wallpaperMaskScale = 1.2;
+var wallpaperMaskShape = "Gem";
 var wallpaperMaskColor = "surface_variant";
-var wallpaperMaskOffsetX = -149;
-var wallpaperMaskOffsetY = 12;
-var clockShape = "12SidedCookie";
+var wallpaperMaskOffsetX = 10;
+var wallpaperMaskOffsetY = 0;
+var clockShape = "6SidedCookie";
+var panelStyle = "Framed";
 
 var fontFamily = "Google Sans Flex"
 var m3Standard = [0.2, 0.0, 0.0, 1.0];
@@ -38,11 +39,11 @@ var m3ExpressiveSpatialFast = [0.42, 1.67, 0.21, 0.9];
 var m3ExpressiveSpatialSlow = [0.39, 1.29, 0.35, 0.98];
 
 var customStandard = [0.98, 0.09, 0.42, 0.50];
-var customStandardDecelerate = [0.0, 0.0, 0.0, 1.0];
-var customStandardAccelerate = [0.3, 0.0, 1.0, 1.0];
-var customEmphasizedDecelerate = [0.05, 0.7, 0.1, 1.0];
-var customEmphasizedAccelerate = [0.3, 0.0, 0.8, 0.15];
-var customExpressiveSpatialFast = [0.42, 1.67, 0.21, 0.9];
+var customStandardDecelerate = [0.00, 0.00, 0.00, 1.00];
+var customStandardAccelerate = [1.00, 0.13, 0.63, 0.42];
+var customEmphasizedDecelerate = [0.05, 0.70, 0.10, 1.00];
+var customEmphasizedAccelerate = [0.30, 0.00, 0.80, 0.15];
+var customExpressiveSpatialFast = [0.42, 1.67, 0.21, 0.90];
 var customExpressiveSpatialSlow = [0.39, 1.29, 0.35, 0.98];
 
 function fuzzyMatch(pattern, str) {

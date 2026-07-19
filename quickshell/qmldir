@@ -31,3 +31,5 @@ AnalogClock 1.0 components/Widgets/AnalogClock.qml
 DesktopClock 1.0 components/Widgets/DesktopClock.qml
 
 DesktopCalender 1.0 components/Widgets/DesktopCalender.qml
+ScreenFrame 1.0 components/ScreenFrame.qml
+InvertedCorner 1.0 components/InvertedCorner.qml

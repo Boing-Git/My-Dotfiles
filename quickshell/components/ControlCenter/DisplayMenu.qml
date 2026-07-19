@@ -45,7 +45,7 @@ ColumnLayout {
         id: displayFlickable
         Layout.fillWidth: true
         Layout.preferredHeight: Math.min(contentHeight, 450)
-        contentHeight: displayListContainer.childrenRect.height; clip: true
+        contentHeight: displayListContainer.implicitHeight; clip: true
 
         ColumnLayout {
             id: displayListContainer

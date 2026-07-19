@@ -16,7 +16,7 @@ QtObject {
 	
 		readonly property color inverse_on_surface: "#ffedea"
 	
-		readonly property color inverse_primary: "#ffb4a7"
+		readonly property color inverse_primary: "#ffb4a6"
 	
 		readonly property color inverse_surface: "#392e2c"
 	
@@ -28,11 +28,11 @@ QtObject {
 	
 		readonly property color on_primary: "#ffffff"
 	
-		readonly property color on_primary_container: "#3a0905"
+		readonly property color on_primary_container: "#3a0a04"
 	
-		readonly property color on_primary_fixed: "#3a0905"
+		readonly property color on_primary_fixed: "#3a0a04"
 	
-		readonly property color on_primary_fixed_variant: "#73342a"
+		readonly property color on_primary_fixed_variant: "#733429"
 	
 		readonly property color on_secondary: "#ffffff"
 	
@@ -44,7 +44,7 @@ QtObject {
 	
 		readonly property color on_surface: "#231918"
 	
-		readonly property color on_surface_variant: "#534341"
+		readonly property color on_surface_variant: "#534340"
 	
 		readonly property color on_tertiary: "#ffffff"
 	
@@ -52,19 +52,19 @@ QtObject {
 	
 		readonly property color on_tertiary_fixed: "#251a00"
 	
-		readonly property color on_tertiary_fixed_variant: "#564419"
+		readonly property color on_tertiary_fixed_variant: "#564519"
 	
 		readonly property color outline: "#857370"
 	
 		readonly property color outline_variant: "#d8c2be"
 	
-		readonly property color primary: "#904b40"
+		readonly property color primary: "#904b3e"
 	
 		readonly property color primary_container: "#ffdad4"
 	
 		readonly property color primary_fixed: "#ffdad4"
 	
-		readonly property color primary_fixed_dim: "#ffb4a7"
+		readonly property color primary_fixed_dim: "#ffb4a6"
 	
 		readonly property color scrim: "#000000"
 	
@@ -74,17 +74,17 @@ QtObject {
 	
 		readonly property color secondary_fixed: "#ffdad4"
 	
-		readonly property color secondary_fixed_dim: "#e7bdb6"
+		readonly property color secondary_fixed_dim: "#e7bdb5"
 	
 		readonly property color shadow: "#000000"
 	
-		readonly property color source_color: "#dd311f"
+		readonly property color source_color: "#c71500"
 	
 		readonly property color surface: "#fff8f6"
 	
 		readonly property color surface_bright: "#fff8f6"
 	
-		readonly property color surface_container: "#fceae7"
+		readonly property color surface_container: "#fceae6"
 	
 		readonly property color surface_container_high: "#f7e4e1"
 	
@@ -96,16 +96,16 @@ QtObject {
 	
 		readonly property color surface_dim: "#e8d6d3"
 	
-		readonly property color surface_tint: "#904b40"
+		readonly property color surface_tint: "#904b3e"
 	
 		readonly property color surface_variant: "#f5ddd9"
 	
 		readonly property color tertiary: "#6f5c2e"
 	
-		readonly property color tertiary_container: "#fbe0a6"
+		readonly property color tertiary_container: "#fae0a6"
 	
-		readonly property color tertiary_fixed: "#fbe0a6"
+		readonly property color tertiary_fixed: "#fae0a6"
 	
-		readonly property color tertiary_fixed_dim: "#dec48c"
+		readonly property color tertiary_fixed_dim: "#ddc48c"
 	
 }

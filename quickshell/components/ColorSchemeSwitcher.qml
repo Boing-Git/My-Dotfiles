@@ -65,12 +65,18 @@ Item {
         height: root.expanded ? 550 : 40
         
         color: Vars.translucent ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.85) : Theme.surface
-        radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        topLeftRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        topRightRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        bottomLeftRadius: root.gameMode || Vars.panelStyle === "Flat" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        bottomRightRadius: root.gameMode || Vars.panelStyle === "Flat" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
         
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
 
-        Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on topLeftRadius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on topRightRadius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on bottomLeftRadius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+        Behavior on bottomRightRadius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
         Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
         Behavior on height { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
 
@@ -155,7 +161,7 @@ Item {
             for (var i = 0; i < themeModel.count; i++) {
                 var item = themeModel.get(i);
                 if (Vars.fuzzyMatch(filterText, item.themeName)) {
-                    proxyModel.append({ "themeName": item.themeName });
+                    proxyModel.append({ "themeName": item.themeName, "themePrimary": item.themePrimary });
                 }
             }
         }
@@ -164,17 +170,20 @@ Item {
 
     Process {
         id: loadThemesProc
-        // Only get directory names directly under color-schemes, excluding currect
-        command: ["bash", "-c", "find ~/.config/color-schemes/ -maxdepth 1 -mindepth 1 -type d -not -name 'currect' -not -name 'current' -exec basename {} \\;"]
+        // Get directory names and their primary color from dark/quickTheme.qml
+        command: ["bash", "-c", "for d in ~/.config/color-schemes/*/; do name=$(basename \"$d\"); if [ \"$name\" != \"current\" ] && [ \"$name\" != \"currect\" ]; then primary=$(grep 'readonly property color primary:' \"$d/dark/quickTheme.qml\" 2>/dev/null | cut -d'\"' -f2); echo \"$name|$primary\"; fi; done"]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
                 themeModel.clear();
                 var lines = this.text.split("\n");
                 for (var i = 0; i < lines.length; i++) {
-                    var name = lines[i].trim();
-                    if (name.length > 0) {
-                        themeModel.append({ "themeName": name });
+                    var line = lines[i].trim();
+                    if (line.length > 0) {
+                        var parts = line.split("|");
+                        var name = parts[0];
+                        var primary = parts.length > 1 && parts[1] ? parts[1] : "#cccccc";
+                        themeModel.append({ "themeName": name, "themePrimary": primary });
                     }
                 }
                 sortFilterProxyModel.updateVisualGrid();

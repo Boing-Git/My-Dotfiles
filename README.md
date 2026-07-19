@@ -23,10 +23,10 @@ The entire system is glued together by a unified theming engine based on **Mater
 
 * **Window Manager**: [Hyprland](https://hyprland.org/) (configured entirely in **Lua** for maximum programmability and modularity)
 * **Desktop Shell**: [Quickshell](https://outfoxxed.me/quickshell/) (QtQuick/QML-based, replacing traditional Waybar/Eww setups with fluid animations)
-* **Terminal Emulator**: [WezTerm](https://wezfurlong.org/wezterm/) / [Foot](https://codeberg.org/dnkl/foot)
+* **Terminal Emulator**: [WezTerm](https://wezfurlong.org/wezterm/)
 * **Shell & Prompt**: [Fish](https://fishshell.com/) with [Starship](https://starship.rs/)
-* **Editor**: [Neovim](https://neovim.io/) & [Zed](https://zed.dev/)
-* **Launcher**: [Fuzzel](https://codeberg.org/dnkl/fuzzel)
+* **Editor**: [Neovim](https://neovim.io/)
+* **Launcher**: [Quickshell App Launcher](quickshell/) (replacing Fuzzel/Rofi)
 * **Audio Visualizer**: [Cava](https://github.com/karlstav/cava)
 * **System Monitoring**: Btop, Htop, Nvtop
 * **Theming & Color**: [Matugen](https://github.com/InioX/matugen) + Custom Python/Bash Scripts (`color-schemes/set-theme.sh`)
@@ -49,13 +49,15 @@ This repository avoids monolithic configuration files. Every component is meticu
 ### [Hyprland (Lua Config)](hypr/)
 Instead of a static `hyprland.conf`, the WM is configured via `hyprland.lua`. 
 * **Modular Layouts**: Dwindle, Master, Scrolling.
-* **Dynamic Manager**: A `manager.py` tool lets you swap themes, change animations (15+ profiles like *Springy*, *Jelly*, *Cinematic*), and layouts on the fly.
+* **Dynamic Manager**: A custom `omniformis` CLI python tool lets you swap themes, change animations (15+ profiles like *Springy*, *Jelly*, *Cinematic*), and layouts on the fly.
 * **Native Keybinds**: Deeply programmable workspace loops and window manipulation using Lua scripting.
 * *[Read more in the Hyprland README](hypr/README.md)*
 
 ### [Quickshell UI (OmniFormis Core)](quickshell/)
 A custom-built, hardware-accelerated QML shell powering the core user interface.
-* **Full Shell Experience**: Includes top panels, volume OSDs, notification daemons, a control center, and Hyprland workspace trackers.
+* **Full Shell Experience**: Includes top panels, volume OSDs, notification daemons, an M3-styled Control Center, and Hyprland workspace trackers.
+* **Built-in Settings App**: A unified, responsive GUI (`SettingsApp/UnifiedSettingsPage.qml`) that parses your `variables.lua` and Hyprland config dynamically. You can toggle special workspace rules, adjust window gaps via sliders, and customize layouts—all without touching a text editor!
+* **Dynamic Widgets & Interactions**: Features an analog desktop clock, segmented pill headers, and precise hover-zone transitions.
 * **Material You Theming**: Colors are extracted directly from the system scheme via Python scripts and injected as QML Singletons for real-time UI updates.
 * *[Read more in the Quickshell README](quickshell/README.md)*
 
@@ -65,7 +67,6 @@ The `color-schemes/` directory acts as the brain for system-wide color coordinat
 * Hyprland Borders & Animations
 * GTK & Qt applications (via `qt5ct`, `qt6ct`, `nwg-look`)
 * Terminal Emulators
-* Fuzzel Launcher
 * Spotify (via imperative `spicetify` hooks)
 
 #### Generating a New Theme
@@ -79,20 +80,24 @@ omniformis theme generate color-schemes/template_light.qml color-schemes/templat
 ## 📁 Repository Structure
 
 ```text
-~/dotfiles/
-├── btop/ & htop/ & nvtop/ # System monitors
+~/Dotfiles/
+├── btop/                  # System monitor (btop)
 ├── cava/                  # Audio visualizer
 ├── color-schemes/         # Core theming engine & scripts
+├── fastfetch/             # System information fetcher
 ├── fish/                  # Fish shell aliases, functions, and config
-├── foot/ & wezterm/       # Terminal configs
-├── fuzzel/                # App launcher styling
 ├── hypr/                  # Lua-based Hyprland config
 ├── matugen/               # Material color generation
-├── neovim/ & nvim/ & zed/ # Code editors
+├── nvim/                  # Neovim configuration
+├── nvtop/                 # GPU usage monitor
 ├── nwg-look/              # GTK settings
-├── qt5ct/ & qt6ct/        # Qt theme settings
+├── qt5ct/                 # Qt5 theme settings
+├── qt6ct/                 # Qt6 theme settings
+├── qtengine/              # Qt theming engine rules
 ├── quickshell/            # QML-based OmniFormis desktop shell
+├── scripts/               # Utility scripts and omniformis CLI
 ├── spicetify/             # Dynamic Spotify theming
+├── wezterm/               # Terminal emulator config
 └── starship.toml          # Shell prompt configuration
 ```
 

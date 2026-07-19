@@ -5,15 +5,15 @@ pragma Singleton
 import QtQuick
 
 QtObject {
-    readonly property color background: "#fbf1c7"
-    readonly property color error: "#9d0006"
+    readonly property color background: "#1d2021"
+    readonly property color error: "#cc241d"
     readonly property color error_container: "#fb4934"
     readonly property color inverse_on_surface: "#ebdbb2"
-    readonly property color inverse_primary: "#fabd2f"
-    readonly property color inverse_surface: "#282828"
-    readonly property color on_background: "#3c3836"
-    readonly property color on_error: "#fbf1c7"
-    readonly property color on_error_container: "#9d0006"
+    readonly property color inverse_primary: "#ebdbb2"
+    readonly property color inverse_surface: "#fbf1c7"
+    readonly property color on_background: "#282828"
+    readonly property color on_error: '#cc241d'
+    readonly property color on_error_container: "#fb4934"
     readonly property color on_primary: "#fbf1c7"
     readonly property color on_primary_container: "#3c3836"
     readonly property color on_primary_fixed: "#3c3836"

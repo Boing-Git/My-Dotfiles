@@ -239,12 +239,21 @@ hl.window_rule({
 --------------------------------------------------------------------------------
 
 -- FIXED: Converted from string list parameters into proper Lua tables
-hl.workspace_rule({
-    workspace = "w[tv1]s[false]",
-    gaps_out = singleWindowGapsOut
-})
+if vars.enableSingleWindowGaps ~= false then
+    hl.workspace_rule({
+        workspace = "w[tv1]s[false]",
+        gaps_out = singleWindowGapsOut
+    })
 
-hl.workspace_rule({
-    workspace = "f[1]s[false]",
-    gaps_out = singleWindowGapsOut
-})
+    hl.workspace_rule({
+        workspace = "f[1]s[false]",
+        gaps_out = singleWindowGapsOut
+    })
+end
+
+if vars.enableSpecialWorkspaceGaps then
+    hl.workspace_rule({
+        workspace = "s[true]",
+        gaps_out = singleWindowGapsOut
+    })
+end

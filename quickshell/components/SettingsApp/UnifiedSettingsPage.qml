@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Effects
+import QtQuick.Shapes
 import Quickshell
 import Quickshell.Io
 import "../.."
@@ -16,6 +17,7 @@ ColumnLayout {
 
     property var allVars: []
     property string activeCategory: "General"
+    property string copiedSliderValue: ""
     onActiveCategoryChanged: applyFilter()
 
     function updateVariable(key, val, source) {
@@ -134,7 +136,7 @@ ColumnLayout {
         focus: true
         KeyNavigation.up: searchInput
         
-        boundsBehavior: Flickable.StopAtBounds
+        // boundsBehavior: Flickable.StopAtBounds
         flickDeceleration: 1500
         maximumFlickVelocity: 3000
 
@@ -540,6 +542,72 @@ ColumnLayout {
                         }
                     }
 
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.RightButton
+                        cursorShape: Qt.ArrowCursor
+                        onClicked: (mouse) => {
+                            if (mouse.button === Qt.RightButton) {
+                                sliderContextMenu.popup();
+                            }
+                        }
+
+                        Menu {
+                            id: sliderContextMenu
+                            width: 180
+                            
+                            background: Rectangle {
+                                implicitWidth: 180
+                                color: Theme.surface_container_highest
+                                radius: 8
+                                border.color: Theme.outline_variant
+                                border.width: 1
+                            }
+                            
+                            MenuItem {
+                                enabled: false // read-only
+                                implicitWidth: 180
+                                implicitHeight: 32
+                                contentItem: Item {
+                                    Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: "Value:"; color: Theme.on_surface_variant; font.family: Vars.fontFamily; font.pixelSize: 14 }
+                                    Text { anchors.right: parent.right; anchors.rightMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: Number(m3Slider.value).toFixed(3); color: Theme.on_surface; font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: Font.Bold }
+                                }
+                                background: Rectangle { color: "transparent" }
+                            }
+                            
+                            MenuSeparator {
+                                implicitWidth: 180
+                                implicitHeight: 9
+                                contentItem: Rectangle { implicitWidth: 180; implicitHeight: 1; color: Theme.outline_variant; anchors.centerIn: parent }
+                            }
+
+                            MenuItem {
+                                implicitWidth: 180
+                                implicitHeight: 36
+                                text: "Copy Value"
+                                contentItem: Text { text: "Copy Value"; color: Theme.on_surface; font.family: Vars.fontFamily; font.pixelSize: 14; verticalAlignment: Text.AlignVCenter; anchors.left: parent.left; anchors.leftMargin: 12 }
+                                background: Rectangle { color: parent.highlighted ? Theme.surface_variant : "transparent"; radius: 4; anchors.fill: parent; anchors.margins: 2 }
+                                onTriggered: rootPage.copiedSliderValue = delegateRoot.itemVal
+                            }
+                            MenuItem {
+                                implicitWidth: 180
+                                implicitHeight: 36
+                                text: "Paste Value"
+                                enabled: rootPage.copiedSliderValue !== ""
+                                contentItem: Text { text: "Paste Value (" + rootPage.copiedSliderValue + ")"; color: parent.enabled ? Theme.on_surface : Theme.on_surface_variant; font.family: Vars.fontFamily; font.pixelSize: 14; verticalAlignment: Text.AlignVCenter; anchors.left: parent.left; anchors.leftMargin: 12 }
+                                background: Rectangle { color: parent.highlighted ? Theme.surface_variant : "transparent"; radius: 4; anchors.fill: parent; anchors.margins: 2 }
+                                onTriggered: {
+                                    if (rootPage.copiedSliderValue !== "") {
+                                        var rounded = Number((parseFloat(rootPage.copiedSliderValue)).toFixed(3));
+                                        m3Slider.value = rounded;
+                                        settingsModel.setProperty(delegateRoot.delegateIndex, "val", rounded.toString());
+                                        updateVariable(delegateRoot.itemKey, rounded.toString(), delegateRoot.itemSource);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // ═══════════════════════════════════════════════
                     // MODE A: Centered/Bidirectional slider (- to 0 to +)
                     // ═══════════════════════════════════════════════
@@ -742,7 +810,7 @@ ColumnLayout {
                         radius: width / 2
                         color: Theme.primary
                     }
-                }
+                } // End inner Slider
 
                 Flow {
                     visible: delegateRoot.itemType === "enum"
@@ -801,6 +869,80 @@ ColumnLayout {
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    settingsModel.setProperty(delegateRoot.delegateIndex, "val", modelData);
+                                    updateVariable(delegateRoot.itemKey, modelData, delegateRoot.itemSource);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                M3Shapes {
+                    id: m3ShapesObj
+                }
+
+                Flow {
+                    visible: delegateRoot.itemType === "shape"
+                    Layout.fillWidth: true
+                    spacing: 2
+                    Repeater {
+                        id: shapeRepeater
+                        model: parent.visible ? delegateRoot.itemEnums.split("|||") : []
+                        delegate: Rectangle {
+                            property bool isSelected: delegateRoot.itemVal === modelData
+                            
+                            property var prevItem: index > 0 ? shapeRepeater.itemAt(index - 1) : null
+                            property var nextItem: index < (shapeRepeater.count - 1) ? shapeRepeater.itemAt(index + 1) : null
+                            property bool hasLeft: prevItem && prevItem.y === y
+                            property bool hasRight: nextItem && nextItem.y === y
+                            
+                            height: 36
+                            width: 48
+                            
+                            topLeftRadius: isSelected ? height / 2 : (hasLeft ? 4 : height / 2)
+                            bottomLeftRadius: isSelected ? height / 2 : (hasLeft ? 4 : height / 2)
+                            topRightRadius: isSelected ? height / 2 : (hasRight ? 4 : height / 2)
+                            bottomRightRadius: isSelected ? height / 2 : (hasRight ? 4 : height / 2)
+                            
+                            Behavior on topLeftRadius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                            Behavior on bottomLeftRadius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                            Behavior on topRightRadius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                            Behavior on bottomRightRadius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                            
+                            color: isSelected ? Theme.primary : Theme.surface_container_highest
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: Vars.animationDuration
+                                    easing.type: Easing.BezierSpline
+                                    easing.bezierCurve: Vars.customExpressiveSpatialSlow
+                                }
+                            }
+                            
+                            Shape {
+                                width: 100
+                                height: 100
+                                anchors.centerIn: parent
+                                scale: 0.24
+                                layer.enabled: true
+                                layer.samples: 4
+                                
+                                ShapePath {
+                                    fillColor: isSelected ? Theme.on_primary : Theme.on_surface
+                                    strokeColor: "transparent"
+                                    strokeWidth: 0
+                                    PathSvg {
+                                        path: m3ShapesObj.getPath(modelData)
+                                    }
+                                }
+                            }
+                            
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                hoverEnabled: true
+                                id: shapeHoverArea
                                 onClicked: {
                                     settingsModel.setProperty(delegateRoot.delegateIndex, "val", modelData);
                                     updateVariable(delegateRoot.itemKey, modelData, delegateRoot.itemSource);
@@ -924,6 +1066,7 @@ ColumnLayout {
                     if (type === "number") {
                         if (key === "gaps_in") { type = "slider"; max = 50; step = 1; }
                         else if (key === "gaps_out") { type = "slider"; max = 100; step = 1; }
+                        else if (key === "singleWindowGapsOut") { type = "slider"; max = 100; step = 1; }
                         else if (key === "border_size") { type = "slider"; max = 20; step = 1; }
                         else if (key === "rounding") { type = "slider"; max = 50; step = 1; }
                         else if (key === "rounding_power") { type = "slider"; min = 1.0; max = 50.0; step = 1.0; }
@@ -1037,7 +1180,7 @@ ColumnLayout {
 
                     var enumsStr = "";
                     if (key === "wallpaperMaskShape") {
-                        type = "enum";
+                        type = "shape";
                         enumsStr = "Circle|||Square|||Slanted|||Arch|||Flag|||Arrow|||Semicircle|||Oval|||Pill|||Triangle|||Diamond|||Clamshell|||Pentagon|||Gem|||VerySunny|||Sunny|||4SidedCookie|||6SidedCookie|||7SidedCookie|||9SidedCookie|||12SidedCookie|||GhostIsh|||4LeafClover|||8LeafClover|||Burst|||SoftBurst|||Boom|||SoftBoom|||Flower|||Puffy|||PuffyDiamond|||PixelCircle|||PixelTriangle|||Bun|||Heart";
                     } else if (key === "wallpaperMaskColor") {
                         type = "color";
@@ -1045,8 +1188,11 @@ ColumnLayout {
                     } else if (key === "wallpaperMaskEnabled") {
                         type = "bool";
                     } else if (key === "clockShape") {
-                        type = "enum";
+                        type = "shape";
                         enumsStr = "Circle|||Square|||VerySunny|||Sunny|||4SidedCookie|||6SidedCookie|||7SidedCookie|||9SidedCookie|||12SidedCookie|||SoftBurst|||SoftBoom|||Flower|||Puffy|||Bun";
+                    } else if (key === "panelStyle") {
+                        type = "enum";
+                        enumsStr = "Floating|||Attached|||Framed";
                     }
 
                     newVars.push({

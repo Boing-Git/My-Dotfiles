@@ -13,8 +13,10 @@ Item {
     signal rightClicked
     signal scrolled(int delta)
     property string timeString: ""
-    property string dateString: "" // New property for the date
+    property string dateString: ""
     property bool gameMode: false
+    property alias panel: clockRect
+    property bool isHovered: dragArea.containsMouse
 
     // No physics strings or translation properties needed
 
@@ -31,13 +33,19 @@ Item {
         width: parent.width
         height: parent.height
         color: Vars.translucent ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.85) : Theme.surface
-        radius: root.gameMode ? 0 : height / 2
+        topLeftRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : height / 2
+        topRightRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : height / 2
+        bottomLeftRadius: root.gameMode ? 0 : height / 2
+        bottomRightRadius: root.gameMode ? 0 : height / 2
         z: 1
 
         Rectangle {
             anchors.fill: parent
-            radius: root.gameMode ? 0 : height / 2
-            color: dragArea.pressed ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.12) : (dragArea.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+            topLeftRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : height / 2
+            topRightRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : height / 2
+            bottomLeftRadius: root.gameMode ? 0 : height / 2
+            bottomRightRadius: root.gameMode ? 0 : height / 2
+            color: dragArea.pressed ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.12) : (dragArea.containsMouse ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.08) : "transparent")
             Behavior on color {
                 enabled: !root.gameMode
                 ColorAnimation {

@@ -13,6 +13,11 @@ ColumnLayout {
     Layout.fillWidth: true
     spacing: 4
 
+    FontLoader {
+        id: filledIconFont
+        source: "../../assets/MaterialSymbolsRounded-Filled.ttf"
+    }
+
     Repeater {
         model: [
             // Connections
@@ -92,9 +97,9 @@ ColumnLayout {
                     
                     Text {
                         text: modelData.icon
-                        font.family: "Material Symbols Outlined"
+                        font.family: parent.parent.isSelected ? filledIconFont.name : "Material Symbols Outlined"
                         font.pixelSize: 24
-                        color: parent.isSelected ? Theme.on_secondary_container : Theme.on_surface_variant
+                        color: parent.parent.isSelected ? Theme.on_secondary_container : Theme.on_surface_variant
                     }
                     ColumnLayout {
                         Layout.fillWidth: true
@@ -103,8 +108,8 @@ ColumnLayout {
                             text: modelData.name
                             font.family: Vars.fontFamily
                             font.pixelSize: 16
-                            font.weight: parent.isSelected ? 500 : 400
-                            color: parent.isSelected ? Theme.on_secondary_container : Theme.on_surface
+                            font.weight: parent.parent.isSelected ? 500 : 400
+                            color: parent.parent.isSelected ? Theme.on_secondary_container : Theme.on_surface
                             Layout.fillWidth: true
                             horizontalAlignment: Text.AlignLeft
                         }
@@ -112,7 +117,7 @@ ColumnLayout {
                             text: modelData.subtitle
                             font.family: Vars.fontFamily
                             font.pixelSize: 12
-                            color: parent.isSelected ? Theme.on_secondary_container : Theme.on_surface_variant
+                            color: parent.parent.isSelected ? Theme.on_secondary_container : Theme.on_surface_variant
                             Layout.fillWidth: true
                             horizontalAlignment: Text.AlignLeft
                             opacity: 0.9

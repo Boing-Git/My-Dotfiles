@@ -75,7 +75,7 @@ local vars = {
     -- Set the gap size between windows (inner)
     gaps_in = 5,
     -- Set the gap size between windows and screen edge (outer)
-    gaps_out = 10,
+    gaps_out = 25,
     -- Set the border size
     border_size = 2,
     -- Set window rounding
@@ -88,8 +88,12 @@ local vars = {
     inactive_opacity = 0.95,
     -- Set window opacity for window rules
     windowOpacity = "0.9",
+    -- Enable gap size for single window
+    enableSingleWindowGaps = false,
     -- Set gap size for single window
-    singleWindowGapsOut = "10",
+    singleWindowGapsOut = 30,
+    -- Enable special workspace gaps rule
+    enableSpecialWorkspaceGaps = true,
 
     -- Shadows
     -- Enable window shadows
@@ -145,7 +149,7 @@ local vars = {
 
     -- Animation Style
     -- Select animation style for hyprland ("expressive", "spring", "jelly", "flyingcards", "snappy", "cinematic", "minimal", "fluid", "aggressive", "elegant", "playful", "elastic", "swift", "relaxed", "slipstream", "standard", "fluent", "custom", "none")
-    AnimateStyle = "slipstream",
+    AnimateStyle = "fluid",
     
     -- --- Custom Animation Profile ---
     
@@ -153,9 +157,9 @@ local vars = {
     -- Set Custom Standard Curve
     CustomStandard = "0.98, 0.09, 0.42, 0.50",
     -- Set Custom Standard Decelerate Curve
-    CustomStandardDecelerate = "0.0, 0.0, 0.0, 1.0",
+    CustomStandardDecelerate = "0.00, 0.00, 0.00, 1.00",
     -- Set Custom Standard Accelerate Curve
-    CustomStandardAccelerate = "0.3, 0.0, 1.0, 1.0",
+    CustomStandardAccelerate = "1.00, 0.13, 0.63, 0.42",
     -- Set Custom Emphasized Decelerate Curve
     CustomEmphasizedDecelerate = "0.05, 0.7, 0.1, 1.0",
     -- Set Custom Emphasized Accelerate Curve

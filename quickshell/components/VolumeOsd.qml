@@ -20,6 +20,7 @@ Item {
     property bool isVisible: false
     property bool preventShow: false
     property bool gameMode: false
+    property alias panel: osdBackground
     property real smoothVolume: Pipewire.defaultAudioSink?.audio?.volume ?? 0
 
     onPreventShowChanged: {
@@ -106,7 +107,10 @@ Item {
         anchors.centerIn: parent
         width: mainContainer.isVisible ? 352 : 132 // 320 + 32 and 100 + 32 padding
         height: 80 // 48 + 32 padding
-        radius: Vars.radiusLarge
+        topLeftRadius: mainContainer.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : Vars.radiusLarge
+        topRightRadius: mainContainer.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : Vars.radiusLarge
+        bottomLeftRadius: mainContainer.gameMode ? 0 : Vars.radiusLarge
+        bottomRightRadius: mainContainer.gameMode ? 0 : Vars.radiusLarge
         color: Vars.translucent ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.85) : Theme.surface
 
         layer.enabled: true

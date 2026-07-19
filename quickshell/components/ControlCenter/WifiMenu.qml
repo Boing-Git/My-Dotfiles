@@ -17,6 +17,11 @@ ColumnLayout {
     // Remove anchors.fill to allow dynamic implicit height
     anchors.margins: Vars.spacingLarge
     spacing: Vars.spacingMedium
+
+    FontLoader {
+        id: filledIconFont
+        source: "../../assets/MaterialSymbolsRounded-Filled.ttf"
+    }
     
     opacity: isActive ? 1.0 : 0.0
     visible: opacity > 0
@@ -59,7 +64,7 @@ ColumnLayout {
         id: wifiFlickable
         Layout.fillWidth: true
         Layout.preferredHeight: Math.min(contentHeight, 450)
-        contentHeight: wifiListContainer.childrenRect.height; clip: true
+        contentHeight: wifiListContainer.implicitHeight; clip: true
 
         ColumnLayout {
             id: wifiListContainer
@@ -82,12 +87,14 @@ ColumnLayout {
                             Layout.preferredWidth: 40; Layout.preferredHeight: 40
                             radius: modelData.connected ? 12 : 20
                             Behavior on radius { NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
-                            color: modelData.connected ? Theme.on_primary : Qt.rgba(Theme.on_surface_variant.r, Theme.on_surface_variant.g, Theme.on_surface_variant.b, 0.1)
+                            color: modelData.connected ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.2) : Qt.rgba(Theme.on_surface_variant.r, Theme.on_surface_variant.g, Theme.on_surface_variant.b, 0.1)
                             Text {
                                 anchors.centerIn: parent
-                                font.family: "Material Symbols Outlined"; font.pixelSize: 22
-                                color: modelData.connected ? Theme.surface : Theme.on_surface_variant
+                                font.family: modelData.connected ? filledIconFont.name : "Material Symbols Outlined"
+                                font.pixelSize: 22
+                                color: modelData.connected ? Theme.on_primary : Theme.on_surface_variant
                                 text: {
+                                    if (modelData.connected) return "\ue1d8";
                                     if (modelData.signalStrength === undefined) return "\ue63e";
                                     let tier = Math.min(Math.floor(modelData.signalStrength / 25), 3);
                                     return ["\ue1ba", "\uebe4", "\uebd6", "\uebe1"][tier] || "\ue63e";
@@ -100,12 +107,12 @@ ColumnLayout {
                             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter; spacing: 0
                             Text { 
                                 text: modelData.name; font.family: Vars.fontFamily; font.pixelSize: 14; font.weight: Font.Bold
-                                color: modelData.connected ? Theme.surface : Theme.on_surface_variant
+                                color: modelData.connected ? Theme.on_primary : Theme.on_surface_variant
                                 Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                             Text { 
                                 text: modelData.connected ? "Connected" : "Available"; font.family: Vars.fontFamily; font.pixelSize: 12; opacity: 0.8
-                                color: modelData.connected ? Theme.surface : Theme.on_surface_variant
+                                color: modelData.connected ? Qt.rgba(Theme.on_primary.r, Theme.on_primary.g, Theme.on_primary.b, 0.75) : Theme.on_surface_variant
                                 Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customStandard } }
                             }
                         }

@@ -109,7 +109,8 @@ ColumnLayout {
 
                 // Icon at right end
                 Text {
-                    x: parent.width - sliders.leftRadiusLarge - width / 2
+                    anchors.right: parent.right
+                    anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     text: audioNode && audioNode.audio.muted ? "\ue04f" : "\ue050"
                     font.family: "Material Symbols Outlined"
@@ -189,7 +190,8 @@ ColumnLayout {
 
                 // Icon at right end
                 Text {
-                    x: parent.width - sliders.leftRadiusLarge - width / 2
+                    anchors.right: parent.right
+                    anchors.rightMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     text: "\ue518"
                     font.family: "Material Symbols Outlined"

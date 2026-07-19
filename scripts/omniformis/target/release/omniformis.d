@@ -1,0 +1,1 @@
+/home/boing/Dotfiles/scripts/omniformis/target/release/omniformis: /home/boing/Dotfiles/scripts/omniformis/src/bezier.rs /home/boing/Dotfiles/scripts/omniformis/src/hypr.rs /home/boing/Dotfiles/scripts/omniformis/src/main.rs /home/boing/Dotfiles/scripts/omniformis/src/qs.rs /home/boing/Dotfiles/scripts/omniformis/src/theme.rs /home/boing/Dotfiles/scripts/omniformis/src/utils.rs

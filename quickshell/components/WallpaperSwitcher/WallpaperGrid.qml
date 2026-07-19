@@ -12,7 +12,7 @@ GridView {
     clip: true
     cellWidth: Math.floor(parent.width / 3)
     cellHeight: cellWidth * 0.5625 + 48
-    boundsBehavior: Flickable.StopAtBounds
+    // boundsBehavior: Flickable.StopAtBounds
     flickDeceleration: 1500
     maximumFlickVelocity: 3000
 

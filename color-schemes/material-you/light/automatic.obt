@@ -11,9 +11,9 @@
     /* Primary Accents (Blue mapping) */
     --blue1: #ffdad4;
     --blue2: #ffdad4;
-    --blue3: #904b40;
-    --blue4: #3a0905;
-    --blue5: #ffb4a7;
+    --blue3: #904b3e;
+    --blue4: #3a0a04;
+    --blue5: #ffb4a6;
 
     /* Error / Danger (Red mapping) */
     --red1: #E85E75;
@@ -31,8 +31,8 @@
     --pink5: #ffffff;
 
     /* Tertiary Accents (Teal mapping -> Tertiary) */
-    --teal1: #fbe0a6;
-    --teal2: #fbe0a6;
+    --teal1: #fae0a6;
+    --teal2: #fae0a6;
     --teal3: #6f5c2e;
     --teal4: #251a00;
     /* ИСПРАВЛЕНО: inverse_tertiary -> on_tertiary */
@@ -40,7 +40,7 @@
 
     /* Purple mapping */
     --purple1: #997FDC;
-    --purple2: #e7bdb6;
+    --purple2: #e7bdb5;
     --purple3: #775651;
     --purple4: #2c1511;
     --purple5: #3D2380;
@@ -63,15 +63,15 @@
     --grey2: #d8c2be;
     --grey3: #f1dfdb;
     --grey4: #f7e4e1;
-    --grey5: #fceae7;
+    --grey5: #fceae6;
     --grey6: #fff8f6;
     --grey7: #e8d6d3;
     --grey8: #000000;
 
     /* Text */
     --white1: #231918;
-    --white2: #534341;
-    --white3: #534341;
+    --white2: #534340;
+    --white3: #534340;
     --white4: #C2C2C2;
     --white5: #ADADAD;
 

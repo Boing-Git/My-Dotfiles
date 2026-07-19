@@ -90,8 +90,8 @@ GridView {
             anchors.margins: Vars.spacingSmall
             radius: Vars.radiusMedium
 
-            color: root.currentTheme === themeName ? Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.12) : (tileMouseArea.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
-            border.color: Theme.primary
+            color: root.currentTheme === themeName ? Qt.rgba(Qt.color(themePrimary).r, Qt.color(themePrimary).g, Qt.color(themePrimary).b, 0.12) : (tileMouseArea.containsMouse ? Qt.rgba(Theme.on_surface.r, Theme.on_surface.g, Theme.on_surface.b, 0.08) : "transparent")
+            border.color: themePrimary
             border.width: (root.currentTheme === themeName) ? 2 : 0
             clip: true
 
@@ -115,8 +115,8 @@ GridView {
                         text: "palette"
                         font.family: "Material Symbols Outlined"
                         font.pixelSize: 48
-                        color: isCurrentFocus ? Theme.on_primary_container : (root.currentTheme === themeName ? Theme.primary : Theme.on_surface)
-                        opacity: 0.8
+                        color: isCurrentFocus ? Theme.on_primary_container : themePrimary
+                        opacity: isCurrentFocus || root.currentTheme === themeName ? 1.0 : 0.6
                     }
                 }
 
@@ -124,11 +124,12 @@ GridView {
                     Layout.fillWidth: true
                     text: themeName
                     font.family: Vars.fontFamily
-                    color: isCurrentFocus ? Theme.on_primary_container : (root.currentTheme === themeName ? Theme.primary : Theme.on_surface)
+                    color: isCurrentFocus ? Theme.on_primary_container : themePrimary
                     font.pixelSize: 16
                     font.weight: root.currentTheme === themeName ? Font.Bold : Font.Normal
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter
+                    opacity: isCurrentFocus || root.currentTheme === themeName ? 1.0 : 0.6
                     
                     Behavior on color { ColorAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
                 }

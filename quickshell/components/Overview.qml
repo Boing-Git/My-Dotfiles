@@ -78,7 +78,7 @@ Item {
             color: "transparent"
 
             WlrLayershell.namespace: "overview"
-            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
             exclusionMode: ExclusionMode.Ignore
             
@@ -148,27 +148,35 @@ Item {
 
                 anchors.top: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.topMargin: overviewContainer.gameMode ? 0 : 5
 
                 property real targetWidth: workspaceGrid.implicitWidth + overviewPanel.bgPadding * 2
                 property real targetHeight: workspaceGrid.implicitHeight + overviewPanel.bgPadding * 2
+                
+                property real innerMaxWidth: parent.width - (2 * Vars.spacingSmall)
+                property bool touchesEdges: Vars.panelStyle === "Framed" && targetWidth >= innerMaxWidth - 20
 
-                width: overviewContainer.visibleState ? targetWidth : 100
+                anchors.topMargin: overviewContainer.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
+
+                width: overviewContainer.visibleState ? (touchesEdges ? innerMaxWidth : targetWidth) : 100
                 height: overviewContainer.visibleState ? targetHeight : 40
 
-                radius: overviewContainer.gameMode ? 0 : (overviewContainer.visibleState ? Vars.radiusExtraLarge : height / 2)
-                color: Vars.translucent ? Qt.rgba(Theme.surface_container_high.r, Theme.surface_container_high.g, Theme.surface_container_high.b, 0.85) : Theme.surface_container_high
+                property real defaultRadius: overviewContainer.gameMode ? 0 : (overviewContainer.visibleState ? Vars.radiusExtraLarge : height / 2)
+                property real innerFrameRadius: Math.max(0, Vars.radiusExtraLarge - Vars.spacingSmall)
+
+                topLeftRadius: overviewContainer.gameMode || Vars.panelStyle === "Attached" ? 0 : (Vars.panelStyle === "Framed" ? (touchesEdges ? innerFrameRadius : 0) : defaultRadius)
+                topRightRadius: overviewContainer.gameMode || Vars.panelStyle === "Attached" ? 0 : (Vars.panelStyle === "Framed" ? (touchesEdges ? innerFrameRadius : 0) : defaultRadius)
+                bottomLeftRadius: overviewContainer.gameMode || touchesEdges ? 0 : defaultRadius
+                bottomRightRadius: overviewContainer.gameMode || touchesEdges ? 0 : defaultRadius
+
+                color: Vars.translucent ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.85) : Theme.surface
                 
                 opacity: overviewContainer.visibleState ? 1.0 : 0.0
                 
-                Behavior on radius {
-                    enabled: !overviewContainer.gameMode
-                    NumberAnimation {
-                        duration: Vars.animationDuration
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Vars.customExpressiveSpatialSlow
-                    }
-                }
+                Behavior on topLeftRadius { enabled: !overviewContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                Behavior on topRightRadius { enabled: !overviewContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                Behavior on bottomLeftRadius { enabled: !overviewContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+                Behavior on bottomRightRadius { enabled: !overviewContainer.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
+
                 Behavior on width {
                     enabled: !overviewContainer.gameMode
                     NumberAnimation {
@@ -250,6 +258,47 @@ Item {
                     }
 
                 } // End of expandedUI
+            } // End of panelBackground
+
+            // === FRAME CORNERS ===
+            InvertedCorner {
+                anchors.top: panelBackground.top
+                anchors.right: panelBackground.left
+                side: "left"
+                visible: Vars.panelStyle === "Framed" && !panelBackground.touchesEdges && overviewContainer.visibleState
+                color: panelBackground.color
+                opacity: panelBackground.opacity
+                radius: panelBackground.innerFrameRadius
+            }
+
+            InvertedCorner {
+                anchors.top: panelBackground.top
+                anchors.left: panelBackground.right
+                side: "right"
+                visible: Vars.panelStyle === "Framed" && !panelBackground.touchesEdges && overviewContainer.visibleState
+                color: panelBackground.color
+                opacity: panelBackground.opacity
+                radius: panelBackground.innerFrameRadius
+            }
+
+            InvertedCorner {
+                anchors.top: panelBackground.bottom
+                anchors.left: panelBackground.left
+                side: "top-left"
+                visible: Vars.panelStyle === "Framed" && panelBackground.touchesEdges && overviewContainer.visibleState
+                color: panelBackground.color
+                opacity: panelBackground.opacity
+                radius: panelBackground.innerFrameRadius
+            }
+
+            InvertedCorner {
+                anchors.top: panelBackground.bottom
+                anchors.right: panelBackground.right
+                side: "top-right"
+                visible: Vars.panelStyle === "Framed" && panelBackground.touchesEdges && overviewContainer.visibleState
+                color: panelBackground.color
+                opacity: panelBackground.opacity
+                radius: panelBackground.innerFrameRadius
             }
 
             // === KEYBOARD NAVIGATION ===

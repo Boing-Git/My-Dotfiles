@@ -14,6 +14,7 @@ Item {
 
     property bool gameMode: false
     property bool forceHidePill: false
+    property alias panel: bg
 
     property var currentWorkspace: Hyprland.focusedWorkspace
     property int activeWsId: currentWorkspace ? currentWorkspace.id : 1
@@ -68,7 +69,10 @@ Item {
         }
         anchors.centerIn: parent
         color: Vars.translucent ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.85) : Theme.surface
-        radius: height / 2
+        topLeftRadius: mainContainer.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : height / 2
+        topRightRadius: mainContainer.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : height / 2
+        bottomLeftRadius: mainContainer.gameMode ? 0 : height / 2
+        bottomRightRadius: mainContainer.gameMode ? 0 : height / 2
         clip: true
         opacity: (overlayVisible && !mainContainer.forceHidePill) ? 1.0 : 0.0
         visible: opacity > 0

@@ -11,8 +11,9 @@ PanelWindow {
     
     signal toggleFloatingSettings()
     
-    exclusionMode: gameMode ? ExclusionMode.Ignore : ExclusionMode.Normal
-    exclusiveZone: gameMode ? 0 : 50
+    exclusionMode: ExclusionMode.Ignore
+    exclusiveZone: 0
+    WlrLayershell.layer: WlrLayer.Top
     anchors {
         top: true
         left: true
@@ -54,7 +55,16 @@ PanelWindow {
     // 1. The Mask Region Array
     mask: Region {
         Region {
-            item: topBarMask
+            item: clockHoverZone
+        }
+        Region {
+            item: clockPill
+        }
+        Region {
+            item: workspacesItem
+        }
+        Region {
+            item: statusBarItem
         }
         Region {
             item: controlCenterItem.panelMask
@@ -85,11 +95,18 @@ PanelWindow {
         }
     }
 
-    // 2. Fixed Top Bar Mask
     Item {
-        id: topBarMask
-        width: parent.width
-        height: 70
+        id: clockHoverZone
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 300
+        height: 100
+        MouseArea {
+            id: clockHoverArea
+            anchors.fill: parent
+            hoverEnabled: true
+            acceptedButtons: Qt.NoButton
+        }
     }
 
     // --- Main UI Content ---
@@ -118,6 +135,7 @@ PanelWindow {
             }
 
             StatusBar {
+                id: statusBarItem
                 Layout.alignment: Qt.AlignTop
             }
         }
@@ -130,12 +148,32 @@ PanelWindow {
         anchors.horizontalCenter: topWindow.gameMode ? undefined : parent.horizontalCenter
         anchors.left: topWindow.gameMode ? parent.left : undefined
         anchors.right: topWindow.gameMode ? parent.right : undefined
-        anchors.topMargin: topWindow.gameMode ? 0 : 5
-        opacity: ((launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || colorSchemeSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || volumeOsdItem.isVisible || workspacesItem.overlayVisible) && !topWindow.gameMode) ? 0.0 : 1.0
+        
+        property bool isShown: ((clockHoverArea.containsMouse || clockPill.isHovered) && !(launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || colorSchemeSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || volumeOsdItem.isVisible || workspacesItem.overlayVisible) && !topWindow.gameMode)
+        
+        anchors.topMargin: {
+            if (topWindow.gameMode) return 0;
+            if (!isShown) return -clockPill.height - 20;
+            return (Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat") ? 0 : Vars.spacingSmall;
+        }
+        
+        opacity: isShown ? 1.0 : 0.0
+        
+        Behavior on anchors.topMargin {
+            enabled: !topWindow.gameMode
+            NumberAnimation {
+                duration: Vars.animationDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Vars.customExpressiveSpatialSlow
+            }
+        }
+
         Behavior on opacity {
             enabled: !topWindow.gameMode
             NumberAnimation {
                 duration: Vars.animationDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Vars.customStandard
             }
         }
 
@@ -157,7 +195,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: topWindow.gameMode ? 0 : 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         forceHidePill: launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || colorSchemeSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || volumeOsdItem.isVisible
     }
 
@@ -166,7 +204,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         width: 100
         height: 40
         focusWindow: topWindow
@@ -181,6 +219,10 @@ PanelWindow {
                 emojiPickerItem.expanded = false;
                 settingsAppItem.expanded = false;
             }
+        }
+        
+        onOpenSettingsRequested: {
+            toggleSettings();
         }
     }
 
@@ -318,7 +360,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         width: 100
         height: 40
         focusWindow: topWindow
@@ -341,7 +383,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         width: 100
         height: 40
         focusWindow: topWindow
@@ -365,7 +407,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         width: 100
         height: 40
         focusWindow: topWindow
@@ -389,7 +431,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         width: 100
         height: 40
         focusWindow: topWindow
@@ -433,7 +475,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: topWindow.gameMode ? 55 : 5
+        anchors.topMargin: topWindow.gameMode ? 55 : (Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall)
         preventShow: launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || colorSchemeSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || launcherItem.panel.width > 105 || controlCenterItem.panel.width > 105 || powerMenuItem.panel.width > 105 || polkitItem.panel.width > 105 || notificationPopupItem.panel.width > 105 || emojiPickerItem.panel.width > 105 || wallpaperSwitcherItem.panel.width > 105 || colorSchemeSwitcherItem.panel.width > 105 || settingsAppItem.panel.width > 105
     }
 
@@ -442,7 +484,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         focusWindow: topWindow
         forceHidePill: launcherItem.expanded || controlCenterItem.expanded || colorSchemeSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || volumeOsdItem.isVisible
 
@@ -465,7 +507,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         width: 100
         height: 40
         focusWindow: topWindow
@@ -488,7 +530,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         focusWindow: topWindow
         forceHidePill: launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || settingsAppItem.expanded || volumeOsdItem.isVisible
 
@@ -512,7 +554,7 @@ PanelWindow {
         gameMode: topWindow.gameMode
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 5
+        anchors.topMargin: topWindow.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Flat" ? 0 : Vars.spacingSmall
         focusWindow: topWindow
         forceHidePill: launcherItem.expanded || controlCenterItem.expanded || wallpaperSwitcherItem.expanded || powerMenuItem.expanded || polkitItem.expanded || notificationPopupItem.expanded || emojiPickerItem.expanded || colorSchemeSwitcherItem.expanded || volumeOsdItem.isVisible
         onDetachToggled: function(isFloating) {
@@ -532,5 +574,32 @@ PanelWindow {
         }
 
         onCloseRequested: expanded = false
+    }
+
+    Repeater {
+        model: [launcherItem, clockPill, workspacesItem, powerMenuItem, emojiPickerItem, colorSchemeSwitcherItem, wallpaperSwitcherItem, settingsAppItem, controlCenterItem, notificationPopupItem, polkitItem, volumeOsdItem]
+        delegate: Item {
+            property var targetPanel: modelData
+            property bool hasPanel: !!targetPanel.panel
+            
+            InvertedCorner {
+                x: (parent.hasPanel ? parent.targetPanel.x + parent.targetPanel.panel.x : parent.targetPanel.x) - width + 1
+                y: (parent.hasPanel ? parent.targetPanel.y + parent.targetPanel.panel.y : parent.targetPanel.y)
+                side: "left"
+                visible: Vars.panelStyle === "Framed" && opacity > 0 && (parent.hasPanel ? parent.targetPanel.panel.width : parent.targetPanel.width) > 0
+                color: parent.hasPanel ? parent.targetPanel.panel.color : "transparent"
+                opacity: (parent.hasPanel ? parent.targetPanel.panel.opacity : 1.0) * parent.targetPanel.opacity
+                radius: Math.max(0, Vars.radiusExtraLarge - Vars.spacingSmall)
+            }
+            InvertedCorner {
+                x: (parent.hasPanel ? parent.targetPanel.x + parent.targetPanel.panel.x + parent.targetPanel.panel.width : parent.targetPanel.x + parent.targetPanel.width) - 1
+                y: (parent.hasPanel ? parent.targetPanel.y + parent.targetPanel.panel.y : parent.targetPanel.y)
+                side: "right"
+                visible: Vars.panelStyle === "Framed" && opacity > 0 && (parent.hasPanel ? parent.targetPanel.panel.width : parent.targetPanel.width) > 0
+                color: parent.hasPanel ? parent.targetPanel.panel.color : "transparent"
+                opacity: (parent.hasPanel ? parent.targetPanel.panel.opacity : 1.0) * parent.targetPanel.opacity
+                radius: Math.max(0, Vars.radiusExtraLarge - Vars.spacingSmall)
+            }
+        }
     }
 }

@@ -29,6 +29,7 @@ Item {
     }
 
     signal appLaunched()
+    signal openSettingsRequested()
 
     LC.LauncherModel {
         id: launcherModel
@@ -68,13 +69,16 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         
         width: root.expanded ? 500 : 100
-        height: root.expanded ? 450 : 40
+        height: root.expanded ? Math.max(80, Math.min(450, mainLayout.implicitHeight + (Vars.spacingLarge * 2))) : 40
         
         opacity: root.expanded || panel.width > 105 ? 1.0 : 0.0
         visible: opacity > 0
         
         color: Vars.translucent ? Qt.rgba(Theme.surface.r, Theme.surface.g, Theme.surface.b, 0.85) : Theme.surface
-        radius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        topLeftRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        topRightRadius: root.gameMode || Vars.panelStyle === "Attached" || Vars.panelStyle === "Framed" ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        bottomLeftRadius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
+        bottomRightRadius: root.gameMode ? 0 : (root.expanded ? Vars.radiusExtraLarge : height / 2)
 
         Behavior on radius { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
         Behavior on width { enabled: !root.gameMode; NumberAnimation { duration: Vars.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Vars.customExpressiveSpatialSlow } }
@@ -91,15 +95,13 @@ Item {
 
             ColumnLayout {
                 id: mainLayout
-                anchors.fill: parent
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
                 spacing: Vars.spacingMedium
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Vars.spacingMedium
-                    
-                    Text { text: "App Launcher"; font.family: Vars.fontFamily; font.pixelSize: 18; font.weight: Font.Bold; color: Theme.on_surface }
-                }
+                // Header removed per user request
 
                 LC.SearchBar {
                     id: searchBar
@@ -130,6 +132,7 @@ Item {
                     onAppLaunched: root.appLaunched()
                     onEscapePressed: root.expanded = false
                     onFocusSearchBar: searchBar.forceActiveFocus()
+                    onOpenSettingsRequested: root.openSettingsRequested()
                     
                     onSearchTextChanged: {
                         searchBar.text = searchText;

@@ -1,0 +1,29 @@
+name: Release Binary
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers the workflow only when you push a tag starting with 'v'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to create a release and upload assets
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Release Binary
+        working-directory: scripts/omniformis/
+        run: cargo build --release --verbose
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            scripts/omniformis/target/release/omniformis
+            scripts/install.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

@@ -139,7 +139,44 @@ elif grep -qi "arch" /etc/os-release; then
     touch ~/.config/quickshell/Pill/.qmlls.ini
     
     echo "Configuring Spicetify..."
+    rm -rf ~/.local/share/spotify-spicetify
+    mkdir -p ~/.local/share/spotify-spicetify
+    
+    if [ -d "/opt/spotify" ]; then
+        cp -rT /opt/spotify ~/.local/share/spotify-spicetify
+    elif command -v spotify >/dev/null; then
+        SPOTIFY_BIN=$(readlink -f $(command -v spotify))
+        SPOTIFY_SHARE="$(dirname "$SPOTIFY_BIN")"
+        if [[ "$SPOTIFY_SHARE" == */bin ]]; then
+            SPOTIFY_SHARE="$(dirname "$SPOTIFY_SHARE")/share/spotify"
+        fi
+        if [ -d "$SPOTIFY_SHARE" ]; then
+            cp -rT "$SPOTIFY_SHARE" ~/.local/share/spotify-spicetify
+        fi
+    fi
+    chmod -R a+wr ~/.local/share/spotify-spicetify
+    
+    # On NixOS, the copied 'spotify' might be a wrapper script pointing to '.spotify-wrapped' in the Nix store.
+    # We must patch this local wrapper to execute the local binary, otherwise it loads the unmodified Nix store binary!
+    if grep -qi "nixos" /etc/os-release && [ -f ~/.local/share/spotify-spicetify/.spotify-wrapped ]; then
+        sed -i -E "s|/nix/store/[^/]+/share/spotify/\.spotify-wrapped|$HOME/.local/share/spotify-spicetify/.spotify-wrapped|g" ~/.local/share/spotify-spicetify/spotify
+    fi
+    
+    mkdir -p ~/.local/share/applications
+    rm -f ~/.local/share/applications/spotify.desktop
+    if [ -f /usr/share/applications/spotify.desktop ]; then
+        cp /usr/share/applications/spotify.desktop ~/.local/share/applications/spotify.desktop
+        sed -i "s|^Exec=spotify|Exec=$HOME/.local/bin/spotify|" ~/.local/share/applications/spotify.desktop
+    elif [ -f /run/current-system/sw/share/applications/spotify.desktop ]; then
+        cp /run/current-system/sw/share/applications/spotify.desktop ~/.local/share/applications/spotify.desktop
+        sed -i "s|^Exec=spotify|Exec=$HOME/.local/bin/spotify|" ~/.local/share/applications/spotify.desktop
+    fi
+    
+    mkdir -p ~/.local/bin
+    ln -sf ~/.local/share/spotify-spicetify/spotify ~/.local/bin/spotify
+
     spicetify config extensions adblockify.js beautifulLyrics.js popupLyrics.js spicyLyrics.js fullAppDisplay.js || true
+    spicetify backup apply || true
     
     echo "Setting Environment Variables in Fish..."
     mkdir -p ~/.config/fish

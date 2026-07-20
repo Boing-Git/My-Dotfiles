@@ -882,9 +882,9 @@ ColumnLayout {
                     id: m3ShapesObj
                 }
 
-                Flow {
+                Grid {
                     visible: delegateRoot.itemType === "shape"
-                    Layout.fillWidth: true
+                    columns: 6
                     spacing: 2
                     Repeater {
                         id: shapeRepeater
@@ -892,10 +892,8 @@ ColumnLayout {
                         delegate: Rectangle {
                             property bool isSelected: delegateRoot.itemVal === modelData
                             
-                            property var prevItem: index > 0 ? shapeRepeater.itemAt(index - 1) : null
-                            property var nextItem: index < (shapeRepeater.count - 1) ? shapeRepeater.itemAt(index + 1) : null
-                            property bool hasLeft: prevItem && prevItem.y === y
-                            property bool hasRight: nextItem && nextItem.y === y
+                            property bool hasLeft: index % 6 !== 0
+                            property bool hasRight: index % 6 !== 5 && index !== shapeRepeater.count - 1
                             
                             height: 36
                             width: 48

@@ -1,9 +1,9 @@
 use clap::{Parser, Subcommand};
 
-mod theme;
-mod qs;
 mod bezier;
 mod hypr;
+mod qs;
+mod theme;
 mod utils;
 
 #[derive(Parser)]
@@ -91,7 +91,10 @@ fn main() {
 
     match cli.command {
         Commands::Theme { cmd } => match cmd {
-            ThemeCommands::Generate { light_file, dark_file } => theme::generate(&light_file, &dark_file),
+            ThemeCommands::Generate {
+                light_file,
+                dark_file,
+            } => theme::generate(&light_file, &dark_file),
             ThemeCommands::List => theme::list(),
             ThemeCommands::Toggle => theme::toggle(),
         },

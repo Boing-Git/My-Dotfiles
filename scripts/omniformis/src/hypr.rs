@@ -166,8 +166,8 @@ pub fn update_var(content: &str, key: &str, value: &str, val_type: &str) -> Stri
     res
 }
 
-pub fn handle(list: bool, args: Vec<String>) {
-    let mut content = read_file();
+pub fn list() {
+    let content = read_file();
     let variables = parse_variables(&content);
     
     let exclude = [
@@ -176,71 +176,53 @@ pub fn handle(list: bool, args: Vec<String>) {
         "CustomExpressiveSpatialFast", "CustomExpressiveSpatialSlow"
     ];
 
-    if list {
-        let mut keys: Vec<_> = variables.keys().collect();
-        keys.sort();
-        for key in keys {
-            if exclude.contains(&key.as_str()) {
-                continue;
-            }
-            let info = &variables[key];
-            let type_str = if info.val_type == "bool" {
-                "togglable bool".to_string()
-            } else if !info.enums.is_empty() {
-                format!("enum ({})", info.enums.join(", "))
-            } else {
-                info.val_type.clone()
-            };
-
-            let left_part = format!("{}: {}", key, type_str);
-            let val_part = format!("[{}]", info.val);
-            println!("{:<50} {:<15} - {} | {}", left_part, val_part, info.category, info.help);
+    let mut keys: Vec<_> = variables.keys().collect();
+    keys.sort();
+    for key in keys {
+        if exclude.contains(&key.as_str()) {
+            continue;
         }
-        return;
+        let info = &variables[key];
+        let type_str = if info.val_type == "bool" {
+            "togglable bool".to_string()
+        } else if !info.enums.is_empty() {
+            format!("enum ({})", info.enums.join(", "))
+        } else {
+            info.val_type.clone()
+        };
+
+        let left_part = format!("{}: {}", key, type_str);
+        let val_part = format!("[{}]", info.val);
+        println!("{:<50} {:<15} - {} | {}", left_part, val_part, info.category, info.help);
     }
+}
 
-    // Manual arg parsing
-    let mut modified = false;
-    let mut game_mode_changed = false;
-    let mut iter = args.iter().peekable();
-
-    while let Some(arg) = iter.next() {
-        if arg.starts_with("--") {
-            let key = arg.trim_start_matches("--");
-            if let Some(info) = variables.get(key) {
-                if let Some(val) = iter.peek() {
-                    if !val.starts_with("--") {
-                        let value = iter.next().unwrap();
-                        content = update_var(&content, key, value, &info.val_type);
-                        modified = true;
-                        if key == "GameMode" {
-                            game_mode_changed = true;
-                        }
-                    } else {
-                        // Flag with no value? Only valid for bool.
-                        if info.val_type == "bool" {
-                            content = update_var(&content, key, "true", &info.val_type);
-                            modified = true;
-                        }
-                    }
-                } else if info.val_type == "bool" {
-                    content = update_var(&content, key, "true", &info.val_type);
-                    modified = true;
-                }
-            } else {
-                eprintln!("Warning: Unknown argument provided: {}", arg);
-                exit(1);
-            }
-        }
+pub fn get(key: &str) {
+    let content = read_file();
+    let variables = parse_variables(&content);
+    if let Some(info) = variables.get(key) {
+        println!("{}", info.val);
+    } else {
+        eprintln!("Variable {} not found", key);
+        exit(1);
     }
+}
 
-    if modified {
+pub fn set(key: &str, value: &str) {
+    let mut content = read_file();
+    let variables = parse_variables(&content);
+    
+    if let Some(info) = variables.get(key) {
+        content = update_var(&content, key, value, &info.val_type);
         write_file(&content);
-        if game_mode_changed {
+        if key == "GameMode" {
             let _ = Command::new("sh")
                 .arg("-c")
                 .arg("omniformis qs kill; sleep 0.1; omniformis qs start -d")
                 .spawn();
         }
+    } else {
+        eprintln!("Warning: Unknown variable: {}", key);
+        exit(1);
     }
 }

@@ -32,14 +32,19 @@ enum Commands {
     },
     /// Hyprland variables management
     Hypr {
-        /// List all variables and their possible states
-        #[arg(short, long)]
-        list: bool,
-
-        /// Additional arguments for hypr variables
-        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
-        args: Vec<String>,
+        #[command(subcommand)]
+        cmd: HyprCommands,
     },
+}
+
+#[derive(Subcommand)]
+enum HyprCommands {
+    /// Get a hypr variable
+    Get { key: String },
+    /// Set a hypr variable
+    Set { key: String, value: String },
+    /// List hypr variables
+    List,
 }
 
 #[derive(Subcommand)]
@@ -110,6 +115,10 @@ fn main() {
             BezierCommands::Load { name } => bezier::load(&name),
             BezierCommands::List => bezier::list(),
         },
-        Commands::Hypr { list, args } => hypr::handle(list, args),
+        Commands::Hypr { cmd } => match cmd {
+            HyprCommands::Get { key } => hypr::get(&key),
+            HyprCommands::Set { key, value } => hypr::set(&key, &value),
+            HyprCommands::List => hypr::list(),
+        },
     }
 }

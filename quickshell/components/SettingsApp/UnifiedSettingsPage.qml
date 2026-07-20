@@ -22,7 +22,7 @@ ColumnLayout {
 
     function updateVariable(key, val, source) {
         var isQs = source === "Quickshell" || source === "quickshell";
-        var cmd = isQs ? '["omniformis", "qs", "set", "' + key + '", "' + val + '"]' : '["omniformis", "hypr", "--' + key + '", "' + val + '"]';
+        var cmd = isQs ? '["omniformis", "qs", "set", "' + key + '", "' + val + '"]' : '["omniformis", "hypr", "set", "' + key + '", "' + val + '"]';
         var proc = Qt.createQmlObject('import Quickshell.Io; Process { command: ' + cmd + '; onExited: destroy() }', rootPage);
         proc.running = true;
 
@@ -924,7 +924,10 @@ ColumnLayout {
                                 anchors.centerIn: parent
                                 scale: 0.24
                                 layer.enabled: true
-                                layer.samples: 4
+                                layer.samples: 8
+                                layer.mipmap: true
+                                layer.smooth: true
+                                antialiasing: true
                                 
                                 ShapePath {
                                     fillColor: isSelected ? Theme.on_primary : Theme.on_surface
